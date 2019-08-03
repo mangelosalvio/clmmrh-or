@@ -310,7 +310,6 @@ class OperatingRoomSlipForm extends Component {
           ...form_data,
           message: "Transaction Deleted"
         });
-        this.props.history.push("/map");
       })
       .catch(err => {
         message.error(err.response.data.message);
