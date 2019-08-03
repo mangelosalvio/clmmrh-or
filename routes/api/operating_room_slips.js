@@ -49,38 +49,27 @@ router.put("/", (req, res) => {
   const body = filterId(req);
   const user = req.body.user;
 
-  Model.findOne({
-    last_name: body.last_name,
-    first_name: body.first_name,
-    middle_name: body.middle_name
-  }).then(record => {
-    if (record) {
-      errors["last_name"] = "Name already exists";
-      return res.status(401).json(errors);
-    } else {
-      const datetime = moment.tz(moment(), process.env.TIMEZONE);
-      const log = `Added by ${user.name} on ${datetime.format("LLL")}`;
+  const datetime = moment.tz(moment(), process.env.TIMEZONE);
+  const log = `Added by ${user.name} on ${datetime.format("LLL")}`;
 
-      const logs = [
-        {
-          user,
-          datetime,
-          log
-        }
-      ];
-
-      const newRecord = new Model({
-        ...body,
-        logs
-      });
-      newRecord
-        .save()
-        .then(record => {
-          return res.json(record);
-        })
-        .catch(err => console.log(err));
+  const logs = [
+    {
+      user,
+      datetime,
+      log
     }
+  ];
+
+  const newRecord = new Model({
+    ...body,
+    logs
   });
+  newRecord
+    .save()
+    .then(record => {
+      return res.json(record);
+    })
+    .catch(err => console.log(err));
 });
 
 router.post("/:id", (req, res) => {
