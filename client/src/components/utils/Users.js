@@ -10,6 +10,7 @@ import { withRouter } from "react-router-dom";
 import { USER_ADMIN } from "../../utils/constants";
 import { Breadcrumb, Layout } from "antd";
 import { roles_options } from "./../../utils/Options";
+import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 
 const { Content } = Layout;
 
@@ -205,7 +206,7 @@ class Users extends Component {
                 error={errors.username}
               />
 
-              <SelectFieldGroup
+              <SimpleSelectFieldGroup
                 label="Role"
                 name="role"
                 value={this.state.role}
