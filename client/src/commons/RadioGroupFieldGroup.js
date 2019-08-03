@@ -12,7 +12,8 @@ const RadioGroupFieldGroup = ({
   inputRef,
   formItemLayout,
   options,
-  defaultValue
+  defaultValue,
+  disabled
 }) => (
   <Form.Item
     label={label}
@@ -27,6 +28,7 @@ const RadioGroupFieldGroup = ({
       value={value}
       onChange={onChange}
       ref={inputRef}
+      disabled={disabled}
     />
   </Form.Item>
 );

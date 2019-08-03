@@ -26,14 +26,25 @@ router.get("/", (req, res) => {
   const form_data = isEmpty(req.query.s)
     ? {}
     : {
-        name: {
-          $regex: new RegExp(req.query.s, "i")
-        }
+        $or: [
+          {
+            name: {
+              $regex: new RegExp(req.query.s, "i")
+            }
+          },
+          {
+            procedure: {
+              $regex: new RegExp(req.query.s, "i")
+            }
+          }
+        ]
       };
 
-  console.log(form_data);
   Model.find(form_data)
-    .sort({ name: 1 })
+    .sort({
+      _id: -1,
+      name: 1
+    })
     .then(records => {
       return res.json(records);
     })

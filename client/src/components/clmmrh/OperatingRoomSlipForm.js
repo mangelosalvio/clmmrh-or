@@ -225,15 +225,21 @@ class OperatingRoomSlipForm extends Component {
   onSearch = (value, e) => {
     e.preventDefault();
 
+    const loading = message.loading("Loading...");
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response =>
+      .then(response => {
+        loading();
         this.setState({
           [collection_name]: response.data,
           message: isEmpty(response.data) ? "No rows found" : ""
-        })
-      )
-      .catch(err => console.log(err));
+        });
+      })
+      .catch(err => {
+        loading();
+        message.error("An error has occurred");
+        console.log(err);
+      });
   };
 
   addNew = () => {
@@ -245,9 +251,11 @@ class OperatingRoomSlipForm extends Component {
   };
 
   edit = record => {
+    const loading = message.loading("Loading...");
     axios
       .get(this.state.url + record._id)
       .then(response => {
+        loading();
         const record = response.data;
         const {
           registration_date,
@@ -286,7 +294,11 @@ class OperatingRoomSlipForm extends Component {
           };
         });
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        loading();
+        message.error("An error has occurred");
+        console.log(err);
+      });
   };
 
   onDelete = () => {
@@ -390,6 +402,14 @@ class OperatingRoomSlipForm extends Component {
   render() {
     const records_column = [
       {
+        title: "Hospital #",
+        dataIndex: "hospital_number"
+      },
+      {
+        title: "Ward",
+        dataIndex: "ward"
+      },
+      {
         title: "Patient Name",
         dataIndex: "name"
       },
@@ -402,32 +422,29 @@ class OperatingRoomSlipForm extends Component {
         dataIndex: "sex"
       },
       {
-        title: "Weight",
-        dataIndex: "weight"
+        title: "Diagnosis",
+        dataIndex: "diagnosis"
       },
       {
-        title: "Service",
-        dataIndex: "service"
+        title: "Procedure",
+        dataIndex: "procedure"
       },
       {
-        title: "Ward",
-        dataIndex: "ward"
+        title: "Surgeon",
+        dataIndex: "surgeon.full_name"
       },
       {
-        title: "Date Ordered",
-        dataIndex: "date_time_ordered",
-        render: value => {
-          return moment(value).format("L");
-        }
+        title: "Anesthesiologist",
+        dataIndex: "main_anes.full_name"
       },
       {
-        title: "Date of Surgery",
-        dataIndex: "date_time_of_surgery",
-        render: value => {
-          return moment(value).format("L");
-        }
+        title: "OR Room",
+        dataIndex: "operating_room_number"
       },
-
+      {
+        title: "Classification",
+        dataIndex: "classification"
+      },
       {
         title: "",
         key: "action",
@@ -696,7 +713,7 @@ class OperatingRoomSlipForm extends Component {
                     value={this.state.name}
                     error={errors.name}
                     formItemLayout={formItemLayout}
-                    onChange={this.onChange}
+                    disabled
                   />
 
                   <TextFieldGroup
@@ -705,7 +722,7 @@ class OperatingRoomSlipForm extends Component {
                     value={this.state.age}
                     error={errors.age}
                     formItemLayout={formItemLayout}
-                    onChange={this.onChange}
+                    disabled
                   />
 
                   <RadioGroupFieldGroup
@@ -716,6 +733,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.sex}
                     formItemLayout={formItemLayout}
                     options={gender_options}
+                    disabled
                   />
 
                   <TextFieldGroup
@@ -725,6 +743,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.weight}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <TextAreaGroup
@@ -734,6 +753,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.address}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <DatePickerFieldGroup
@@ -745,6 +765,7 @@ class OperatingRoomSlipForm extends Component {
                     }
                     error={errors.registration_date}
                     formItemLayout={formItemLayout}
+                    disabled
                   />
 
                   <TextFieldGroup
@@ -754,6 +775,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.hospital_number}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <TextFieldGroup
@@ -763,6 +785,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.ward}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <SimpleSelectFieldGroup
@@ -773,6 +796,7 @@ class OperatingRoomSlipForm extends Component {
                     formItemLayout={formItemLayout}
                     error={errors.service}
                     options={service_options}
+                    disabled
                   />
 
                   <Divider orientation="left">Surgical Procedures</Divider>
@@ -895,6 +919,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.name}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <TextFieldGroup
@@ -904,6 +929,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.age}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <RadioGroupFieldGroup
@@ -914,6 +940,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.sex}
                     formItemLayout={formItemLayout}
                     options={gender_options}
+                    disabled
                   />
 
                   <TextFieldGroup
@@ -923,6 +950,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.weight}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <TextAreaGroup
@@ -932,6 +960,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.address}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <DatePickerFieldGroup
@@ -943,6 +972,7 @@ class OperatingRoomSlipForm extends Component {
                     }
                     error={errors.registration_date}
                     formItemLayout={formItemLayout}
+                    disabled
                   />
 
                   <TextFieldGroup
@@ -952,6 +982,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.hospital_number}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <TextFieldGroup
@@ -970,6 +1001,7 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.ward}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
                   />
 
                   <SimpleSelectFieldGroup
@@ -980,6 +1012,7 @@ class OperatingRoomSlipForm extends Component {
                     formItemLayout={formItemLayout}
                     error={errors.service}
                     options={service_options}
+                    disabled
                   />
 
                   <Divider orientation="left">Surgical Procedures</Divider>
