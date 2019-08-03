@@ -1,0 +1,198 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+.PrintableReport html,
+.PrintableReport body,
+.PrintableReport div,
+.PrintableReport span,
+.PrintableReport applet,
+.PrintableReport object,
+.PrintableReport iframe,
+.PrintableReport h1,
+.PrintableReport h2,
+.PrintableReport h3,
+.PrintableReport h4,
+.PrintableReport h5,
+.PrintableReport h6,
+.PrintableReport p,
+.PrintableReport blockquote,
+.PrintableReport pre,
+.PrintableReport a,
+.PrintableReport abbr,
+.PrintableReport acronym,
+.PrintableReport address,
+.PrintableReport big,
+.PrintableReport cite,
+.PrintableReport code,
+.PrintableReport del,
+.PrintableReport dfn,
+.PrintableReport em,
+.PrintableReport img,
+.PrintableReport ins,
+.PrintableReport kbd,
+.PrintableReport q,
+.PrintableReport s,
+.PrintableReport samp,
+.PrintableReport small,
+.PrintableReport strike,
+.PrintableReport strong,
+.PrintableReport sub,
+.PrintableReport sup,
+.PrintableReport tt,
+.PrintableReport var,
+.PrintableReport b,
+.PrintableReport u,
+.PrintableReport i,
+.PrintableReport center,
+.PrintableReport dl,
+.PrintableReport dt,
+.PrintableReport dd,
+.PrintableReport ol,
+.PrintableReport ul,
+.PrintableReport li,
+.PrintableReport fieldset,
+.PrintableReport form,
+.PrintableReport label,
+.PrintableReport legend,
+.PrintableReport table,
+.PrintableReport caption,
+.PrintableReport tbody,
+.PrintableReport tfoot,
+.PrintableReport thead,
+.PrintableReport tr,
+.PrintableReport th,
+.PrintableReport td,
+.PrintableReport article,
+.PrintableReport aside,
+.PrintableReport canvas,
+.PrintableReport details,
+.PrintableReport embed,
+.PrintableReport figure,
+.PrintableReport figcaption,
+.PrintableReport footer,
+.PrintableReport header,
+.PrintableReport hgroup,
+.PrintableReport menu,
+.PrintableReport nav,
+.PrintableReport output,
+.PrintableReport ruby,
+.PrintableReport section,
+.PrintableReport summary,
+.PrintableReport time,
+.PrintableReport mark,
+.PrintableReport audio,
+.PrintableReport video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+.PrintableReport article,
+.PrintableReport aside,
+.PrintableReport details,
+.PrintableReport figcaption,
+.PrintableReport figure,
+.PrintableReport footer,
+.PrintableReport header,
+.PrintableReport hgroup,
+.PrintableReport menu,
+.PrintableReport nav,
+.PrintableReport section {
+  display: block;
+}
+.PrintableReport body {
+  line-height: 1;
+}
+.PrintableReport ol,
+.PrintableReport ul {
+  list-style: none;
+}
+.PrintableReport blockquote,
+.PrintableReport q {
+  quotes: none;
+}
+.PrintableReport blockquote:before,
+.PrintableReport blockquote:after,
+.PrintableReport q:before,
+.PrintableReport q:after {
+  content: "";
+  content: none;
+}
+.PrintableReport table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.PrintableReport {
+  margin-top: -50px;
+  background: none !important;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.75rem;
+}
+
+.PrintableReport .border-b-1 {
+  border-bottom: 1px solid #000;
+}
+
+.PrintableReport span.w-50 {
+  margin: 0px 8px;
+  width: 50px;
+  display: inline-block;
+  border-bottom: 1px solid #000;
+}
+.PrintableReport span.w-100 {
+  margin: 0px 8px;
+  width: 100px;
+  display: inline-block;
+  border-bottom: 1px solid #000;
+}
+.PrintableReport span.w-150 {
+  margin: 0px 8px;
+  width: 150px;
+  display: inline-block;
+  border-bottom: 1px solid #000;
+}
+
+.PrintableReport table.full-width {
+  width: 100%;
+}
+
+.PrintableReport div.column {
+  padding: 0rem 0.75rem;
+}
+
+.PrintableReport table.full-width th {
+  font-weight: bold;
+}
+
+.PrintableReport .border-top {
+  border-top: 1px solid #000;
+}
+
+.PrintableReport .underline {
+  text-decoration: underline;
+}
+
+.PrintableReport .uppercase {
+  text-transform: uppercase;
+}
+
+html,
+body {
+  background: none;
+}
+
+@media print {
+  .DeveloperFooter {
+    display: none;
+  }
+
+  .close-button-container {
+    display: none;
+  }
+}
