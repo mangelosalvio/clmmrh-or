@@ -54,6 +54,7 @@ const form_data = {
   weight: "",
   hospital_number: "",
   ward: "",
+  date_of_birth: null,
   registration_date: null,
   service: "",
   diagnosis: "",
@@ -98,6 +99,21 @@ const form_data = {
   stimulant: "",
   asa: "",
 
+  time_ward_informed: null,
+  arrival_time: null,
+  room_is_ready: null,
+  equip_ready: null,
+  patient_placed_in_or_table: null,
+  time_anes_arrived: null,
+  time_surgeon_arrived: null,
+  induction_time: null,
+  induction_completed: null,
+  time_or_started: null,
+  or_ended: null,
+  trans_out_from_or: null,
+  surgical_safety_checklist: null,
+  remarks: "",
+
   errors: {}
 };
 
@@ -138,7 +154,21 @@ class OperatingRoomSlipForm extends Component {
             date_time_received,
             anes_start,
             operation_started,
-            operation_finished
+            operation_finished,
+            time_ward_informed,
+            arrival_time,
+            room_is_ready,
+            equip_ready,
+            patient_placed_in_or_table,
+            time_anes_arrived,
+            time_surgeon_arrived,
+            induction_time,
+            induction_completed,
+            time_or_started,
+            or_ended,
+            trans_out_from_or,
+            surgical_safety_checklist,
+            date_of_birth
           } = data;
 
           message.success("Transaction Saved");
@@ -146,6 +176,7 @@ class OperatingRoomSlipForm extends Component {
           this.setState({
             ...form_data,
             ...data,
+            date_of_birth: date_of_birth ? moment(date_of_birth) : null,
             registration_date: registration_date
               ? moment(registration_date)
               : null,
@@ -164,6 +195,34 @@ class OperatingRoomSlipForm extends Component {
               : null,
             operation_finished: operation_finished
               ? moment(operation_finished)
+              : null,
+
+            time_ward_informed: time_ward_informed
+              ? moment(time_ward_informed)
+              : null,
+            arrival_time: arrival_time ? moment(arrival_time) : null,
+            room_is_ready: room_is_ready ? moment(room_is_ready) : null,
+            equip_ready: equip_ready ? moment(equip_ready) : null,
+            patient_placed_in_or_table: patient_placed_in_or_table
+              ? moment(patient_placed_in_or_table)
+              : null,
+            time_anes_arrived: time_anes_arrived
+              ? moment(time_anes_arrived)
+              : null,
+            time_surgeon_arrived: time_surgeon_arrived
+              ? moment(time_surgeon_arrived)
+              : null,
+            induction_time: induction_time ? moment(induction_time) : null,
+            induction_completed: induction_completed
+              ? moment(induction_completed)
+              : null,
+            time_or_started: time_or_started ? moment(time_or_started) : null,
+            or_ended: or_ended ? moment(or_ended) : null,
+            trans_out_from_or: trans_out_from_or
+              ? moment(trans_out_from_or)
+              : null,
+            surgical_safety_checklist: surgical_safety_checklist
+              ? moment(surgical_safety_checklist)
               : null,
             errors: {}
           });
@@ -178,13 +237,28 @@ class OperatingRoomSlipForm extends Component {
         .post(this.state.url + this.state._id, form_data)
         .then(({ data }) => {
           const {
+            date_of_birth,
             registration_date,
             date_time_ordered,
             date_time_received,
             date_time_of_surgery,
             anes_start,
             operation_started,
-            operation_finished
+            operation_finished,
+
+            time_ward_informed,
+            arrival_time,
+            room_is_ready,
+            equip_ready,
+            patient_placed_in_or_table,
+            time_anes_arrived,
+            time_surgeon_arrived,
+            induction_time,
+            induction_completed,
+            time_or_started,
+            or_ended,
+            trans_out_from_or,
+            surgical_safety_checklist
           } = data;
 
           loading(0);
@@ -192,6 +266,7 @@ class OperatingRoomSlipForm extends Component {
           this.setState({
             ...form_data,
             ...data,
+            date_of_birth: date_of_birth ? moment(date_of_birth) : null,
             registration_date: registration_date
               ? moment(registration_date)
               : null,
@@ -210,6 +285,33 @@ class OperatingRoomSlipForm extends Component {
               : null,
             operation_finished: operation_finished
               ? moment(operation_finished)
+              : null,
+            time_ward_informed: time_ward_informed
+              ? moment(time_ward_informed)
+              : null,
+            arrival_time: arrival_time ? moment(arrival_time) : null,
+            room_is_ready: room_is_ready ? moment(room_is_ready) : null,
+            equip_ready: equip_ready ? moment(equip_ready) : null,
+            patient_placed_in_or_table: patient_placed_in_or_table
+              ? moment(patient_placed_in_or_table)
+              : null,
+            time_anes_arrived: time_anes_arrived
+              ? moment(time_anes_arrived)
+              : null,
+            time_surgeon_arrived: time_surgeon_arrived
+              ? moment(time_surgeon_arrived)
+              : null,
+            induction_time: induction_time ? moment(induction_time) : null,
+            induction_completed: induction_completed
+              ? moment(induction_completed)
+              : null,
+            time_or_started: time_or_started ? moment(time_or_started) : null,
+            or_ended: or_ended ? moment(or_ended) : null,
+            trans_out_from_or: trans_out_from_or
+              ? moment(trans_out_from_or)
+              : null,
+            surgical_safety_checklist: surgical_safety_checklist
+              ? moment(surgical_safety_checklist)
               : null,
             errors: {}
           });
@@ -258,19 +360,34 @@ class OperatingRoomSlipForm extends Component {
         loading();
         const record = response.data;
         const {
+          date_of_birth,
           registration_date,
           date_time_ordered,
           date_time_of_surgery,
           date_time_received,
           anes_start,
           operation_started,
-          operation_finished
+          operation_finished,
+          time_ward_informed,
+          arrival_time,
+          room_is_ready,
+          equip_ready,
+          patient_placed_in_or_table,
+          time_anes_arrived,
+          time_surgeon_arrived,
+          induction_time,
+          induction_completed,
+          time_or_started,
+          or_ended,
+          trans_out_from_or,
+          surgical_safety_checklist
         } = response.data;
         this.setState(prevState => {
           return {
             ...form_data,
             [collection_name]: [],
             ...record,
+            date_of_birth: date_of_birth ? moment(date_of_birth) : null,
             registration_date: registration_date
               ? moment(registration_date)
               : null,
@@ -289,6 +406,34 @@ class OperatingRoomSlipForm extends Component {
               : null,
             operation_finished: operation_finished
               ? moment(operation_finished)
+              : null,
+
+            time_ward_informed: time_ward_informed
+              ? moment(time_ward_informed)
+              : null,
+            arrival_time: arrival_time ? moment(arrival_time) : null,
+            room_is_ready: room_is_ready ? moment(room_is_ready) : null,
+            equip_ready: equip_ready ? moment(equip_ready) : null,
+            patient_placed_in_or_table: patient_placed_in_or_table
+              ? moment(patient_placed_in_or_table)
+              : null,
+            time_anes_arrived: time_anes_arrived
+              ? moment(time_anes_arrived)
+              : null,
+            time_surgeon_arrived: time_surgeon_arrived
+              ? moment(time_surgeon_arrived)
+              : null,
+            induction_time: induction_time ? moment(induction_time) : null,
+            induction_completed: induction_completed
+              ? moment(induction_completed)
+              : null,
+            time_or_started: time_or_started ? moment(time_or_started) : null,
+            or_ended: or_ended ? moment(or_ended) : null,
+            trans_out_from_or: trans_out_from_or
+              ? moment(trans_out_from_or)
+              : null,
+            surgical_safety_checklist: surgical_safety_checklist
+              ? moment(surgical_safety_checklist)
               : null,
             errors: {}
           };
@@ -498,6 +643,15 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.name}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Date of Birth"
+                    name="date_of_birth"
+                    value={this.state.date_of_birth}
+                    onChange={value => this.setState({ date_of_birth: value })}
+                    error={errors.date_of_birth}
+                    formItemLayout={formItemLayout}
                   />
 
                   <TextFieldGroup
@@ -715,6 +869,16 @@ class OperatingRoomSlipForm extends Component {
                     disabled
                   />
 
+                  <DatePickerFieldGroup
+                    label="Date of Birth"
+                    name="date_of_birth"
+                    value={this.state.date_of_birth}
+                    onChange={value => this.setState({ date_of_birth: value })}
+                    error={errors.date_of_birth}
+                    formItemLayout={formItemLayout}
+                    disabled
+                  />
+
                   <TextFieldGroup
                     label="Age"
                     name="age"
@@ -918,6 +1082,16 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.name}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
+                    disabled
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Date of Birth"
+                    name="date_of_birth"
+                    value={this.state.date_of_birth}
+                    onChange={value => this.setState({ date_of_birth: value })}
+                    error={errors.date_of_birth}
+                    formItemLayout={formItemLayout}
                     disabled
                   />
 
@@ -1164,6 +1338,24 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
+                  <TextAreaGroup
+                    label="Tentative Diagnosis"
+                    name="tentative_diagnosis"
+                    value={this.state.tentative_diagnosis}
+                    error={errors.tentative_diagnosis}
+                    formItemLayout={formItemLayout}
+                    onChange={this.onChange}
+                  />
+
+                  <TextAreaGroup
+                    label="Final Diagnosis"
+                    name="final_diagnosis"
+                    value={this.state.final_diagnosis}
+                    error={errors.final_diagnosis}
+                    formItemLayout={formItemLayout}
+                    onChange={this.onChange}
+                  />
+
                   <Divider orientation="left">
                     Treatment in the Operating Room
                   </Divider>
@@ -1269,6 +1461,183 @@ class OperatingRoomSlipForm extends Component {
                     name="stimulant"
                     value={this.state.stimulant}
                     error={errors.stimulant}
+                    formItemLayout={formItemLayout}
+                    onChange={this.onChange}
+                  />
+
+                  <Form.Item className="m-t-1" {...tailFormItemLayout}>
+                    <div className="field is-grouped">
+                      <div className="control">
+                        <button className="button is-small is-primary">
+                          Save
+                        </button>
+                      </div>
+                      {!isEmpty(this.state._id) ? (
+                        <a
+                          className="button is-danger is-outlined is-small"
+                          onClick={this.onDelete}
+                        >
+                          <span>Delete</span>
+                          <span className="icon is-small">
+                            <i className="fas fa-times" />
+                          </span>
+                        </a>
+                      ) : null}
+                    </div>
+                  </Form.Item>
+                </TabPane>
+                <TabPane tab="Time Logs" key="4">
+                  <DatePickerFieldGroup
+                    label="Time Ward Informed"
+                    name="time_ward_informed"
+                    value={this.state.time_ward_informed}
+                    onChange={value =>
+                      this.setState({ time_ward_informed: value })
+                    }
+                    error={errors.time_ward_informed}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Arrival Time"
+                    name="arrival_time"
+                    value={this.state.arrival_time}
+                    onChange={value => this.setState({ arrival_time: value })}
+                    error={errors.arrival_time}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Room is ready"
+                    name="room_is_ready"
+                    value={this.state.room_is_ready}
+                    onChange={value => this.setState({ room_is_ready: value })}
+                    error={errors.room_is_ready}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Equip/Inst ready"
+                    name="equip_ready"
+                    value={this.state.equip_ready}
+                    onChange={value => this.setState({ equip_ready: value })}
+                    error={errors.equip_ready}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Patient Placed in OR Table"
+                    name="patient_placed_in_or_table"
+                    value={this.state.patient_placed_in_or_table}
+                    onChange={value =>
+                      this.setState({ patient_placed_in_or_table: value })
+                    }
+                    error={errors.patient_placed_in_or_table}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Time Anes Arrived"
+                    name="time_anes_arrived"
+                    value={this.state.time_anes_arrived}
+                    onChange={value =>
+                      this.setState({ time_anes_arrived: value })
+                    }
+                    error={errors.time_anes_arrived}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Time Surgeon Arrived"
+                    name="time_surgeon_arrived"
+                    value={this.state.time_surgeon_arrived}
+                    onChange={value =>
+                      this.setState({ time_surgeon_arrived: value })
+                    }
+                    error={errors.time_surgeon_arrived}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Induction Time"
+                    name="induction_time"
+                    value={this.state.induction_time}
+                    onChange={value => this.setState({ induction_time: value })}
+                    error={errors.induction_time}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Induction Completed"
+                    name="induction_completed"
+                    value={this.state.induction_completed}
+                    onChange={value =>
+                      this.setState({ induction_completed: value })
+                    }
+                    error={errors.induction_completed}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Time OR Started"
+                    name="time_or_started"
+                    value={this.state.time_or_started}
+                    onChange={value =>
+                      this.setState({ time_or_started: value })
+                    }
+                    error={errors.time_or_started}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="OR Ended"
+                    name="or_ended"
+                    value={this.state.or_ended}
+                    onChange={value => this.setState({ or_ended: value })}
+                    error={errors.or_ended}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Trans out from OR"
+                    name="trans_out_from_or"
+                    value={this.state.trans_out_from_or}
+                    onChange={value =>
+                      this.setState({ trans_out_from_or: value })
+                    }
+                    error={errors.trans_out_from_or}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <DatePickerFieldGroup
+                    label="Surgical Safety Checklist"
+                    name="surgical_safety_checklist"
+                    value={this.state.surgical_safety_checklist}
+                    onChange={value =>
+                      this.setState({ surgical_safety_checklist: value })
+                    }
+                    error={errors.surgical_safety_checklist}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  />
+
+                  <TextAreaGroup
+                    label="Remarks"
+                    name="remarks"
+                    value={this.state.remarks}
+                    error={errors.remarks}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
                   />

@@ -6,6 +6,7 @@ const OperatingRoomSlipSchema = new Schema({
   age: String,
   address: String,
   sex: String,
+  date_of_birth: Date,
   weight: String,
   hospital_number: String,
   ward: String,
@@ -59,6 +60,21 @@ const OperatingRoomSlipSchema = new Schema({
   nutrition: String,
   stimulant: String,
   asa: String,
+
+  time_ward_informed: Date,
+  arrival_time: Date,
+  room_is_ready: Date,
+  equip_ready: Date,
+  patient_placed_in_or_table: Date,
+  time_anes_arrived: Date,
+  time_surgeon_arrived: Date,
+  induction_time: Date,
+  induction_completed: Date,
+  time_or_started: Date,
+  or_ended: Date,
+  trans_out_from_or: Date,
+  surgical_safety_checklist: Date,
+  remarks: String,
 
   logs: [
     {

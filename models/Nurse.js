@@ -9,6 +9,10 @@ const NurseSchema = new Schema({
   contact_number: String,
   assignment: String,
   job_status: String,
+  on_duty: {
+    type: Boolean,
+    default: false
+  },
   logs: [
     {
       user: Object,

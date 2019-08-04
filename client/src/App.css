@@ -98,6 +98,9 @@ form {
 .full-bordered {
   border: 1px solid #000;
 }
+.outline-full-bordered {
+  outline: 1px solid #000;
+}
 
 .OrderForm--category-container {
   font-size: 11px;
@@ -330,6 +333,98 @@ input[type="checkbox"] {
   padding: 0px 36px;
 }
 
-.ant-table-body {
+.ant-table-body,
+.ant-table-fixed {
   font-size: 11px !important;
+}
+
+.is-flex {
+  display: flex;
+}
+
+.is-flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.is-flex-1 {
+  flex: 1;
+}
+.is-flex-2 {
+  flex: 2;
+}
+
+.is-flex-column {
+  flex-flow: column;
+}
+
+.or-display {
+  color: #fff;
+}
+
+.display-wrapper {
+  flex: 1;
+  margin: 2px;
+  padding: 8px;
+  background-color: #121212;
+  border-radius: 4px;
+  font-size: 0.5vw;
+}
+.display-wrapper-accent {
+  flex: 1;
+  margin: 2px;
+  padding: 8px;
+  background-color: #bb86fc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-weight: bold;
+  text-align: center;
+  font-size: 0.8vw;
+}
+.display-wrapper-secondary {
+  background-color: #3700b3;
+  color: #fff;
+  font-weight: bold;
+  padding: 8px;
+  text-align: center;
+  font-size: 0.8vw;
+}
+.time-wrapper {
+  font-weight: bold;
+  text-align: center;
+  color: #fff;
+  padding: 8px;
+  background-color: #121212;
+  margin-bottom: 8px;
+  font-size: 1vw;
+}
+
+.display-footer-developer {
+  text-align: center;
+  font-size: 0.4vw;
+  padding: 0.4rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.display-footer-label {
+  text-align: right;
+  font-size: 0.7vw;
+}
+
+.display-footer-accent {
+  font-weight: bold;
+  color: #00dac5;
+  padding-left: 1rem;
+  font-size: 0.7vw;
+}
+
+.is-emergency {
+  color: #ce6679;
+}
+
+.is-scrollable .ant-table td {
+  white-space: nowrap;
 }

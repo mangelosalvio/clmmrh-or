@@ -7,7 +7,7 @@ import MessageBoxInfo from "../../commons/MessageBoxInfo";
 import Searchbar from "../../commons/Searchbar";
 import "../../styles/Autosuggest.css";
 
-import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
+import { Layout, Breadcrumb, Form, Table, Icon, message, Button } from "antd";
 
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import {
@@ -20,10 +20,11 @@ import {
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
+import SimpleSelect from "../../commons/SimpleSelect";
 
 const { Content } = Layout;
 
-const collection_name = "surgeons";
+const collection_name = "nurses";
 
 const form_data = {
   [collection_name]: [],
@@ -148,6 +149,46 @@ class NurseForm extends Component {
     this.setState({ message: "" });
   };
 
+  updateOnDuty = (record, index) => {
+    const on_duty = record.on_duty ? !record.on_duty : true;
+    const form_data = {
+      on_duty
+    };
+    const loading = message.loading("Processing...");
+    axios
+      .post(`/api/nurses/${record._id}/on-duty`, form_data)
+      .then(response => {
+        loading();
+        const records = [...this.state[collection_name]];
+        records[index] = { ...response.data };
+        this.setState({
+          [collection_name]: records
+        });
+      })
+      .catch(err => {
+        loading();
+        message.error("An error has occurred");
+      });
+  };
+
+  onChangeAssignment = (value, record, index) => {
+    const form_data = {
+      assignment: value,
+      user: this.props.auth.user
+    };
+    const loading = message.loading("Processing...");
+    axios
+      .post(`/api/nurses/${record._id}/assignment`, form_data)
+      .then(response => {
+        loading();
+        const records = [...this.state[collection_name]];
+        records[index] = { ...response.data };
+        this.setState({
+          [collection_name]: records
+        });
+      });
+  };
+
   render() {
     const records_column = [
       {
@@ -160,11 +201,28 @@ class NurseForm extends Component {
       },
       {
         title: "Assignment",
-        dataIndex: "assignment"
+        dataIndex: "assignment",
+        render: (value, record, index) => (
+          <SimpleSelect
+            value={value}
+            onChange={value => this.onChangeAssignment(value, record, index)}
+            options={nurse_assignment_options}
+            style={{ width: 200 }}
+          />
+        )
       },
       {
         title: "Job Status",
         dataIndex: "job_status"
+      },
+      {
+        title: "On Duty",
+        dataIndex: "on_duty",
+        render: (value, record, index) => (
+          <Button onClick={() => this.updateOnDuty(record, index)}>
+            {value ? "YES" : "NO"}
+          </Button>
+        )
       },
 
       {

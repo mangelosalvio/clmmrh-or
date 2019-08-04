@@ -52,7 +52,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
           key="sub1"
           title={
             <span>
-              <Icon type="profile" />
+              <Icon type="container" />
               Master Files
             </span>
           }
@@ -91,7 +91,24 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
               Reports
             </span>
           }
-        />
+        >
+          <Menu.Item key="31">
+            <Link to="/or-logs">
+              <span>
+                <Icon type="folder" />
+                OR Logs
+              </span>
+            </Link>
+          </Menu.Item>
+        </SubMenu>
+        <Menu.Item key="3">
+          <Link to="/main-display">
+            <span>
+              <Icon type="appstore" />
+              Schedule Display
+            </span>
+          </Link>
+        </Menu.Item>
 
         {auth.user && auth.user.role === USER_ADMIN && (
           <Menu.Item key="5">
@@ -135,7 +152,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
         />
       </Content>
       <Footer style={{ textAlign: "center" }}>
-        ©2018 Powered by Michael Salvio | msalvio.technologies@gmail.com
+        ©2019 Powered by Michael Salvio | msalvio.technologies@gmail.com
       </Footer>
     </Layout>
   </Layout>

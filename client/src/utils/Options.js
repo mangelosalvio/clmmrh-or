@@ -35,11 +35,7 @@ export const payment_types = ["Spot Cash", "Installment"];
 export const lot_status = ["Occupied", "Vacant"];
 export const case_options = ["Elective Surgery", "Emergency Procedure"];
 
-export const classification_options = [
-  "Private(Pay)",
-  "Housecase(Philhealth)",
-  "Service(Charity)"
-];
+export const classification_options = ["Private", "Housecase", "Service"];
 
 export const gender_options = ["Male", "Female"];
 export const service_options = [

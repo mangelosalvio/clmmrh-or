@@ -19,6 +19,7 @@ import {
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
+import SimpleSelect from "../../commons/SimpleSelect";
 
 const { Content } = Layout;
 
@@ -147,6 +148,23 @@ class AnesForm extends Component {
     this.setState({ message: "" });
   };
 
+  onChangeAssignment = (value, record, index) => {
+    const form_data = {
+      assignment: value
+    };
+    const loading = message.loading("Processing...");
+    axios
+      .post(`/api/anesthesiologists/${record._id}/assignment`, form_data)
+      .then(response => {
+        loading();
+        const records = [...this.state[collection_name]];
+        records[index] = { ...response.data };
+        this.setState({
+          [collection_name]: records
+        });
+      });
+  };
+
   render() {
     const records_column = [
       {
@@ -161,7 +179,15 @@ class AnesForm extends Component {
 
       {
         title: "Assignment",
-        dataIndex: "assignment"
+        dataIndex: "assignment",
+        render: (value, record, index) => (
+          <SimpleSelect
+            value={value}
+            onChange={value => this.onChangeAssignment(value, record, index)}
+            options={assignment_options}
+            style={{ width: 150 }}
+          />
+        )
       },
       {
         title: "Year Level",

@@ -82,6 +82,24 @@ router.put("/", (req, res) => {
   });
 });
 
+router.post("/:id/on-duty", (req, res) => {
+  Nurse.findById(req.params.id).then(nurse => {
+    if (nurse) {
+      nurse.on_duty = req.body.on_duty;
+      nurse.save().then(nurse => res.json(nurse));
+    }
+  });
+});
+
+router.post("/:id/assignment", (req, res) => {
+  Nurse.findById(req.params.id).then(nurse => {
+    if (nurse) {
+      nurse.assignment = req.body.assignment;
+      nurse.save().then(nurse => res.json(nurse));
+    }
+  });
+});
+
 router.post("/:id", (req, res) => {
   const { isValid, errors } = validateInput(req.body);
 

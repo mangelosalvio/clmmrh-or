@@ -82,6 +82,16 @@ router.put("/", (req, res) => {
   });
 });
 
+router.post("/:id/assignment", (req, res) => {
+  Model.findById(req.params.id).then(record => {
+    record.assignment = req.body.assignment;
+    record
+      .save()
+      .then(record => res.json(record))
+      .catch(err => console.log(err));
+  });
+});
+
 router.post("/:id", (req, res) => {
   const { isValid, errors } = validateInput(req.body);
 
