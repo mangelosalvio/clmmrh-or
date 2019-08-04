@@ -117,63 +117,63 @@ class ORLogs extends Component {
       {
         title: "Time Ward Informed",
         dataIndex: "time_ward_informed",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Arrival Time",
         dataIndex: "arrival_time",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Room is Ready",
         dataIndex: "room_is_ready",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Equip/Inst Ready",
         dataIndex: "equip_ready",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Patient Placed in OR Table",
         dataIndex: "patient_placed_in_or_table",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Time Anes Arrived",
         dataIndex: "time_anes_arrived",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Induction Time",
         dataIndex: "induction_time",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
 
       {
         title: "Induction Completed",
         dataIndex: "induction_completed",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Time OR Started",
         dataIndex: "time_or_started",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "OR Ended",
         dataIndex: "or_ended",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Trans Out from OR",
         dataIndex: "trans_out_from_or",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       },
       {
         title: "Surgical Safety Checklist",
         dataIndex: "surgical_safety_checklist",
-        render: value => <span>{moment(value).format("lll")}</span>
+        render: value => <span>{value && moment(value).format("lll")}</span>
       }
     ];
 
