@@ -428,3 +428,7 @@ input[type="checkbox"] {
 .is-scrollable .ant-table td {
   white-space: nowrap;
 }
+
+.MuiInputBase-input.MuiInput-input {
+  font-size: 14px;
+}

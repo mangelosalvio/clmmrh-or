@@ -37,6 +37,9 @@ import {
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
+import MomentUtils from "@date-io/moment";
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateTimePickerFieldGroup from "../../commons/DateTimePickerFieldGroup";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
@@ -1487,7 +1490,7 @@ class OperatingRoomSlipForm extends Component {
                   </Form.Item>
                 </TabPane>
                 <TabPane tab="Time Logs" key="4">
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Time Ward Informed"
                     name="time_ward_informed"
                     value={this.state.time_ward_informed}
@@ -1498,6 +1501,17 @@ class OperatingRoomSlipForm extends Component {
                     formItemLayout={formItemLayout}
                     showTime={true}
                   />
+                  {/* <DatePickerFieldGroup
+                    label="Time Ward Informed"
+                    name="time_ward_informed"
+                    value={this.state.time_ward_informed}
+                    onChange={value =>
+                      this.setState({ time_ward_informed: value })
+                    }
+                    error={errors.time_ward_informed}
+                    formItemLayout={formItemLayout}
+                    showTime={true}
+                  /> */}
 
                   <DatePickerFieldGroup
                     label="Arrival Time"
