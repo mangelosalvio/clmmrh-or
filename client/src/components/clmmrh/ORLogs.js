@@ -173,7 +173,7 @@ class ORLogs extends Component {
       {
         title: "Surgical Safety Checklist",
         dataIndex: "surgical_safety_checklist",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: value => <span>{value ? <Icon type="check" /> : ""}</span>
       }
     ];
 

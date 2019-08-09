@@ -27,6 +27,7 @@ const surgeons = require("./routes/api/surgeons");
 const operating_room_slips = require("./routes/api/operating_room_slips");
 const anesthesiologists = require("./routes/api/anesthesiologists");
 const nurses = require("./routes/api/nurses");
+const relative_value_scales = require("./routes/api/relative_value_scales");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -46,6 +47,7 @@ app.use("/api/surgeons", surgeons);
 app.use("/api/operating-room-slips", operating_room_slips);
 app.use("/api/anesthesiologists", anesthesiologists);
 app.use("/api/nurses", nurses);
+app.use("/api/relative-value-scales", relative_value_scales);
 
 app.use(
   "/public/attachments",

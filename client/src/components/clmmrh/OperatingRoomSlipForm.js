@@ -40,6 +40,7 @@ import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 import MomentUtils from "@date-io/moment";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateTimePickerFieldGroup from "../../commons/DateTimePickerFieldGroup";
+import CheckboxFieldGroup from "../../commons/CheckboxFieldGroup";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
@@ -117,6 +118,9 @@ const form_data = {
   surgical_safety_checklist: null,
   remarks: "",
 
+  rvs_code: "",
+  rvs_description: "",
+
   errors: {}
 };
 
@@ -134,7 +138,9 @@ class OperatingRoomSlipForm extends Component {
   };
 
   onChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    this.setState({ [e.target.name]: value });
   };
 
   onSubmit = e => {
@@ -546,6 +552,24 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onRvsCodeLookup = e => {
+    e.preventDefault();
+    const loading = message.loading("Loading...");
+    axios
+      .get(`/api/relative-value-scales/${this.state.rvs_code}/code`)
+      .then(response => {
+        loading();
+        if (response.data) {
+          this.setState({
+            rvs_description: response.data.description
+          });
+          message.success("RVS Found");
+        } else {
+          message.error("RVS not Found");
+        }
+      });
+  };
+
   render() {
     const records_column = [
       {
@@ -785,7 +809,7 @@ class OperatingRoomSlipForm extends Component {
                     column="full_name"
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Date/Time Ordered"
                     name="date_time_ordered"
                     value={this.state.date_time_ordered}
@@ -797,7 +821,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Date/Time Received"
                     name="date_time_received"
                     value={this.state.date_time_received}
@@ -809,7 +833,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Date/Time of Surgery"
                     name="date_time_of_surgery"
                     value={this.state.date_time_of_surgery}
@@ -1307,7 +1331,7 @@ class OperatingRoomSlipForm extends Component {
                     onChange={this.onChange}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Anesthesia Started"
                     name="anes_start"
                     value={this.state.anes_start}
@@ -1317,7 +1341,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Operation Started"
                     name="operation_started"
                     value={this.state.operation_started}
@@ -1329,7 +1353,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Operation Finished"
                     name="operation_finished"
                     value={this.state.operation_finished}
@@ -1355,6 +1379,25 @@ class OperatingRoomSlipForm extends Component {
                     name="final_diagnosis"
                     value={this.state.final_diagnosis}
                     error={errors.final_diagnosis}
+                    formItemLayout={formItemLayout}
+                    onChange={this.onChange}
+                  />
+
+                  <TextFieldGroup
+                    label="RVS Code"
+                    name="rvs_code"
+                    value={this.state.rvs_code}
+                    error={errors.rvs_code}
+                    formItemLayout={formItemLayout}
+                    onChange={this.onChange}
+                    onPressEnter={this.onRvsCodeLookup}
+                  />
+
+                  <TextAreaGroup
+                    label="RVS Desc"
+                    name="rvs_description"
+                    value={this.state.rvs_description}
+                    error={errors.rvs_description}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
                   />
@@ -1501,19 +1544,8 @@ class OperatingRoomSlipForm extends Component {
                     formItemLayout={formItemLayout}
                     showTime={true}
                   />
-                  {/* <DatePickerFieldGroup
-                    label="Time Ward Informed"
-                    name="time_ward_informed"
-                    value={this.state.time_ward_informed}
-                    onChange={value =>
-                      this.setState({ time_ward_informed: value })
-                    }
-                    error={errors.time_ward_informed}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  /> */}
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Arrival Time"
                     name="arrival_time"
                     value={this.state.arrival_time}
@@ -1523,8 +1555,8 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
-                    label="Room is ready"
+                  <DateTimePickerFieldGroup
+                    label="Room is Ready"
                     name="room_is_ready"
                     value={this.state.room_is_ready}
                     onChange={value => this.setState({ room_is_ready: value })}
@@ -1533,7 +1565,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Equip/Inst ready"
                     name="equip_ready"
                     value={this.state.equip_ready}
@@ -1543,7 +1575,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Patient Placed in OR Table"
                     name="patient_placed_in_or_table"
                     value={this.state.patient_placed_in_or_table}
@@ -1555,7 +1587,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Time Anes Arrived"
                     name="time_anes_arrived"
                     value={this.state.time_anes_arrived}
@@ -1567,7 +1599,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Time Surgeon Arrived"
                     name="time_surgeon_arrived"
                     value={this.state.time_surgeon_arrived}
@@ -1579,7 +1611,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Induction Time"
                     name="induction_time"
                     value={this.state.induction_time}
@@ -1589,7 +1621,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Induction Completed"
                     name="induction_completed"
                     value={this.state.induction_completed}
@@ -1601,7 +1633,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Time OR Started"
                     name="time_or_started"
                     value={this.state.time_or_started}
@@ -1613,7 +1645,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="OR Ended"
                     name="or_ended"
                     value={this.state.or_ended}
@@ -1623,7 +1655,7 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <DateTimePickerFieldGroup
                     label="Trans out from OR"
                     name="trans_out_from_or"
                     value={this.state.trans_out_from_or}
@@ -1635,16 +1667,13 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DatePickerFieldGroup
+                  <CheckboxFieldGroup
                     label="Surgical Safety Checklist"
                     name="surgical_safety_checklist"
-                    value={this.state.surgical_safety_checklist}
-                    onChange={value =>
-                      this.setState({ surgical_safety_checklist: value })
-                    }
+                    checked={this.state.surgical_safety_checklist}
+                    onChange={this.onChange}
                     error={errors.surgical_safety_checklist}
                     formItemLayout={formItemLayout}
-                    showTime={true}
                   />
 
                   <TextAreaGroup

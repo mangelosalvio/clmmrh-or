@@ -73,8 +73,11 @@ const OperatingRoomSlipSchema = new Schema({
   time_or_started: Date,
   or_ended: Date,
   trans_out_from_or: Date,
-  surgical_safety_checklist: Date,
+  surgical_safety_checklist: Boolean,
   remarks: String,
+
+  rvs_code: String,
+  rvs_description: String,
 
   logs: [
     {

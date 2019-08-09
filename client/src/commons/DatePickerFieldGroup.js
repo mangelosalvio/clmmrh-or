@@ -26,6 +26,7 @@ const DatePickerFieldGroup = ({
       value={value}
       ref={inputRef}
       showTime={showTime}
+      format="MM/DD/YYYY"
     />
   </Form.Item>
 );

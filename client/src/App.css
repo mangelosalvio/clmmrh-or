@@ -431,4 +431,11 @@ input[type="checkbox"] {
 
 .MuiInputBase-input.MuiInput-input {
   font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.MuiFormControl-root.MuiTextField-root {
+  border: 1px solid rgb(217, 217, 217);
+  border-radius: 4px;
+  padding: 0px 11px;
 }

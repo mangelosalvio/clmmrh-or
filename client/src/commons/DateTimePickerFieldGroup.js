@@ -23,6 +23,9 @@ const DateTimePickerFieldGroup = ({
         onChange={onChange}
         style={{ fontSize: "14px" }}
         format="MM/DD/YYYY hh:mm A"
+        InputProps={{
+          disableUnderline: true
+        }}
       />
     </MuiPickersUtilsProvider>
   </Form.Item>

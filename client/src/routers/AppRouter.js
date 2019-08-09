@@ -25,6 +25,7 @@ import AnesForm from "../components/clmmrh/AnesForm";
 import NurseForm from "../components/clmmrh/NurseForm";
 import MainDisplay from "../components/clmmrh/MainDisplay";
 import ORLogs from "../components/clmmrh/ORLogs";
+import RelativeValueScaleForm from "../components/clmmrh/RelativeValueScaleForm";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -47,6 +48,11 @@ const AppRouter = () => (
 
         <PrivateRoute path="/surgeons" component={SurgeonForm} exact={true} />
         <PrivateRoute path="/nurses" component={NurseForm} exact={true} />
+        <PrivateRoute
+          path="/relative-value-scales"
+          component={RelativeValueScaleForm}
+          exact={true}
+        />
         <PrivateRoute
           path="/anesthesiologists"
           component={AnesForm}

@@ -81,6 +81,14 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
               </span>
             </Link>
           </Menu.Item>
+          <Menu.Item key="23">
+            <Link to="/relative-value-scales">
+              <span>
+                <Icon type="folder" />
+                RVS
+              </span>
+            </Link>
+          </Menu.Item>
         </SubMenu>
 
         <SubMenu
