@@ -117,6 +117,9 @@ router.post("/display-monitor", (req, res) => {
           {
             $group: {
               _id: "$operating_room_number",
+              operating_room_number: {
+                $first: "$operating_room_number"
+              },
               service: {
                 $first: "$service"
               },
@@ -151,6 +154,11 @@ router.post("/display-monitor", (req, res) => {
           },
           {
             $limit: 8
+          },
+          {
+            $sort: {
+              operating_room_number: 1
+            }
           }
         ]).exec(cb);
       },
@@ -314,19 +322,7 @@ router.post("/display-monitor", (req, res) => {
         elective_list.length = 16;
         emergency_list.length = 16;
 
-        let operating_room_numbers = constants.OPERATING_ROOM_NUMBER_OPTIONS;
-
-        arr_return["on_going"] = operating_room_numbers.map(
-          operating_room_number => {
-            const or_slip = on_going.find(o => o._id === operating_room_number);
-
-            return {
-              operating_room_number,
-              or_slip
-            };
-          }
-        );
-
+        arr_return["on_going"] = on_going;
         arr_return["pacu"] = pacu;
         arr_return["in_holding_room"] = in_holding_room;
         arr_return["elective_list"] = elective_list;

@@ -241,61 +241,50 @@ class MainDisplay extends Component {
           {this.state.current_time}
         </div>
         <div className="is-flex is-flex-column" style={{ flex: "16 auto" }}>
-          <div className="is-flex">
-            <div className="outline-full-bordered is-flex-1 display-wrapper-secondary">
-              OPERATING ROOM
-            </div>
-            {operating_room_number_options.map(operating_room_number => (
-              <div className="outline-full-bordered is-flex-1 display-wrapper-secondary">
-                {operating_room_number}
-              </div>
-            ))}
-          </div>
-
           <div className="outline-full-bordered is-flex is-flex-1">
             <div className="outline-full-bordered is-flex is-flex-1">
               <div className="display-wrapper-accent">ONGOING OPERATIONS</div>
             </div>
-
-            {this.state.on_going.map(record => (
-              <div className="outline-full-bordered is-flex-1 is-flex">
-                <div
-                  className={classnames("display-wrapper", {
-                    "is-emergency":
-                      record.or_slip &&
-                      record.or_slip.case === EMERGENCY_PROCEDURE
-                  })}
-                >
-                  {record.or_slip && (
+            <div className="is-flex" style={{ flex: "8" }}>
+              {this.state.on_going.map(record => (
+                <div className="outline-full-bordered is-flex-1 is-flex">
+                  <div
+                    className={classnames("display-wrapper", {
+                      "is-emergency":
+                        record && record.case === EMERGENCY_PROCEDURE
+                    })}
+                  >
                     <p>
-                      {record.or_slip.service} {record.or_slip.case_order}{" "}
-                      {record.or_slip.classification} <br />{" "}
-                      <span className="has-text-weight-bold">
-                        {record.or_slip.name}
-                      </span>{" "}
+                      <div className="is-flex">
+                        <div className="has-text-weight-bold or-room-number-display">
+                          {record.operating_room_number}
+                        </div>
+                        <div className="is-flex-1">
+                          {record.service} {record.case_order}{" "}
+                          {record.classification} <br />{" "}
+                          <span className="has-text-weight-bold">
+                            {record.name}
+                          </span>{" "}
+                          <br />
+                          {record.age}
+                          <br />
+                          {record.ward}
+                          <br />
+                        </div>
+                      </div>
+                      {record.procedure}
                       <br />
-                      {record.or_slip.age}
-                      <br />
-                      {record.or_slip.ward}
-                      <br />
-                      {this.filterProcedure(record.or_slip.procedure)}
-                      <br />
-                      {record.or_slip.surgeon && (
-                        <span>
-                          {this.getScreenName(record.or_slip.surgeon)}
-                        </span>
+                      {record.surgeon && (
+                        <span>{this.getScreenName(record.surgeon)}</span>
                       )}{" "}
-                      {record.or_slip.main_anes && (
-                        <span>
-                          {" "}
-                          / {this.getScreenName(record.or_slip.main_anes)}
-                        </span>
+                      {record.main_anes && (
+                        <span> / {this.getScreenName(record.main_anes)}</span>
                       )}
                     </p>
-                  )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
           <div className="outline-full-bordered is-flex is-flex-1">
             <div className="outline-full-bordered is-flex-1 is-flex">

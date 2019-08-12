@@ -369,6 +369,7 @@ input[type="checkbox"] {
   background-color: #121212;
   border-radius: 4px;
   font-size: 0.5vw;
+  overflow: none;
 }
 .display-wrapper-accent {
   flex: 1;
@@ -398,8 +399,9 @@ input[type="checkbox"] {
   color: #fff;
   padding: 8px;
   background-color: #121212;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-size: 1vw;
+  background-color: #3700b3;
 }
 
 .display-footer-developer {
@@ -421,8 +423,18 @@ input[type="checkbox"] {
   font-size: 0.7vw;
 }
 
+.or-room-number-display {
+  padding: 5px;
+  font-weight: bold;
+  color: #fff;
+  font-size: 2vw;
+  margin-right: 4px;
+  border-radius: 2px;
+  color: #00dac5;
+}
+
 .is-emergency {
-  color: #ce6679;
+  color: #f00;
 }
 
 .is-scrollable .ant-table td {
