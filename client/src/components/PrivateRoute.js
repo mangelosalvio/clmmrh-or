@@ -9,7 +9,7 @@ import { logoutUser } from "../actions/authActions";
 import companyLogo from "./../images/clmmrh.png";
 
 const { SubMenu } = Menu;
-const { Content, Footer } = Layout;
+const { Content } = Layout;
 
 const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
   <Layout className="is-full-height">
@@ -24,7 +24,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
     >
       <div className="logo">
         <div>
-          <img src={companyLogo} />
+          <img src={companyLogo} alt="logo" />
         </div>
         {/* <span>SITE MANAGEMENT SYSTEM</span> */}
         <div style={{ marginTop: "16px" }}>
@@ -159,9 +159,6 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
           }
         />
       </Content>
-      <Footer style={{ textAlign: "center" }}>
-        ©2019 Powered by Michael Salvio | msalvio.technologies@gmail.com
-      </Footer>
     </Layout>
   </Layout>
 );

@@ -1,5 +1,4 @@
 import { LOGIN_USER, SET_CURRENT_LOT } from "./../actions/types";
-import isEmpty from "./../validation/is-empty";
 
 const mapDefaultState = {
   selected_lot: null

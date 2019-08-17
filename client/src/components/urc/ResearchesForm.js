@@ -877,7 +877,7 @@ class ResearchesForm extends Component {
           <div>
             {files.map(file => (
               <div key={file.filename}>
-                <a href="#" onClick={() => this.onOpenAttachment(file)}>
+                <a href="" onClick={() => this.onOpenAttachment(file)}>
                   <Icon
                     type="paper-clip"
                     theme="outlined"

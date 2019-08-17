@@ -12,12 +12,10 @@ import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import {
   gender_options,
-  service_options,
   assignment_options,
   year_level_options
 } from "../../utils/Options";
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
-import SelectFieldGroup from "../../commons/SelectFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 import SimpleSelect from "../../commons/SimpleSelect";
 

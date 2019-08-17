@@ -451,3 +451,8 @@ input[type="checkbox"] {
   border-radius: 4px;
   padding: 0px 11px;
 }
+
+.ant-select.ant-select-auto-complete ul {
+  list-style: none !important;
+  margin: 0px !important;
+}

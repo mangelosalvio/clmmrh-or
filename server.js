@@ -5,7 +5,10 @@ const bodyParser = require("body-parser");
 const app = express();
 const passport = require("passport");
 const path = require("path");
-const http_server = require("http").Server(app);
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
+
+app.set("socketio", io);
 
 const fs = require("fs");
 
@@ -63,4 +66,4 @@ if (process.env.NODE_ENV === "production") {
 
 const port = process.env.SERVER_PORT || 5000;
 
-http_server.listen(port, () => console.log(`Server running on PORT ${port}`));
+http.listen(port, () => console.log(`Server running on PORT ${port}`));

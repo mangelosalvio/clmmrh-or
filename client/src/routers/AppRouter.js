@@ -9,16 +9,6 @@ import UpdatePasswordForm from "../components/utils/UpdatePasswordForm";
 import PublicRoute from "../components/PublicRoute";
 
 import SettingForm from "../components/pas/SettingForm";
-import ResearchCategoriesForm from "../components/cre/ResearchCategoriesForm";
-import ResearchAgendaForm from "../components/cre/ResearchAgendaForm";
-import PresentationCategoriesForm from "../components/cre/PresentationCategoriesForm";
-import ResearchesForm from "../components/urc/ResearchesForm";
-import AcademicYearForm from "../components/cre/AcademicYearForm";
-import CollegeForm from "../components/cre/CollegeForm";
-import AttachmentCategoriesForm from "../components/cre/AttachmentCategoriesForm";
-import FacultyForm from "../components/cre/FacultyForm";
-import SiteMap from "../components/tdc/SiteMap";
-import LotInformationForm from "../components/tde/LotInformationForm";
 import OperatingRoomSlipForm from "../components/clmmrh/OperatingRoomSlipForm";
 import SurgeonForm from "../components/clmmrh/SurgeonForm";
 import AnesForm from "../components/clmmrh/AnesForm";
@@ -36,8 +26,6 @@ const AppRouter = () => (
 
         <PrivateRoute path="/users" component={Users} exact={true} />
         <PrivateRoute path="/settings" component={SettingForm} exact={true} />
-
-        <PrivateRoute path="/map" component={SiteMap} exact={true} />
         <PrivateRoute
           path="/or-slip"
           component={OperatingRoomSlipForm}

@@ -75,6 +75,8 @@ router.put("/", (req, res) => {
       newRecord
         .save()
         .then(record => {
+          const io = req.app.get("socketio");
+          io.emit("refresh-display", true);
           return res.json(record);
         })
         .catch(err => console.log(err));
@@ -87,7 +89,11 @@ router.post("/:id/assignment", (req, res) => {
     record.assignment = req.body.assignment;
     record
       .save()
-      .then(record => res.json(record))
+      .then(record => {
+        const io = req.app.get("socketio");
+        io.emit("refresh-display", true);
+        return res.json(record);
+      })
       .catch(err => console.log(err));
   });
 });
@@ -128,6 +134,8 @@ router.post("/:id", (req, res) => {
       record
         .save()
         .then(record => {
+          const io = req.app.get("socketio");
+          io.emit("refresh-display", true);
           return res.json(record);
         })
         .catch(err => console.log(err));
@@ -139,7 +147,11 @@ router.post("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
   Model.findByIdAndRemove(req.params.id)
-    .then(response => res.json({ success: 1 }))
+    .then(response => {
+      const io = req.app.get("socketio");
+      io.emit("refresh-display", true);
+      return res.json({ success: 1 });
+    })
     .catch(err => console.log(err));
 });
 

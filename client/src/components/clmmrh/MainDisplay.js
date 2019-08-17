@@ -1,31 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import TextFieldGroup from "../../commons/TextFieldGroup";
 import axios from "axios";
 import isEmpty from "../../validation/is-empty";
-import MessageBoxInfo from "../../commons/MessageBoxInfo";
-import Searchbar from "../../commons/Searchbar";
-import "../../styles/Autosuggest.css";
 import moment from "moment";
-
-import { Layout, Breadcrumb, Form, Table, Icon, message, Row, Col } from "antd";
-
-import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
+import { message, Row, Col } from "antd";
 import classnames from "classnames";
-import {
-  gender_options,
-  service_options,
-  assignment_options,
-  year_level_options,
-  operating_room_number_options
-} from "../../utils/Options";
-import { EMERGENCY_PROCEDURE } from "./../../utils/constants";
-import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
-import SelectFieldGroup from "../../commons/SelectFieldGroup";
-import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
-import SimpleSelect from "../../commons/SimpleSelect";
-
-const { Content } = Layout;
+import { EMERGENCY_PROCEDURE, SOCKET_ENDPOINT } from "./../../utils/constants";
+import socketIoClient from "socket.io-client";
 
 const collection_name = "anesthesiologists";
 
@@ -56,6 +37,12 @@ class MainDisplay extends Component {
   };
 
   componentDidMount() {
+    const socket = socketIoClient(SOCKET_ENDPOINT);
+    socket.on("refresh-display", data => {
+      //this.props.getTables();
+      this.getOrData();
+    });
+
     setInterval(() => {
       const current_time = moment().format("dddd, MMMM D, YYYY, h:mm:ss A");
       this.setState({
@@ -63,12 +50,16 @@ class MainDisplay extends Component {
       });
     }, 1000);
 
+    this.getOrData();
+  }
+
+  getOrData = () => {
     axios.post("/api/operating-room-slips/display-monitor").then(response => {
       this.setState({
         ...response.data
       });
     });
-  }
+  };
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -506,9 +497,6 @@ class MainDisplay extends Component {
               {pacu_anes}
             </Col>
           </Row>
-        </div>
-        <div className="display-footer-developer">
-          ©2019 Powered by msalvio technologies | msalvio.technologies@gmail.com
         </div>
       </div>
     );

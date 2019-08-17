@@ -22,6 +22,28 @@ router.get("/:code/code", (req, res) => {
     .catch(err => console.log(err));
 });
 
+router.get("/listings", (req, res) => {
+  const form_data = isEmpty(req.query)
+    ? {}
+    : {
+        $or: [
+          {
+            description: {
+              $regex: new RegExp(req.query.s, "i")
+            }
+          }
+        ]
+      };
+
+  Model.find(form_data)
+    .limit(20)
+    .sort({ description: 1 })
+    .then(records => {
+      return res.json(records);
+    })
+    .catch(err => console.log(err));
+});
+
 router.get("/:id", (req, res) => {
   Model.findById(req.params.id)
     .then(record => res.json(record))
@@ -32,13 +54,22 @@ router.get("/", (req, res) => {
   const form_data = isEmpty(req.query)
     ? {}
     : {
-        code: {
-          $regex: new RegExp(req.query.s, "i")
-        }
+        $or: [
+          {
+            code: {
+              $regex: new RegExp(req.query.s, "i")
+            }
+          },
+          {
+            description: {
+              $regex: new RegExp(req.query.s, "i")
+            }
+          }
+        ]
       };
 
   Model.find(form_data)
-    .sort({ name: 1 })
+    .sort({ code: 1 })
     .then(records => {
       return res.json(records);
     })

@@ -3,7 +3,6 @@ import TextFieldGroup from "../../commons/TextFieldGroup";
 import axios from "axios";
 import isEmpty from "../../validation/is-empty";
 import MessageBoxInfo from "../../commons/MessageBoxInfo";
-import SelectFieldGroup from "../../commons/SelectFieldGroup";
 import Searchbar from "../../commons/Searchbar";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";

@@ -6,7 +6,6 @@ import axios from "axios";
 import isEmpty from "../../validation/is-empty";
 import MessageBoxInfo from "../../commons/MessageBoxInfo";
 import Searchbar from "../../commons/Searchbar";
-import "../../styles/Autosuggest.css";
 import {
   Layout,
   Breadcrumb,
@@ -22,8 +21,6 @@ import DatePickerFieldGroup from "../../commons/DatePickerFieldGroup";
 import TextAreaGroup from "../../commons/TextAreaGroup";
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
 import {
-  payment_types,
-  lot_status,
   case_options,
   classification_options,
   gender_options,
@@ -37,10 +34,10 @@ import {
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
-import MomentUtils from "@date-io/moment";
-import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateTimePickerFieldGroup from "../../commons/DateTimePickerFieldGroup";
 import CheckboxFieldGroup from "../../commons/CheckboxFieldGroup";
+import TextAreaAutocompleteGroup from "../../commons/TextAreaAutocompleteGroup";
+import { debounce } from "lodash";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
@@ -133,13 +130,20 @@ class OperatingRoomSlipForm extends Component {
     options: {
       surgeons: [],
       anesthesiologists: [],
-      nurses: []
+      nurses: [],
+      rvs: []
     }
   };
+
+  constructor(props) {
+    super(props);
+    this.onRvsSearch = debounce(this.onRvsSearch, 300);
+  }
 
   onChange = e => {
     const value =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
+
     this.setState({ [e.target.name]: value });
   };
 
@@ -570,6 +574,34 @@ class OperatingRoomSlipForm extends Component {
       });
   };
 
+  /**
+   * RVS Desc
+   */
+
+  onRvsSearch = value => {
+    axios
+      .get(`/api/relative-value-scales/listings/?s=${value}`)
+      .then(response =>
+        this.setState({
+          options: {
+            ...this.state.options,
+            rvs: response.data
+          }
+        })
+      )
+      .catch(err => console.log(err));
+  };
+
+  onRvsSelect = value => {
+    const index = this.state.options.rvs.map(o => o.description).indexOf(value);
+    const rvs_code = this.state.options.rvs[index].code;
+
+    this.setState({
+      rvs_code,
+      rvs_description: value
+    });
+  };
+
   render() {
     const records_column = [
       {
@@ -634,6 +666,8 @@ class OperatingRoomSlipForm extends Component {
     ];
 
     const { errors } = this.state;
+
+    const rvs_desc_data_source = this.state.options.rvs.map(o => o.description);
 
     return (
       <Content className="content">
@@ -1393,13 +1427,19 @@ class OperatingRoomSlipForm extends Component {
                     onPressEnter={this.onRvsCodeLookup}
                   />
 
-                  <TextAreaGroup
+                  <TextAreaAutocompleteGroup
                     label="RVS Desc"
                     name="rvs_description"
                     value={this.state.rvs_description}
                     error={errors.rvs_description}
                     formItemLayout={formItemLayout}
-                    onChange={this.onChange}
+                    rows="4"
+                    onChange={value =>
+                      this.setState({ rvs_description: value })
+                    }
+                    dataSource={rvs_desc_data_source}
+                    onSelect={this.onRvsSelect}
+                    onSearch={this.onRvsSearch}
                   />
 
                   <Divider orientation="left">

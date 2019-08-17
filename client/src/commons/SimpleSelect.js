@@ -1,8 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import "react-dates/initialize";
-import "react-dates/lib/css/_datepicker.css";
-import { Select, Form } from "antd";
+import { Select } from "antd";
 const { Option } = Select;
 
 const SimpleSelect = ({ name, value, onChange, options, disabled, style }) => (

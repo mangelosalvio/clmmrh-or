@@ -1,7 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import axios from "axios";
-import { Form, Input, Upload, message, Button, Icon, Row, Col } from "antd";
+import { Upload, message, Button, Icon, Row, Col } from "antd";
 
 export default class FileUploadGroup extends React.Component {
   state = {

@@ -3,7 +3,6 @@ import { withRouter } from "react-router-dom";
 import { loginUser } from "./../actions/authActions";
 import { connect } from "react-redux";
 import TextFieldGroup from "./../commons/TextFieldGroup";
-import DeveloperFooter from "./../utils/DeveloperFooter";
 import companyLogo from "./../images/clmmrh_logo.png";
 import footerLogo from "./../images/doh_logo.png";
 
@@ -56,7 +55,7 @@ class LoginForm extends Component {
               className="has-text-centered has-text-weight-bold is-size-4"
               style={{ paddingBottom: "1rem" }}
             >
-              <img src={companyLogo} />
+              <img src={companyLogo} alt="Logo" />
               <br />
               <br />
               OPERATING ROOM MANAGEMENT SYSTEM
@@ -91,9 +90,12 @@ class LoginForm extends Component {
                 className="has-text-centered"
                 style={{ marginBottom: "1rem" }}
               >
-                <img src={footerLogo} style={{ width: "300px" }} />
+                <img
+                  src={footerLogo}
+                  style={{ width: "300px" }}
+                  alt="DOH Logo"
+                />
               </div>
-              <DeveloperFooter />
             </Form>
           </div>
         </div>

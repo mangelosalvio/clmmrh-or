@@ -1,19 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import TextFieldGroup from "../../commons/TextFieldGroup";
 import axios from "axios";
-import isEmpty from "../../validation/is-empty";
-import MessageBoxInfo from "../../commons/MessageBoxInfo";
-import Searchbar from "../../commons/Searchbar";
-import "../../styles/Autosuggest.css";
+import { Layout, Breadcrumb, Table, Icon } from "antd";
 
-import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
-
-import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
-import { gender_options, service_options } from "../../utils/Options";
-import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
-import SelectFieldGroup from "../../commons/SelectFieldGroup";
-import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
+import { formItemLayout } from "./../../utils/Layouts";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 import moment from "moment";
 
