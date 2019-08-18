@@ -245,7 +245,50 @@ class MainDisplay extends Component {
                         record && record.case === EMERGENCY_PROCEDURE
                     })}
                   >
-                    <p>
+                    <div className="is-flex">
+                      <div className="has-text-weight-bold or-room-number-display">
+                        {record.operating_room_number}
+                      </div>
+                      <div className="is-flex-1">
+                        {record.service} {record.case_order}{" "}
+                        {record.classification} <br />{" "}
+                        <span className="has-text-weight-bold">
+                          {record.name}
+                        </span>{" "}
+                        <br />
+                        {record.age}
+                        <br />
+                        {record.ward}
+                        <br />
+                      </div>
+                    </div>
+                    {record.procedure}
+                    <br />
+                    {record.surgeon && (
+                      <span>{this.getScreenName(record.surgeon)}</span>
+                    )}{" "}
+                    {record.main_anes && (
+                      <span> / {this.getScreenName(record.main_anes)}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="outline-full-bordered is-flex is-flex-1">
+            <div className="outline-full-bordered is-flex-1 is-flex">
+              <div className="display-wrapper-accent">PACU</div>
+            </div>
+            {this.state.pacu.map(record => (
+              <div className="outline-full-bordered is-flex-1 is-flex">
+                <div
+                  className={classnames("display-wrapper", {
+                    "is-emergency":
+                      record && record.case === EMERGENCY_PROCEDURE
+                  })}
+                >
+                  {record && (
+                    <div>
                       <div className="is-flex">
                         <div className="has-text-weight-bold or-room-number-display">
                           {record.operating_room_number}
@@ -271,45 +314,7 @@ class MainDisplay extends Component {
                       {record.main_anes && (
                         <span> / {this.getScreenName(record.main_anes)}</span>
                       )}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="outline-full-bordered is-flex is-flex-1">
-            <div className="outline-full-bordered is-flex-1 is-flex">
-              <div className="display-wrapper-accent">PACU</div>
-            </div>
-            {this.state.pacu.map(record => (
-              <div className="outline-full-bordered is-flex-1 is-flex">
-                <div
-                  className={classnames("display-wrapper", {
-                    "is-emergency":
-                      record && record.case === EMERGENCY_PROCEDURE
-                  })}
-                >
-                  {record && (
-                    <p>
-                      {record.service} {record.case_order}{" "}
-                      {record.classification} <br />{" "}
-                      <span className="has-text-weight-bold">
-                        {record.name}
-                      </span>{" "}
-                      <br />
-                      {record.age}
-                      <br />
-                      {record.ward}
-                      <br />
-                      {this.filterProcedure(record.procedure)}
-                      <br />
-                      {record.surgeon && (
-                        <span>{this.getScreenName(record.surgeon)}</span>
-                      )}{" "}
-                      {record.main_anes && (
-                        <span> / {this.getScreenName(record.main_anes)}</span>
-                      )}
-                    </p>
+                    </div>
                   )}
                 </div>
               </div>

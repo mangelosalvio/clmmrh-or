@@ -424,12 +424,10 @@ input[type="checkbox"] {
 }
 
 .or-room-number-display {
-  padding: 5px;
+  padding: 0vw 0.35vw;
   font-weight: bold;
   color: #fff;
-  font-size: 2vw;
-  margin-right: 4px;
-  border-radius: 2px;
+  font-size: 1.75vw;
   color: #00dac5;
 }
 

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
 import { Layout, Breadcrumb, Table, Icon } from "antd";
-
 import { formItemLayout } from "./../../utils/Layouts";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 import moment from "moment";

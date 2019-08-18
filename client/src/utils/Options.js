@@ -86,7 +86,10 @@ export const operating_room_number_options = [
   "5",
   "6",
   "7",
-  "OB"
+  "OB",
+  "WT1",
+  "WT2",
+  "EC"
 ];
 
 export const assignment_options = ["NA", "TEAM CAPTAIN", "PACU"];
