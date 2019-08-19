@@ -44,7 +44,7 @@ class MainDisplay extends Component {
     });
 
     setInterval(() => {
-      const current_time = moment().format("dddd, MMMM D, YYYY, h:mm:ss A");
+      const current_time = moment().format("dddd, MMMM D, YYYY h:mm:ss A");
       this.setState({
         current_time
       });
@@ -223,7 +223,7 @@ class MainDisplay extends Component {
     return (
       <div
         className="is-full-height is-flex-column is-flex or-display"
-        style={{ backgroundColor: "#000" }}
+        style={{ backgroundColor: "#22301E" }}
       >
         <div
           className="time-wrapper"

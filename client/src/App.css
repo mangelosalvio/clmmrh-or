@@ -366,8 +366,7 @@ input[type="checkbox"] {
   flex: 1;
   margin: 2px;
   padding: 8px;
-  background-color: #121212;
-  border-radius: 4px;
+  background-color: #22301e;
   font-size: 0.5vw;
   overflow: none;
 }
@@ -375,8 +374,7 @@ input[type="checkbox"] {
   flex: 1;
   margin: 2px;
   padding: 8px;
-  background-color: #bb86fc;
-  border-radius: 4px;
+  background-color: #b1a0c7;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -401,7 +399,9 @@ input[type="checkbox"] {
   background-color: #121212;
   margin-bottom: 4px;
   font-size: 1vw;
-  background-color: #3700b3;
+  background-color: #00363a;
+  border-bottom: 2px solid #fff;
+  border-top: 2px solid #fff;
 }
 
 .display-footer-developer {
@@ -418,7 +418,7 @@ input[type="checkbox"] {
 
 .display-footer-accent {
   font-weight: bold;
-  color: #00dac5;
+  color: yellow;
   padding-left: 1rem;
   font-size: 0.7vw;
 }
@@ -428,7 +428,7 @@ input[type="checkbox"] {
   font-weight: bold;
   color: #fff;
   font-size: 1.75vw;
-  color: #00dac5;
+  color: yellow;
 }
 
 .is-emergency {
