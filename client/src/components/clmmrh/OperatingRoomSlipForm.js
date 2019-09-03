@@ -14,7 +14,8 @@ import {
   Icon,
   message,
   Divider,
-  Tabs
+  Tabs,
+  Button
 } from "antd";
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import DatePickerFieldGroup from "../../commons/DatePickerFieldGroup";
@@ -65,6 +66,7 @@ const form_data = {
   classification: "",
   date_time_ordered: null,
   date_time_received: null,
+  surgery_is_date: false,
   date_time_of_surgery: null,
   case_order: "",
   received_by: "",
@@ -117,6 +119,8 @@ const form_data = {
 
   rvs_code: "",
   rvs_description: "",
+
+  rvs: [],
 
   errors: {}
 };
@@ -602,7 +606,57 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onAddRvs = () => {
+    const rvs = [
+      ...this.state.rvs,
+      {
+        rvs_code: this.state.rvs_code,
+        rvs_description: this.state.rvs_description
+      }
+    ];
+
+    this.setState({
+      rvs,
+      rvs_code: "",
+      rvs_description: ""
+    });
+  };
+
+  onDeleteRvs = index => {
+    const rvs = [...this.state.rvs];
+    rvs.splice(index, 1);
+    this.setState({
+      rvs
+    });
+  };
+
   render() {
+    const rvs_column = [
+      {
+        title: "RVS Code",
+        dataIndex: "rvs_code"
+      },
+      {
+        title: "RVS Description",
+        dataIndex: "rvs_description"
+      },
+      {
+        title: "",
+        key: "action",
+        width: 10,
+        render: (text, record, index) => (
+          <span>
+            <Icon
+              type="delete"
+              theme="filled"
+              className="pointer"
+              onClick={() => this.onDeleteRvs(index)}
+            />
+          </span>
+        )
+      }
+    ];
+
     const records_column = [
       {
         title: "Hospital #",
@@ -867,17 +921,39 @@ class OperatingRoomSlipForm extends Component {
                     showTime={true}
                   />
 
-                  <DateTimePickerFieldGroup
-                    label="Date/Time of Surgery"
-                    name="date_time_of_surgery"
-                    value={this.state.date_time_of_surgery}
-                    onChange={value =>
-                      this.setState({ date_time_of_surgery: value })
-                    }
-                    error={errors.date_time_of_surgery}
+                  <CheckboxFieldGroup
+                    label="Surgery is Date only"
+                    name="surgery_is_date"
+                    checked={this.state.surgery_is_date}
+                    onChange={this.onChange}
+                    error={errors.surgery_is_date}
                     formItemLayout={formItemLayout}
-                    showTime={true}
                   />
+
+                  {this.state.surgery_is_date ? (
+                    <DatePickerFieldGroup
+                      label="Date/Time of Surgery"
+                      name="date_time_of_surgery"
+                      value={this.state.date_time_of_surgery}
+                      onChange={value =>
+                        this.setState({ date_time_of_surgery: value })
+                      }
+                      error={errors.date_time_of_surgery}
+                      formItemLayout={formItemLayout}
+                    />
+                  ) : (
+                    <DateTimePickerFieldGroup
+                      label="Date/Time of Surgery"
+                      name="date_time_of_surgery"
+                      value={this.state.date_time_of_surgery}
+                      onChange={value =>
+                        this.setState({ date_time_of_surgery: value })
+                      }
+                      error={errors.date_time_of_surgery}
+                      formItemLayout={formItemLayout}
+                      showTime={true}
+                    />
+                  )}
 
                   <SimpleSelectFieldGroup
                     label="Case Order"
@@ -889,13 +965,18 @@ class OperatingRoomSlipForm extends Component {
                     options={case_order_options}
                   />
 
-                  <TextFieldGroup
+                  <SelectFieldGroup
                     label="Received By"
                     name="received_by"
-                    value={this.state.received_by}
+                    value={
+                      this.state.received_by && this.state.received_by.full_name
+                    }
+                    onChange={index => this.onNurseChange(index, "received_by")}
+                    onSearch={this.onNurseSearch}
                     error={errors.received_by}
                     formItemLayout={formItemLayout}
-                    onChange={this.onChange}
+                    data={this.state.options.nurses}
+                    column="full_name"
                   />
 
                   <Form.Item className="m-t-1" {...tailFormItemLayout}>
@@ -1417,6 +1498,8 @@ class OperatingRoomSlipForm extends Component {
                     onChange={this.onChange}
                   />
 
+                  <Divider orientation="left">RVS</Divider>
+
                   <TextFieldGroup
                     label="RVS Code"
                     name="rvs_code"
@@ -1440,6 +1523,26 @@ class OperatingRoomSlipForm extends Component {
                     dataSource={rvs_desc_data_source}
                     onSelect={this.onRvsSelect}
                     onSearch={this.onRvsSearch}
+                  />
+
+                  <Form.Item className="m-t-1" {...tailFormItemLayout}>
+                    <div className="field is-grouped">
+                      <div className="control">
+                        <Button
+                          className="button is-small"
+                          onClick={this.onAddRvs}
+                        >
+                          Add RVS
+                        </Button>
+                      </div>
+                    </div>
+                  </Form.Item>
+
+                  <Table
+                    dataSource={this.state.rvs}
+                    columns={rvs_column}
+                    rowKey={record => record._id}
+                    pagination={false}
                   />
 
                   <Divider orientation="left">

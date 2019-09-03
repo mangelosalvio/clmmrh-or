@@ -19,9 +19,10 @@ const OperatingRoomSlipSchema = new Schema({
   classification: String,
   date_time_ordered: Date,
   date_time_received: Date,
+  surgery_is_date: Boolean,
   date_time_of_surgery: Date,
   case_order: String,
-  received_by: String,
+  received_by: Object,
 
   /**
    * PRE OPERATION
@@ -76,8 +77,12 @@ const OperatingRoomSlipSchema = new Schema({
   surgical_safety_checklist: Boolean,
   remarks: String,
 
-  rvs_code: String,
-  rvs_description: String,
+  rvs: [
+    {
+      rvs_code: String,
+      rvs_description: String
+    }
+  ],
 
   logs: [
     {
