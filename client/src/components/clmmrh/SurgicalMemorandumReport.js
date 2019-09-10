@@ -408,6 +408,11 @@ class SurgicalMemorandumReport extends Component {
           <span className="has-text-weight-bold">OPERATION PERFORMED</span>
           <p className="full-bordered p-8" style={{ minHeight: "120px" }}>
             {this.state.operation_performed}
+            {this.state.rvs.map(r => (
+              <div>
+                {r.rvs_description} - {r.rvs_code}
+              </div>
+            ))}
           </p>
         </div>
         <div className="m-t-16 has-text-weight-bold">
