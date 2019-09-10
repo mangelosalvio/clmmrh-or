@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import TextFieldGroup from "../../commons/TextFieldGroup";
 import axios from "axios";
 import isEmpty from "../../validation/is-empty";
@@ -1661,9 +1661,23 @@ class OperatingRoomSlipForm extends Component {
                           Save
                         </button>
                       </div>
-                      {!isEmpty(this.state._id) ? (
+
+                      {!isEmpty(this.state._id) && [
+                        <div className="control">
+                          <Link
+                            to={`/or-slip/${this.state._id}/surgical-memorandum`}
+                            target="_blank"
+                          >
+                            <Button className="button is-small is-outlined is-info">
+                              <span className="icon is-small">
+                                <i className="fas fa-print" />
+                              </span>
+                              Print
+                            </Button>
+                          </Link>
+                        </div>,
                         <a
-                          className="button is-danger is-outlined is-small"
+                          className="button is-danger is-outlined is-small control"
                           onClick={this.onDelete}
                         >
                           <span>Delete</span>
@@ -1671,7 +1685,7 @@ class OperatingRoomSlipForm extends Component {
                             <i className="fas fa-times" />
                           </span>
                         </a>
-                      ) : null}
+                      ]}
                     </div>
                   </Form.Item>
                 </TabPane>

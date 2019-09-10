@@ -16,6 +16,7 @@ import NurseForm from "../components/clmmrh/NurseForm";
 import MainDisplay from "../components/clmmrh/MainDisplay";
 import ORLogs from "../components/clmmrh/ORLogs";
 import RelativeValueScaleForm from "../components/clmmrh/RelativeValueScaleForm";
+import SurgicalMemorandumReport from "../components/clmmrh/SurgicalMemorandumReport";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -50,6 +51,12 @@ const AppRouter = () => (
         <PrivateRoute
           path="/update-password"
           component={UpdatePasswordForm}
+          exact={true}
+        />
+
+        <Route
+          path="/or-slip/:id/surgical-memorandum"
+          component={SurgicalMemorandumReport}
           exact={true}
         />
       </Switch>

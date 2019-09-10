@@ -233,6 +233,10 @@ div.flex-end-container {
   border-top: 2px solid #000 !important;
 }
 
+.b-b-1 {
+  border-bottom: 1px solid #000;
+}
+
 .img-overlay-wrap {
   position: relative;
   display: inline-block; /* <= shrinks container to image size */
@@ -267,6 +271,10 @@ input[type="checkbox"] {
 }
 
 .m-t-1 {
+  margin-top: 8px !important;
+}
+
+.m-t-16 {
   margin-top: 8px !important;
 }
 
@@ -453,4 +461,20 @@ input[type="checkbox"] {
 .ant-select.ant-select-auto-complete ul {
   list-style: none !important;
   margin: 0px !important;
+}
+
+.content.report {
+  background: #fff;
+  font-size: 10px;
+  color: #000;
+}
+
+@media print {
+  .content.report {
+    padding: 0px;
+  }
+}
+
+.p-8 {
+  padding: 8px;
 }
