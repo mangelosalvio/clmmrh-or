@@ -1,51 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
-import TextFieldGroup from "../../commons/TextFieldGroup";
 import axios from "axios";
-import isEmpty from "../../validation/is-empty";
-import MessageBoxInfo from "../../commons/MessageBoxInfo";
-import Searchbar from "../../commons/Searchbar";
-import {
-  Layout,
-  Breadcrumb,
-  Form,
-  Table,
-  Icon,
-  message,
-  Divider,
-  Tabs,
-  Button,
-  Col,
-  Row,
-  AutoComplete,
-  Input
-} from "antd";
-import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
-import DatePickerFieldGroup from "../../commons/DatePickerFieldGroup";
-import TextAreaGroup from "../../commons/TextAreaGroup";
-import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
-import {
-  case_options,
-  classification_options,
-  gender_options,
-  service_options,
-  case_order_options,
-  operation_type_options,
-  laterality_options,
-  operating_room_number_options,
-  operation_status_options
-} from "../../utils/Options";
+import { Layout, message, Col, Row } from "antd";
+
 import moment from "moment";
-import SelectFieldGroup from "../../commons/SelectFieldGroup";
-import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
-import DateTimePickerFieldGroup from "../../commons/DateTimePickerFieldGroup";
-import CheckboxFieldGroup from "../../commons/CheckboxFieldGroup";
-import TextAreaAutocompleteGroup from "../../commons/TextAreaAutocompleteGroup";
-import { debounce } from "lodash";
 
 const { Content } = Layout;
-const TabPane = Tabs.TabPane;
 
 const collection_name = "slips";
 
@@ -126,9 +87,7 @@ const form_data = {
 
   rvs: [],
 
-  errors: {},
-  surgeon_signatory: "",
-  anes_signatory: ""
+  errors: {}
 };
 
 class SurgicalMemorandumReport extends Component {
@@ -145,9 +104,6 @@ class SurgicalMemorandumReport extends Component {
     }
   };
 
-  constructor(props) {
-    super(props);
-  }
   componentDidMount() {
     this.getRecord();
   }
@@ -182,62 +138,67 @@ class SurgicalMemorandumReport extends Component {
           trans_out_from_or,
           surgical_safety_checklist
         } = response.data;
-        this.setState(prevState => {
-          return {
-            ...form_data,
-            [collection_name]: [],
-            ...record,
-            date_of_birth: date_of_birth ? moment(date_of_birth) : null,
-            registration_date: registration_date
-              ? moment(registration_date)
-              : null,
-            date_time_ordered: date_time_ordered
-              ? moment(date_time_ordered)
-              : null,
-            date_time_received: date_time_received
-              ? moment(date_time_received)
-              : null,
-            date_time_of_surgery: date_time_of_surgery
-              ? moment(date_time_of_surgery)
-              : null,
-            anes_start: anes_start ? moment(anes_start) : null,
-            operation_started: operation_started
-              ? moment(operation_started)
-              : null,
-            operation_finished: operation_finished
-              ? moment(operation_finished)
-              : null,
+        this.setState(
+          prevState => {
+            return {
+              ...form_data,
+              [collection_name]: [],
+              ...record,
+              date_of_birth: date_of_birth ? moment(date_of_birth) : null,
+              registration_date: registration_date
+                ? moment(registration_date)
+                : null,
+              date_time_ordered: date_time_ordered
+                ? moment(date_time_ordered)
+                : null,
+              date_time_received: date_time_received
+                ? moment(date_time_received)
+                : null,
+              date_time_of_surgery: date_time_of_surgery
+                ? moment(date_time_of_surgery)
+                : null,
+              anes_start: anes_start ? moment(anes_start) : null,
+              operation_started: operation_started
+                ? moment(operation_started)
+                : null,
+              operation_finished: operation_finished
+                ? moment(operation_finished)
+                : null,
 
-            time_ward_informed: time_ward_informed
-              ? moment(time_ward_informed)
-              : null,
-            arrival_time: arrival_time ? moment(arrival_time) : null,
-            room_is_ready: room_is_ready ? moment(room_is_ready) : null,
-            equip_ready: equip_ready ? moment(equip_ready) : null,
-            patient_placed_in_or_table: patient_placed_in_or_table
-              ? moment(patient_placed_in_or_table)
-              : null,
-            time_anes_arrived: time_anes_arrived
-              ? moment(time_anes_arrived)
-              : null,
-            time_surgeon_arrived: time_surgeon_arrived
-              ? moment(time_surgeon_arrived)
-              : null,
-            induction_time: induction_time ? moment(induction_time) : null,
-            induction_completed: induction_completed
-              ? moment(induction_completed)
-              : null,
-            time_or_started: time_or_started ? moment(time_or_started) : null,
-            or_ended: or_ended ? moment(or_ended) : null,
-            trans_out_from_or: trans_out_from_or
-              ? moment(trans_out_from_or)
-              : null,
-            surgical_safety_checklist: surgical_safety_checklist
-              ? moment(surgical_safety_checklist)
-              : null,
-            errors: {}
-          };
-        });
+              time_ward_informed: time_ward_informed
+                ? moment(time_ward_informed)
+                : null,
+              arrival_time: arrival_time ? moment(arrival_time) : null,
+              room_is_ready: room_is_ready ? moment(room_is_ready) : null,
+              equip_ready: equip_ready ? moment(equip_ready) : null,
+              patient_placed_in_or_table: patient_placed_in_or_table
+                ? moment(patient_placed_in_or_table)
+                : null,
+              time_anes_arrived: time_anes_arrived
+                ? moment(time_anes_arrived)
+                : null,
+              time_surgeon_arrived: time_surgeon_arrived
+                ? moment(time_surgeon_arrived)
+                : null,
+              induction_time: induction_time ? moment(induction_time) : null,
+              induction_completed: induction_completed
+                ? moment(induction_completed)
+                : null,
+              time_or_started: time_or_started ? moment(time_or_started) : null,
+              or_ended: or_ended ? moment(or_ended) : null,
+              trans_out_from_or: trans_out_from_or
+                ? moment(trans_out_from_or)
+                : null,
+              surgical_safety_checklist: surgical_safety_checklist
+                ? moment(surgical_safety_checklist)
+                : null,
+              errors: {}
+            };
+          },
+          () => {
+            window.print();
+          }
+        );
       })
       .catch(err => {
         message.error("An error has occurred");
@@ -274,14 +235,6 @@ class SurgicalMemorandumReport extends Component {
   };
 
   render() {
-    const surgeon_data_source = this.state.options.surgeons.map(
-      o => o.full_name
-    );
-
-    const anes_data_source = this.state.options.anesthesiologists.map(
-      o => o.full_name
-    );
-
     return (
       <Content className="content report">
         <div className="has-text-centered has-text-weight-bold">
@@ -495,28 +448,12 @@ class SurgicalMemorandumReport extends Component {
         </Row>
 
         <Row style={{ marginTop: "64px" }}>
-          <Col offset={2} span={8} className="b-b-1">
-            <AutoComplete
-              className="print-input-signatory"
-              dataSource={surgeon_data_source}
-              onSearch={this.onSurgeonSearch}
-              value={this.state.surgeon_signatory}
-              onChange={value => this.setState({ surgeon_signatory: value })}
-            >
-              <Input className="print-input-signatory" />
-            </AutoComplete>
+          <Col offset={2} span={8} className="b-b-1 has-text-centered">
+            {this.state.surgeon && this.state.surgeon.full_name}
           </Col>
           <Col span={1}>M.D.</Col>
-          <Col offset={2} span={8} className="b-b-1">
-            <AutoComplete
-              className="print-input-signatory"
-              dataSource={anes_data_source}
-              onSearch={this.onAnesSearch}
-              value={this.state.anes_signatory}
-              onChange={value => this.setState({ anes_signatory: value })}
-            >
-              <Input className="print-input-signatory" />
-            </AutoComplete>
+          <Col offset={2} span={8} className="b-b-1 has-text-centered">
+            {this.state.main_anes && this.state.main_anes.full_name}
           </Col>
           <Col span={1}>M.D.</Col>
         </Row>
