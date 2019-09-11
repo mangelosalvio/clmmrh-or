@@ -17,7 +17,9 @@ import {
   Tabs,
   Button,
   Col,
-  Row
+  Row,
+  AutoComplete,
+  Input
 } from "antd";
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import DatePickerFieldGroup from "../../commons/DatePickerFieldGroup";
@@ -124,7 +126,9 @@ const form_data = {
 
   rvs: [],
 
-  errors: {}
+  errors: {},
+  surgeon_signatory: "",
+  anes_signatory: ""
 };
 
 class SurgicalMemorandumReport extends Component {
@@ -178,67 +182,62 @@ class SurgicalMemorandumReport extends Component {
           trans_out_from_or,
           surgical_safety_checklist
         } = response.data;
-        this.setState(
-          prevState => {
-            return {
-              ...form_data,
-              [collection_name]: [],
-              ...record,
-              date_of_birth: date_of_birth ? moment(date_of_birth) : null,
-              registration_date: registration_date
-                ? moment(registration_date)
-                : null,
-              date_time_ordered: date_time_ordered
-                ? moment(date_time_ordered)
-                : null,
-              date_time_received: date_time_received
-                ? moment(date_time_received)
-                : null,
-              date_time_of_surgery: date_time_of_surgery
-                ? moment(date_time_of_surgery)
-                : null,
-              anes_start: anes_start ? moment(anes_start) : null,
-              operation_started: operation_started
-                ? moment(operation_started)
-                : null,
-              operation_finished: operation_finished
-                ? moment(operation_finished)
-                : null,
+        this.setState(prevState => {
+          return {
+            ...form_data,
+            [collection_name]: [],
+            ...record,
+            date_of_birth: date_of_birth ? moment(date_of_birth) : null,
+            registration_date: registration_date
+              ? moment(registration_date)
+              : null,
+            date_time_ordered: date_time_ordered
+              ? moment(date_time_ordered)
+              : null,
+            date_time_received: date_time_received
+              ? moment(date_time_received)
+              : null,
+            date_time_of_surgery: date_time_of_surgery
+              ? moment(date_time_of_surgery)
+              : null,
+            anes_start: anes_start ? moment(anes_start) : null,
+            operation_started: operation_started
+              ? moment(operation_started)
+              : null,
+            operation_finished: operation_finished
+              ? moment(operation_finished)
+              : null,
 
-              time_ward_informed: time_ward_informed
-                ? moment(time_ward_informed)
-                : null,
-              arrival_time: arrival_time ? moment(arrival_time) : null,
-              room_is_ready: room_is_ready ? moment(room_is_ready) : null,
-              equip_ready: equip_ready ? moment(equip_ready) : null,
-              patient_placed_in_or_table: patient_placed_in_or_table
-                ? moment(patient_placed_in_or_table)
-                : null,
-              time_anes_arrived: time_anes_arrived
-                ? moment(time_anes_arrived)
-                : null,
-              time_surgeon_arrived: time_surgeon_arrived
-                ? moment(time_surgeon_arrived)
-                : null,
-              induction_time: induction_time ? moment(induction_time) : null,
-              induction_completed: induction_completed
-                ? moment(induction_completed)
-                : null,
-              time_or_started: time_or_started ? moment(time_or_started) : null,
-              or_ended: or_ended ? moment(or_ended) : null,
-              trans_out_from_or: trans_out_from_or
-                ? moment(trans_out_from_or)
-                : null,
-              surgical_safety_checklist: surgical_safety_checklist
-                ? moment(surgical_safety_checklist)
-                : null,
-              errors: {}
-            };
-          },
-          () => {
-            window.print();
-          }
-        );
+            time_ward_informed: time_ward_informed
+              ? moment(time_ward_informed)
+              : null,
+            arrival_time: arrival_time ? moment(arrival_time) : null,
+            room_is_ready: room_is_ready ? moment(room_is_ready) : null,
+            equip_ready: equip_ready ? moment(equip_ready) : null,
+            patient_placed_in_or_table: patient_placed_in_or_table
+              ? moment(patient_placed_in_or_table)
+              : null,
+            time_anes_arrived: time_anes_arrived
+              ? moment(time_anes_arrived)
+              : null,
+            time_surgeon_arrived: time_surgeon_arrived
+              ? moment(time_surgeon_arrived)
+              : null,
+            induction_time: induction_time ? moment(induction_time) : null,
+            induction_completed: induction_completed
+              ? moment(induction_completed)
+              : null,
+            time_or_started: time_or_started ? moment(time_or_started) : null,
+            or_ended: or_ended ? moment(or_ended) : null,
+            trans_out_from_or: trans_out_from_or
+              ? moment(trans_out_from_or)
+              : null,
+            surgical_safety_checklist: surgical_safety_checklist
+              ? moment(surgical_safety_checklist)
+              : null,
+            errors: {}
+          };
+        });
       })
       .catch(err => {
         message.error("An error has occurred");
@@ -246,7 +245,43 @@ class SurgicalMemorandumReport extends Component {
       });
   };
 
+  onSurgeonSearch = value => {
+    axios
+      .get(`/api/surgeons/?s=${value}`)
+      .then(response =>
+        this.setState({
+          options: {
+            ...this.state.options,
+            surgeons: response.data
+          }
+        })
+      )
+      .catch(err => console.log(err));
+  };
+
+  onAnesSearch = value => {
+    axios
+      .get(`/api/anesthesiologists/?s=${value}`)
+      .then(response =>
+        this.setState({
+          options: {
+            ...this.state.options,
+            anesthesiologists: response.data
+          }
+        })
+      )
+      .catch(err => console.log(err));
+  };
+
   render() {
+    const surgeon_data_source = this.state.options.surgeons.map(
+      o => o.full_name
+    );
+
+    const anes_data_source = this.state.options.anesthesiologists.map(
+      o => o.full_name
+    );
+
     return (
       <Content className="content report">
         <div className="has-text-centered has-text-weight-bold">
@@ -362,7 +397,7 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <div className="m-t-16 has-text-weight-bold">
-          TREATMENT IN THE OPRATING ROOM
+          TREATMENT IN THE OPERATING ROOM
         </div>
         <Row>
           <Col span={3} offset={2}>
@@ -461,11 +496,27 @@ class SurgicalMemorandumReport extends Component {
 
         <Row style={{ marginTop: "64px" }}>
           <Col offset={2} span={8} className="b-b-1">
-            &nbsp;
+            <AutoComplete
+              className="print-input-signatory"
+              dataSource={surgeon_data_source}
+              onSearch={this.onSurgeonSearch}
+              value={this.state.surgeon_signatory}
+              onChange={value => this.setState({ surgeon_signatory: value })}
+            >
+              <Input className="print-input-signatory" />
+            </AutoComplete>
           </Col>
           <Col span={1}>M.D.</Col>
           <Col offset={2} span={8} className="b-b-1">
-            &nbsp;
+            <AutoComplete
+              className="print-input-signatory"
+              dataSource={anes_data_source}
+              onSearch={this.onAnesSearch}
+              value={this.state.anes_signatory}
+              onChange={value => this.setState({ anes_signatory: value })}
+            >
+              <Input className="print-input-signatory" />
+            </AutoComplete>
           </Col>
           <Col span={1}>M.D.</Col>
         </Row>

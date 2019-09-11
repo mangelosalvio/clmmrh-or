@@ -478,3 +478,11 @@ input[type="checkbox"] {
 .p-8 {
   padding: 8px;
 }
+
+.print-input-signatory {
+  border: none;
+  color: #000;
+  width: 100%;
+  font-size: 10px;
+  text-align: center;
+}
