@@ -238,6 +238,15 @@ class SurgicalMemorandumReport extends Component {
     return (
       <Content className="content report">
         <div className="has-text-centered has-text-weight-bold">
+          CORAZON LOCSIN MONTELIBANO MEMORIAL REGIONAL HOSPITAL
+        </div>
+        <div className="has-text-centered">
+          Lacson - Burgos Streets, Bacolod City
+        </div>
+        <div
+          className="has-text-centered has-text-weight-bold"
+          style={{ marginTop: "32px" }}
+        >
           SURGICAL MEMORANDUM
         </div>
         <Row className="m-t-16">
@@ -314,13 +323,13 @@ class SurgicalMemorandumReport extends Component {
         </Row>
         <div className="m-t-1">
           <span className="has-text-weight-bold">TENTATIVE DIAGNOSIS</span>
-          <p className="full-bordered p-8" style={{ minHeight: "120px" }}>
+          <p className="full-bordered p-8" style={{ minHeight: "80px" }}>
             {this.state.tentative_diagnosis}
           </p>
         </div>
         <div className="m-t-1">
           <span className="has-text-weight-bold">FINAL DIAGNOSIS</span>
-          <p className="full-bordered p-8" style={{ minHeight: "120px" }}>
+          <p className="full-bordered p-8" style={{ minHeight: "80px" }}>
             {this.state.final_diagnosis}
           </p>
         </div>
@@ -394,7 +403,7 @@ class SurgicalMemorandumReport extends Component {
         </Row>
         <div className="m-t-1">
           <span className="has-text-weight-bold">OPERATION PERFORMED</span>
-          <p className="full-bordered p-8" style={{ minHeight: "120px" }}>
+          <p className="full-bordered p-8" style={{ minHeight: "80px" }}>
             {this.state.operation_performed}
             {this.state.rvs.map(r => (
               <div>
@@ -466,6 +475,12 @@ class SurgicalMemorandumReport extends Component {
             Anesthesiologist
           </Col>
         </Row>
+
+        <div className="print-iso-footer">
+          Surgical Memorandum <br />
+          CLMMRH-MRS.F.043 <br />
+          Issued: 2/5/14 Issue No. 001
+        </div>
       </Content>
     );
   }
