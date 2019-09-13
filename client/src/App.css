@@ -494,3 +494,9 @@ input[type="checkbox"] {
   font-size: 8px;
   font-family: "Times New Roman", Times, serif;
 }
+
+.underline-paragraph {
+  text-decoration: underline;
+  overflow-wrap: break-word;
+  text-align: justify;
+}

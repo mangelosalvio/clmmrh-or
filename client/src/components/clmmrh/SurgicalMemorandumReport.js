@@ -264,7 +264,7 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={3}>Address></Col>
+          <Col span={3}>Address</Col>
           <Col span={12} className="b-b-1">
             {this.state.address}
           </Col>
@@ -322,15 +322,18 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <div className="m-t-1">
-          <span className="has-text-weight-bold">TENTATIVE DIAGNOSIS</span>
-          <p className="full-bordered p-8" style={{ minHeight: "80px" }}>
-            {this.state.tentative_diagnosis}
-          </p>
+          <div className="has-text-weight-bold">TENTATIVE DIAGNOSIS</div>
+          <div
+            className="p-8 underline-paragraph"
+            style={{ minHeight: "80px" }}
+          >
+            {this.state.tentative_diagnosis.padEnd(819, "\u00A0")}
+          </div>
         </div>
         <div className="m-t-1">
           <span className="has-text-weight-bold">FINAL DIAGNOSIS</span>
-          <p className="full-bordered p-8" style={{ minHeight: "80px" }}>
-            {this.state.final_diagnosis}
+          <p className="p-8 underline-paragraph" style={{ minHeight: "80px" }}>
+            {this.state.final_diagnosis.padEnd(819, "\u00A0")}
           </p>
         </div>
         <Row className="m-t-16">
@@ -403,14 +406,12 @@ class SurgicalMemorandumReport extends Component {
         </Row>
         <div className="m-t-1">
           <span className="has-text-weight-bold">OPERATION PERFORMED</span>
-          <p className="full-bordered p-8" style={{ minHeight: "80px" }}>
-            {this.state.operation_performed}
-            {this.state.rvs.map(r => (
-              <div>
-                {r.rvs_description} - {r.rvs_code}
-              </div>
-            ))}
-          </p>
+          <div className="b-b-1">{this.state.operation_performed}</div>
+          {this.state.rvs.map(r => (
+            <div className="b-b-1">
+              {r.rvs_description} - {r.rvs_code}
+            </div>
+          ))}
         </div>
         <div className="m-t-16 has-text-weight-bold">
           IMMEDIATE POST OPERATIVE TREATMENT
