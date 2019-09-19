@@ -361,6 +361,27 @@ class SurgicalMemorandumReport extends Component {
             {this.state.anes_route}
           </Col>
         </Row>
+
+        <Row>
+          <Col span={4}>Anesthesia Began</Col>
+          <Col span={4} className="b-b-1">
+            &nbsp;
+            {this.state.anes_start &&
+              moment(this.state.anes_start).format("hh:mm A")}
+          </Col>
+          <Col span={4}>Operation Started</Col>
+          <Col span={4} className="b-b-1">
+            &nbsp;
+            {this.state.operation_started &&
+              moment(this.state.operation_started).format("hh:mm A")}
+          </Col>
+          <Col span={4}>Operation Finished</Col>
+          <Col span={4} className="b-b-1">
+            &nbsp;
+            {this.state.operation_finished &&
+              moment(this.state.operation_finished).format("hh:mm A")}
+          </Col>
+        </Row>
         <div className="m-t-16 has-text-weight-bold">
           TREATMENT IN THE OPERATING ROOM
         </div>
