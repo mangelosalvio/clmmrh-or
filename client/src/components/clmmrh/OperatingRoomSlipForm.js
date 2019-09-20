@@ -39,6 +39,7 @@ import DateTimePickerFieldGroup from "../../commons/DateTimePickerFieldGroup";
 import CheckboxFieldGroup from "../../commons/CheckboxFieldGroup";
 import TextAreaAutocompleteGroup from "../../commons/TextAreaAutocompleteGroup";
 import { debounce } from "lodash";
+import { OPERATION_STATUS_ON_SCHEDULE } from "./../../utils/constants";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
@@ -72,7 +73,7 @@ const form_data = {
   received_by: "",
 
   operation_type: "",
-  operation_status: "",
+  operation_status: OPERATION_STATUS_ON_SCHEDULE,
   main_anes: "",
   laterality: "",
   operating_room_number: "",
