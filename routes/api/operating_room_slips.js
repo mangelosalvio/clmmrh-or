@@ -101,6 +101,7 @@ router.post("/logs", (req, res) => {
 });
 
 router.post("/display-monitor", (req, res) => {
+  const now = moment.tz(moment(), process.env.TIMEZONE);
   async.parallel(
     {
       on_going: cb => {
@@ -207,7 +208,14 @@ router.post("/display-monitor", (req, res) => {
               operation_status: constants.ON_SCHEDULE,
               case: constants.ELECTIVE_SURGERY,
               date_time_of_surgery: {
-                $lte: moment.tz(moment(), process.env.TIMEZONE).toDate()
+                $lte: now
+                  .clone()
+                  .endOf("day")
+                  .toDate(),
+                $gte: now
+                  .clone()
+                  .startOf("day")
+                  .toDate()
               }
             }
           },
@@ -229,7 +237,14 @@ router.post("/display-monitor", (req, res) => {
               operation_status: constants.ON_SCHEDULE,
               case: constants.EMERGENCY_PROCEDURE,
               date_time_of_surgery: {
-                $lte: moment.tz(moment(), process.env.TIMEZONE).toDate()
+                $lte: now
+                  .clone()
+                  .endOf("day")
+                  .toDate(),
+                $gte: now
+                  .clone()
+                  .startOf("day")
+                  .toDate()
               }
             }
           },
