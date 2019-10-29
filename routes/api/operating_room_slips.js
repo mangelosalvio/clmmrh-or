@@ -299,6 +299,16 @@ router.post("/display-monitor", (req, res) => {
           })
           .exec(cb);
       },
+      on_duty_anes: cb => {
+        Anesthesiologist.find({
+          on_duty: true
+        })
+          .sort({
+            last_name: 1,
+            first_name: 1
+          })
+          .exec(cb);
+      },
       pacu_anes: cb => {
         Anesthesiologist.find({
           assignment: constants.PACU_ANES

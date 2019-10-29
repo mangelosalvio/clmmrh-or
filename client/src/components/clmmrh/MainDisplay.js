@@ -23,6 +23,7 @@ const form_data = {
   receiving_nurse: [],
   holding_room_nurse: [],
   on_duty_nurse: [],
+  on_duty_anes: [],
   pacu_anes: [],
   team_captain_anes: [],
   errors: {}
@@ -179,8 +180,9 @@ class MainDisplay extends Component {
   };
 
   filterProcedure = procedure => {
-    if (procedure.length > 50) {
-      return `${procedure.substring(0, procedure.length - 1)}...`;
+    let max_characters = 60;
+    if (procedure.length > max_characters) {
+      return `${procedure.substring(0, max_characters - 1)}...`;
     }
 
     return procedure;
@@ -209,6 +211,10 @@ class MainDisplay extends Component {
       .join("/");
 
     const on_duty_nurse = this.state.on_duty_nurse
+      .map(o => this.getScreenName(o))
+      .join("/");
+
+    const on_duty_anes = this.state.on_duty_anes
       .map(o => this.getScreenName(o))
       .join("/");
 
@@ -382,26 +388,38 @@ class MainDisplay extends Component {
                     })}
                   >
                     {record && (
-                      <p>
-                        {record.service} {record.case_order}{" "}
-                        {record.classification} <br />{" "}
-                        <span className="has-text-weight-bold">
-                          {record.name}
-                        </span>{" "}
-                        <br />
-                        {record.age}
-                        <br />
-                        {record.ward}
-                        <br />
-                        {this.filterProcedure(record.procedure)}
-                        <br />
-                        {record.surgeon && (
-                          <span>{this.getScreenName(record.surgeon)}</span>
-                        )}{" "}
-                        {record.main_anes && (
-                          <span> / {this.getScreenName(record.main_anes)}</span>
-                        )}
-                      </p>
+                      <div className="is-flex flex-column">
+                        <div className="is-flex-1">
+                          {record.service} {record.case_order}{" "}
+                          {record.classification} <br />{" "}
+                          <span className="has-text-weight-bold">
+                            {record.name}
+                          </span>{" "}
+                          <br />
+                          {record.age}
+                          <br />
+                          {record.ward}
+                        </div>
+                        <div
+                          className="is-flex-1"
+                          style={{
+                            overflow: "hidden"
+                          }}
+                        >
+                          {this.filterProcedure(record.procedure)}
+                        </div>
+                        <div className="is-flex-1">
+                          {record.surgeon && (
+                            <span>{this.getScreenName(record.surgeon)}</span>
+                          )}{" "}
+                          {record.main_anes && (
+                            <span>
+                              {" "}
+                              / {this.getScreenName(record.main_anes)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -432,26 +450,31 @@ class MainDisplay extends Component {
                     })}
                   >
                     {record && (
-                      <p>
-                        {record.service} {record.case_order}{" "}
-                        {record.classification} <br />{" "}
-                        <span className="has-text-weight-bold">
-                          {record.name}
-                        </span>{" "}
-                        <br />
-                        {record.age}
-                        <br />
-                        {record.ward}
-                        <br />
-                        {this.filterProcedure(record.procedure)}
-                        <br />
-                        {record.surgeon && (
-                          <span>{this.getScreenName(record.surgeon)}</span>
-                        )}{" "}
-                        {record.main_anes && (
-                          <span> / {this.getScreenName(record.main_anes)}</span>
-                        )}
-                      </p>
+                      <div className="is-flex flex-column">
+                        <div>
+                          {record.service} {record.case_order}{" "}
+                          {record.classification} <br />{" "}
+                          <span className="has-text-weight-bold">
+                            {record.name}
+                          </span>{" "}
+                          <br />
+                          {record.age}
+                          <br />
+                          {record.ward}
+                        </div>
+                        <div>{this.filterProcedure(record.procedure)}</div>
+                        <div>
+                          {record.surgeon && (
+                            <span>{this.getScreenName(record.surgeon)}</span>
+                          )}{" "}
+                          {record.main_anes && (
+                            <span>
+                              {" "}
+                              / {this.getScreenName(record.main_anes)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -471,7 +494,7 @@ class MainDisplay extends Component {
               24 hour duty:
             </Col>
             <Col span={6} className="display-footer-accent">
-              {on_duty_nurse}
+              {on_duty_anes}
             </Col>
           </Row>
           <Row>

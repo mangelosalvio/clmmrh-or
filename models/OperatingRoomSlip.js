@@ -8,6 +8,7 @@ const OperatingRoomSlipSchema = new Schema({
   sex: String,
   date_of_birth: Date,
   weight: String,
+  weight_unit: String,
   hospital_number: String,
   ward: String,
   registration_date: Date,

@@ -84,6 +84,19 @@ router.put("/", (req, res) => {
   });
 });
 
+router.post("/:id/on-duty", (req, res) => {
+  Anesthesiologist.findById(req.params.id).then(anes => {
+    if (anes) {
+      anes.on_duty = req.body.on_duty;
+      anes.save().then(anes => {
+        const io = req.app.get("socketio");
+        io.emit("refresh-display", true);
+        return res.json(anes);
+      });
+    }
+  });
+});
+
 router.post("/:id/assignment", (req, res) => {
   Model.findById(req.params.id).then(record => {
     record.assignment = req.body.assignment;

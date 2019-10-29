@@ -9,6 +9,10 @@ const AnesSchema = new Schema({
   contact_number: String,
   assignment: String,
   year_level: String,
+  on_duty: {
+    type: Boolean,
+    default: false
+  },
   logs: [
     {
       user: Object,

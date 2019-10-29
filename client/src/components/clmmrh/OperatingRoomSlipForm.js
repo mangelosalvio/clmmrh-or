@@ -55,6 +55,7 @@ const form_data = {
   address: "",
   sex: "",
   weight: "",
+  weight_unit: "kg",
   hospital_number: "",
   ward: "",
   date_of_birth: null,
@@ -631,6 +632,26 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onChangeDateOfBirth = date_of_birth => {
+    let now = moment();
+
+    const dob = date_of_birth.clone();
+    let years = now.diff(dob, "years");
+    dob.add(years, "years");
+
+    let months = now.diff(dob, "months");
+    dob.add(months, "months");
+
+    let days = now.diff(dob, "days");
+
+    let age = `${years}Y${months}M${days}D`;
+
+    this.setState({
+      age,
+      date_of_birth
+    });
+  };
+
   render() {
     const rvs_column = [
       {
@@ -765,7 +786,7 @@ class OperatingRoomSlipForm extends Component {
                     label="Date of Birth"
                     name="date_of_birth"
                     value={this.state.date_of_birth}
-                    onChange={value => this.setState({ date_of_birth: value })}
+                    onChange={this.onChangeDateOfBirth}
                     error={errors.date_of_birth}
                     formItemLayout={formItemLayout}
                   />
@@ -794,6 +815,15 @@ class OperatingRoomSlipForm extends Component {
                     name="weight"
                     value={this.state.weight}
                     error={errors.weight}
+                    formItemLayout={formItemLayout}
+                    onChange={this.onChange}
+                  />
+
+                  <TextFieldGroup
+                    label="Weight Unit"
+                    name="weight_unit"
+                    value={this.state.weight_unit}
+                    error={errors.weight_unit}
                     formItemLayout={formItemLayout}
                     onChange={this.onChange}
                   />

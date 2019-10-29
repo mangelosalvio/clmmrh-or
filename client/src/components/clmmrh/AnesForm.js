@@ -7,7 +7,7 @@ import MessageBoxInfo from "../../commons/MessageBoxInfo";
 import Searchbar from "../../commons/Searchbar";
 import "../../styles/Autosuggest.css";
 
-import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
+import { Layout, Breadcrumb, Form, Table, Icon, message, Button } from "antd";
 
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import {
@@ -163,6 +163,28 @@ class AnesForm extends Component {
       });
   };
 
+  updateOnDuty = (record, index) => {
+    const on_duty = record.on_duty ? !record.on_duty : true;
+    const form_data = {
+      on_duty
+    };
+    const loading = message.loading("Processing...");
+    axios
+      .post(`/api/anesthesiologists/${record._id}/on-duty`, form_data)
+      .then(response => {
+        loading();
+        const records = [...this.state[collection_name]];
+        records[index] = { ...response.data };
+        this.setState({
+          [collection_name]: records
+        });
+      })
+      .catch(err => {
+        loading();
+        message.error("An error has occurred");
+      });
+  };
+
   render() {
     const records_column = [
       {
@@ -190,6 +212,15 @@ class AnesForm extends Component {
       {
         title: "Year Level",
         dataIndex: "year_level"
+      },
+      {
+        title: "On Duty",
+        dataIndex: "on_duty",
+        render: (value, record, index) => (
+          <Button onClick={() => this.updateOnDuty(record, index)}>
+            {value ? "YES" : "NO"}
+          </Button>
+        )
       },
       {
         title: "",
