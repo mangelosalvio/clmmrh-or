@@ -8,6 +8,13 @@ const path = require("path");
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
+const sqldatabase = require("./config/sqldatabase");
+
+sqldatabase
+  .authenticate()
+  .then(() => console.log("SQL DB Connected"))
+  .catch(err => console.log("Error : " + err));
+
 app.set("socketio", io);
 
 const fs = require("fs");

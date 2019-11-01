@@ -375,9 +375,9 @@ input[type="checkbox"] {
   margin: 2px;
   padding: 2px;
   background-color: #22301e;
-  /* font-size: 0.8vw; */
+  font-size: 0.5vw;
   font-weight: bolder;
-  font-size: 11px;
+  /* font-size: 11px; */
   overflow: hidden;
 }
 .display-wrapper-accent {

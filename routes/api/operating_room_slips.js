@@ -1,5 +1,10 @@
 const express = require("express");
 const router = express.Router();
+const { Sequelize } = require("sequelize");
+const sqldatabase = require("./../../config/sqldatabase");
+
+const Person = require("./../../models/sql/Person");
+
 const OperatingRoomSlip = require("./../../models/OperatingRoomSlip");
 const Anesthesiologist = require("./../../models/Anesthesiologist");
 const Nurse = require("./../../models/Nurse");
@@ -16,6 +21,7 @@ const constants = require("./../../config/constants");
 const numeral = require("numeral");
 const async = require("async");
 const net = require("net");
+const Op = Sequelize.Op;
 
 const Model = OperatingRoomSlip;
 
@@ -86,6 +92,64 @@ router.put("/", (req, res) => {
       return res.json(record);
     })
     .catch(err => console.log(err));
+});
+
+/**
+ * GET PATIENT FROM BIZBOX
+ */
+
+router.post("/patients", (req, res) => {
+  const search_text = req.body.search_text;
+
+  /*  Person.findAll({
+    where: {
+      name: {
+        [Op.like]: `${search_text}%`
+      }
+    },
+    order: [["name", "ASC"]],
+    limit: 50
+  }).then(records => {
+    return res.json(records);
+  });
+ */
+  const query = `SELECT * FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY fullname
+    ORDER BY dcno) num FROM (
+        SELECT TOP 10 *
+        FROM    (SELECT TOP 10 dc.dcno,dc.fullname,dc.fname,dc.mname,dc.lname, 
+                            dc.abbrev,ad.age,pat.sex,dc.rmno,
+                            ad.weight,ad.weightunit,dc.birthdate,
+                            CAST (ad.admindiagnosis AS varchar(255)) diagnosis,
+                            CONVERT(varchar(12),ad.admdate,101) regisdate,
+                            addm.address
+                FROM datacenter dc INNER JOIN admission ad ON dc.dcno = ad.dcno
+                INNER JOIN patient pat ON dc.dcno = pat.dcno 
+                INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
+                WHERE (dc.fullname LIKE '%$data%' OR fname LIKE '%$data%')
+      AND (addm.address is not null and addm.address <> '(N/A)')
+                ORDER BY ad.regdate DESC
+                UNION
+                SELECT TOP 10 dc.dcno,dc.fullname,dc.fname,dc.mname,dc.lname,
+                            dc.abbrev,opd.age,pat.sex,dc.rmno,
+                            opd.weight,opd.weightunit,dc.birthdate,
+                            CAST (opd.initdiagnosis AS varchar(255)) diagnosis,
+                            CONVERT(varchar(12),opd.regdate,101) regisdate,
+                            addm.address
+                FROM datacenter dc INNER JOIN outpatient opd ON dc.dcno = opd.dcno
+                INNER JOIN patient pat ON dc.dcno = pat.dcno
+                INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
+                WHERE (dc.fullname LIKE '%${search_text}%' OR fname LIKE '%${search_text}%')
+      AND (addm.address is not null and addm.address <> '(N/A)')
+                ORDER BY opd.regdate DESC
+                ) united ORDER BY convert(date,united.regisdate) DESC) gani) gd
+    WHERE gd.num = 1 `;
+
+  /* const query = `select * from Persons where name like '${search_text}%'`; */
+
+  sqldatabase
+    .query(query, { type: sqldatabase.QueryTypes.SELECT })
+    .then(records => res.json(records))
+    .catch(err => res.status(500).json(err));
 });
 
 router.post("/logs", (req, res) => {

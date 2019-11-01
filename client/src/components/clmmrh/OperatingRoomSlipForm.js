@@ -15,7 +15,11 @@ import {
   message,
   Divider,
   Tabs,
-  Button
+  Button,
+  Row,
+  Col,
+  Input,
+  Select
 } from "antd";
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import DatePickerFieldGroup from "../../commons/DatePickerFieldGroup";
@@ -30,7 +34,8 @@ import {
   operation_type_options,
   laterality_options,
   operating_room_number_options,
-  operation_status_options
+  operation_status_options,
+  weight_unit_options
 } from "../../utils/Options";
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
@@ -40,9 +45,11 @@ import CheckboxFieldGroup from "../../commons/CheckboxFieldGroup";
 import TextAreaAutocompleteGroup from "../../commons/TextAreaAutocompleteGroup";
 import { debounce } from "lodash";
 import { OPERATION_STATUS_ON_SCHEDULE } from "./../../utils/constants";
+import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
+const { Option } = Select;
 
 const collection_name = "slips";
 
@@ -137,13 +144,15 @@ class OperatingRoomSlipForm extends Component {
       surgeons: [],
       anesthesiologists: [],
       nurses: [],
-      rvs: []
+      rvs: [],
+      patients: []
     }
   };
 
   constructor(props) {
     super(props);
     this.onRvsSearch = debounce(this.onRvsSearch, 300);
+    this.onSearchPatient = debounce(this.onSearchPatient, 300);
   }
 
   onChange = e => {
@@ -652,6 +661,74 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onSearchPatient = search_text => {
+    const form_data = {
+      search_text
+    };
+
+    axios
+      .post("/api/operating-room-slips/patients", form_data)
+      .then(response =>
+        this.setState({
+          options: {
+            ...this.state.options,
+            patients: response.data
+          }
+        })
+      )
+      .catch(err => message.error("There was an error connecting to Bizbox"));
+  };
+
+  onSelectPatient = name => {
+    const patient = this.state.options.patients.find(o => o.name === name);
+
+    if (patient) {
+      console.log(patient);
+      const hospital_number = patient.abbrev;
+      const fullname = patient.fullname;
+      const fname = patient.fname;
+      const mname = patient.mname;
+      const lname = patient.lname;
+      const diagnosis = patient.diagnosis;
+      const weight = patient.weight;
+      const address = patient.address;
+      const registration_date = moment(patient.regisdate);
+      const sex = patient.sex === "F" ? "Female" : "Male";
+      const ward = patient.rmno;
+      const weight_unit = patient.weightunit;
+
+      let now = moment();
+      const dob = moment(patient.birth_date);
+      let years = now.diff(dob, "years");
+      dob.add(years, "years");
+
+      let months = now.diff(dob, "months");
+      dob.add(months, "months");
+
+      let days = now.diff(dob, "days");
+      let age = `${years}Y${months}M${days}D`;
+
+      /* this.setState({
+        hospital_number,
+        diagnosis,
+        weight,
+        address,
+        registration_date,
+        sex,
+        ward,
+        weight_unit,
+        age
+      }) */
+
+      this.setState({
+        age,
+        date_of_birth: moment(patient.birth_date),
+        registration_date: moment(patient.registration_date),
+        weight: patient.weight
+      });
+    }
+  };
+
   render() {
     const rvs_column = [
       {
@@ -745,6 +822,8 @@ class OperatingRoomSlipForm extends Component {
 
     const rvs_desc_data_source = this.state.options.rvs.map(o => o.description);
 
+    const patients = this.state.options.patients.map(o => o.name);
+
     return (
       <Content className="content">
         <div className="columns is-marginless">
@@ -773,13 +852,16 @@ class OperatingRoomSlipForm extends Component {
               <Tabs>
                 <TabPane tab="Operating Complex Receiving" key="1">
                   <Divider orientation="left">Patient Information</Divider>
-                  <TextFieldGroup
+
+                  <TextFieldAutocompleteGroup
                     label="Name"
-                    name="name"
                     value={this.state.name}
-                    error={errors.name}
+                    dataSource={patients}
+                    onSelect={this.onSelectPatient}
+                    onChange={value => this.setState({ name: value })}
+                    onSearch={this.onSearchPatient}
+                    placeholder="Patient Name"
                     formItemLayout={formItemLayout}
-                    onChange={this.onChange}
                   />
 
                   <DatePickerFieldGroup
@@ -810,23 +892,33 @@ class OperatingRoomSlipForm extends Component {
                     options={gender_options}
                   />
 
-                  <TextFieldGroup
-                    label="Weight"
-                    name="weight"
-                    value={this.state.weight}
-                    error={errors.weight}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <TextFieldGroup
-                    label="Weight Unit"
-                    name="weight_unit"
-                    value={this.state.weight_unit}
-                    error={errors.weight_unit}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                  <Row className="ant-form-item" gutter={4}>
+                    <Col span={4} className="ant-form-item-label">
+                      <label>Weight</label>
+                    </Col>
+                    <Col span={16} className="ant-form-item-control-wrapper">
+                      <Input
+                        name="weight"
+                        value={this.state.weight}
+                        onChange={this.onChange}
+                      />
+                    </Col>
+                    <Col span={4}>
+                      <Select
+                        value={this.state.weight_unit}
+                        name="weight_unit"
+                        onChange={value =>
+                          this.setState({ weight_unit: value })
+                        }
+                      >
+                        {weight_unit_options.map((d, index) => (
+                          <Option key={d} value={d}>
+                            {d}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Col>
+                  </Row>
 
                   <TextAreaGroup
                     label="Address"
@@ -1072,15 +1164,35 @@ class OperatingRoomSlipForm extends Component {
                     disabled
                   />
 
-                  <TextFieldGroup
-                    label="Weight"
-                    name="weight"
-                    value={this.state.weight}
-                    error={errors.weight}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
+                  <Row className="ant-form-item" gutter={4}>
+                    <Col span={4} className="ant-form-item-label">
+                      <label>Weight</label>
+                    </Col>
+                    <Col span={16} className="ant-form-item-control-wrapper">
+                      <Input
+                        name="weight"
+                        value={this.state.weight}
+                        onChange={this.onChange}
+                        disabled
+                      />
+                    </Col>
+                    <Col span={4}>
+                      <Select
+                        value={this.state.weight_unit}
+                        name="weight_unit"
+                        onChange={value =>
+                          this.setState({ weight_unit: value })
+                        }
+                        disabled
+                      >
+                        {weight_unit_options.map((d, index) => (
+                          <Option key={d} value={d}>
+                            {d}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Col>
+                  </Row>
 
                   <TextAreaGroup
                     label="Address"
@@ -1289,15 +1401,35 @@ class OperatingRoomSlipForm extends Component {
                     disabled
                   />
 
-                  <TextFieldGroup
-                    label="Weight"
-                    name="weight"
-                    value={this.state.weight}
-                    error={errors.weight}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
+                  <Row className="ant-form-item" gutter={4}>
+                    <Col span={4} className="ant-form-item-label">
+                      <label>Weight</label>
+                    </Col>
+                    <Col span={16} className="ant-form-item-control-wrapper">
+                      <Input
+                        name="weight"
+                        value={this.state.weight}
+                        onChange={this.onChange}
+                        disabled
+                      />
+                    </Col>
+                    <Col span={4}>
+                      <Select
+                        value={this.state.weight_unit}
+                        name="weight_unit"
+                        onChange={value =>
+                          this.setState({ weight_unit: value })
+                        }
+                        disabled
+                      >
+                        {weight_unit_options.map((d, index) => (
+                          <Option key={d} value={d}>
+                            {d}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Col>
+                  </Row>
 
                   <TextAreaGroup
                     label="Address"
