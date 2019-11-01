@@ -148,7 +148,21 @@ router.post("/patients", (req, res) => {
 
   sqldatabase
     .query(query, { type: sqldatabase.QueryTypes.SELECT })
-    .then(records => res.json(records))
+    .then(records => {
+      let updated_records = [...records];
+
+      updated_records = updated_records.map(record => {
+        const { fname, mname, lname } = record;
+        const fullname = `${lname}, ${fname} ${mname.charAt(0)}`;
+
+        return {
+          ...record,
+          fullname
+        };
+      });
+
+      return res.json(updated_records);
+    })
     .catch(err => res.status(500).json(err));
 });
 

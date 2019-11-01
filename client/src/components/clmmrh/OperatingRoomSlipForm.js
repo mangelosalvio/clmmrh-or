@@ -685,17 +685,13 @@ class OperatingRoomSlipForm extends Component {
     if (patient) {
       console.log(patient);
       const hospital_number = patient.abbrev;
-      const fullname = patient.fullname;
-      const fname = patient.fname;
-      const mname = patient.mname;
-      const lname = patient.lname;
       const diagnosis = patient.diagnosis;
       const weight = patient.weight;
+      const weight_unit = patient.weightunit;
       const address = patient.address;
       const registration_date = moment(patient.regisdate);
       const sex = patient.sex === "F" ? "Female" : "Male";
       const ward = patient.rmno;
-      const weight_unit = patient.weightunit;
 
       let now = moment();
       const dob = moment(patient.birth_date);
@@ -708,7 +704,7 @@ class OperatingRoomSlipForm extends Component {
       let days = now.diff(dob, "days");
       let age = `${years}Y${months}M${days}D`;
 
-      /* this.setState({
+      this.setState({
         hospital_number,
         diagnosis,
         weight,
@@ -718,13 +714,6 @@ class OperatingRoomSlipForm extends Component {
         ward,
         weight_unit,
         age
-      }) */
-
-      this.setState({
-        age,
-        date_of_birth: moment(patient.birth_date),
-        registration_date: moment(patient.registration_date),
-        weight: patient.weight
       });
     }
   };
@@ -822,7 +811,7 @@ class OperatingRoomSlipForm extends Component {
 
     const rvs_desc_data_source = this.state.options.rvs.map(o => o.description);
 
-    const patients = this.state.options.patients.map(o => o.name);
+    const patients = this.state.options.patients.map(o => o.fullname);
 
     return (
       <Content className="content">

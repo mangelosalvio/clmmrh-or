@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Form, Input, AutoComplete } from "antd";
+import { Form, AutoComplete } from "antd";
 
 const TextFieldAutocompleteGroup = ({
   label,

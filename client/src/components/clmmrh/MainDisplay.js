@@ -210,10 +210,6 @@ class MainDisplay extends Component {
       .map(o => this.getScreenName(o))
       .join("/");
 
-    const on_duty_nurse = this.state.on_duty_nurse
-      .map(o => this.getScreenName(o))
-      .join("/");
-
     const on_duty_anes = this.state.on_duty_anes
       .map(o => this.getScreenName(o))
       .join("/");
