@@ -109,11 +109,19 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
             </Link>
           </Menu.Item>
         </SubMenu>
-        <Menu.Item key="3">
+        <Menu.Item key="/main-display">
           <Link to="/main-display">
             <span>
               <Icon type="appstore" />
               Schedule Display
+            </span>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="/or-elective-operations">
+          <Link to="/or-elective-operations" target="_blank">
+            <span>
+              <Icon type="appstore" />
+              OR Elective Op
             </span>
           </Link>
         </Menu.Item>

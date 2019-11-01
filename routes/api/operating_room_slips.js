@@ -166,6 +166,89 @@ router.post("/patients", (req, res) => {
     .catch(err => res.status(500).json(err));
 });
 
+router.post("/or-elective-operations", (req, res) => {
+  const now = moment.tz(moment(), process.env.TIMEZONE);
+
+  async.parallel(
+    {
+      electives: cb => {
+        OperatingRoomSlip.aggregate([
+          {
+            $match: {
+              date_time_of_surgery: {
+                $gt: now
+                  .clone()
+                  .endOf("day")
+                  .toDate()
+              }
+            }
+          },
+          {
+            $sort: {
+              name: 1
+            }
+          },
+          {
+            $group: {
+              _id: "$operating_room_number",
+              items: {
+                $push: {
+                  hospital_number: "$hospital_number",
+                  ward: "$ward",
+                  name: "$name",
+                  age: "$age",
+                  sex: "$sex",
+                  diagnosis: "$diagnosis",
+                  procedure: "$procedure",
+                  surgeon: "$surgeon",
+                  main_anes: "$main_anes",
+                  classification: "$classification"
+                }
+              }
+            }
+          },
+          {
+            $sort: {
+              _id: 1
+            }
+          }
+        ]).exec(cb);
+      },
+      on_duty_anes: cb => {
+        Anesthesiologist.find({
+          on_duty: true
+        })
+          .sort({
+            last_name: 1,
+            first_name: 1
+          })
+          .exec(cb);
+      },
+      pacu_anes: cb => {
+        Anesthesiologist.find({
+          assignment: constants.PACU_ANES
+        })
+          .sort({
+            last_name: 1,
+            first_name: 1
+          })
+          .exec(cb);
+      },
+      team_captain_anes: cb => {
+        Anesthesiologist.find({
+          assignment: constants.TEAM_CAPTAIN_ANES
+        })
+          .sort({
+            last_name: 1,
+            first_name: 1
+          })
+          .exec(cb);
+      }
+    },
+    (err, result) => res.json(result)
+  );
+});
+
 router.post("/logs", (req, res) => {
   const from_date = moment(req.body.period_covered[0]);
   const to_date = moment(req.body.period_covered[1]);

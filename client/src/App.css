@@ -496,7 +496,7 @@ input[type="checkbox"] {
   position: fixed;
   bottom: 0px;
   left: 0px;
-  font-size: 8px;
+  font-size: 6px;
   font-family: "Times New Roman", Times, serif;
 }
 
@@ -504,4 +504,69 @@ input[type="checkbox"] {
   text-decoration: underline;
   overflow-wrap: break-word;
   text-align: justify;
+}
+
+.or-report {
+  font-size: 8px;
+  background-color: #fff;
+  color: #000;
+}
+
+.or-report table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.or-report table tbody td {
+  border: 1px solid #000;
+  text-align: center;
+}
+
+.or-report table .or-room {
+  background-color: #8cb4e2;
+  border: 1px solid #000;
+  font-weight: bolder;
+  text-align: left;
+}
+
+.or-report-heading td {
+  background-color: #bfbfbf;
+  border: 1px solid #000;
+  text-align: center !important;
+}
+
+.or-report .signatories-container {
+  margin-top: 8px;
+}
+
+.or-report .signatory {
+  border-top: 1px solid #000;
+  margin-top: 32px;
+  text-align: center;
+}
+
+@media screen {
+  .is-full-height {
+    background-color: #fff;
+  }
+}
+
+@media print {
+  body {
+    background-color: #fff !important;
+  }
+  .is-full-height,
+  .or-report {
+    background-color: #fff !important;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+
+  .or-report table {
+    page-break-after: always;
+  }
 }
