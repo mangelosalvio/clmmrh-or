@@ -29,6 +29,7 @@ class ORElectiveOperations extends Component {
       rvs: []
     },
     electives: [],
+    waiting_electives: [],
     on_duty_anes: [],
     pacu_anes: [],
     team_captain_anes: []
@@ -153,15 +154,35 @@ class ORElectiveOperations extends Component {
                     <td>{item.ward}</td>
                     <td>{item.name}</td>
                     <td>{item.age}</td>
-                    <td>{item.sex.charAt(0)}</td>
+                    <td>{item.sex && item.sex.charAt(0)}</td>
                     <td>{item.diagnosis}</td>
-                    <td>{item.procedure}</td>
+                    <td contentEditable="true">{item.procedure}</td>
                     <td>{item.surgeon && item.surgeon.last_name}</td>
                     <td>{item.main_anes && item.main_anes.last_name}</td>
                     <td>{item.classification}</td>
                   </tr>
                 ))
               ])}
+              <tr>
+                <td colSpan="10" className="or-room has-text-centered">
+                  Elective Cases to follow, cut off for Charity cases at 6 PM
+                  (must end on or before):
+                </td>
+              </tr>
+              {this.state.waiting_electives.map(item => (
+                <tr>
+                  <td>{item.hospital_number}</td>
+                  <td>{item.ward}</td>
+                  <td>{item.name}</td>
+                  <td>{item.age}</td>
+                  <td>{item.sex && item.sex.charAt(0)}</td>
+                  <td>{item.diagnosis}</td>
+                  <td>{item.procedure}</td>
+                  <td>{item.surgeon && item.surgeon.last_name}</td>
+                  <td>{item.main_anes && item.main_anes.last_name}</td>
+                  <td>{item.classification}</td>
+                </tr>
+              ))}
             </tbody>
             <tfoot>
               <td colSpan="10">
@@ -178,13 +199,17 @@ class ORElectiveOperations extends Component {
                   <Row gutter={48}>
                     <Col offset={1} span={8}>
                       <div className="signatory">
-                        <div>Krejmer R. Magalona, RN </div>
+                        <div contentEditable="true">
+                          Krejmer R. Magalona, RN{" "}
+                        </div>
                         <div>OR/PACU Supervisor</div>
                       </div>
                     </Col>
                     <Col offset={6} span={8}>
                       <div className="signatory">
-                        <div>Jose Dominador J. Nalumen, MD</div>
+                        <div contentEditable="true">
+                          Jose Dominador J. Nalumen, MD
+                        </div>
                         <div>Manager, OR Complex</div>
                       </div>
                     </Col>

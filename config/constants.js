@@ -28,5 +28,18 @@ module.exports = {
   RECEIVING_NURSE: "RECEIVING NURSE",
   HOLDING_ROOM_NURSE: "HOLDING ROOM",
   TEAM_CAPTAIN_ANES: "TEAM CAPTAIN",
-  PACU_ANES: "PACU"
+  PACU_ANES: "PACU",
+  OPERATING_ROOMS: {
+    "1": "Heritage OR 1",
+    "2": "Heritage OR 2",
+    "3": "Heritage OR 3",
+    "4": "Heritage OR 4",
+    "5": "Heritage OR 5",
+    "6": "Heritage OR 6",
+    "7": "Heritage OR 7",
+    WT1: "West OR 1",
+    WT2: "West OR 2",
+    EC: "Eye Center",
+    OB: "OB"
+  }
 };

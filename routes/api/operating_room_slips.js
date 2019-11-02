@@ -3,9 +3,8 @@ const router = express.Router();
 const { Sequelize } = require("sequelize");
 const sqldatabase = require("./../../config/sqldatabase");
 
-const Person = require("./../../models/sql/Person");
-
 const OperatingRoomSlip = require("./../../models/OperatingRoomSlip");
+const ORSchedule = require("./../../models/ORSchedule");
 const Anesthesiologist = require("./../../models/Anesthesiologist");
 const Nurse = require("./../../models/Nurse");
 const Counter = require("./../../models/Counter");
@@ -18,6 +17,8 @@ const moment = require("moment-timezone");
 const round = require("./../../utils/round");
 const numberFormat = require("./../../utils/numberFormat");
 const constants = require("./../../config/constants");
+const util = require("util");
+
 const numeral = require("numeral");
 const async = require("async");
 const net = require("net");
@@ -180,6 +181,10 @@ router.post("/or-elective-operations", (req, res) => {
                   .clone()
                   .endOf("day")
                   .toDate()
+              },
+              operating_room_number: {
+                $exists: true,
+                $nin: ["", null]
               }
             }
           },
@@ -214,38 +219,111 @@ router.post("/or-elective-operations", (req, res) => {
           }
         ]).exec(cb);
       },
-      on_duty_anes: cb => {
-        Anesthesiologist.find({
-          on_duty: true
-        })
-          .sort({
-            last_name: 1,
-            first_name: 1
-          })
-          .exec(cb);
+      waiting_electives: cb => {
+        OperatingRoomSlip.aggregate([
+          {
+            $match: {
+              date_time_of_surgery: {
+                $gt: now
+                  .clone()
+                  .endOf("day")
+                  .toDate()
+              },
+              $or: [
+                {
+                  operating_room_number: {
+                    $exists: false
+                  }
+                },
+                {
+                  operating_room_number: {
+                    $in: ["", null]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            $sort: {
+              name: 1
+            }
+          }
+        ]).exec(cb);
       },
-      pacu_anes: cb => {
-        Anesthesiologist.find({
-          assignment: constants.PACU_ANES
-        })
-          .sort({
-            last_name: 1,
-            first_name: 1
-          })
-          .exec(cb);
-      },
-      team_captain_anes: cb => {
-        Anesthesiologist.find({
-          assignment: constants.TEAM_CAPTAIN_ANES
-        })
-          .sort({
-            last_name: 1,
-            first_name: 1
-          })
-          .exec(cb);
+      schedule: cb => {
+        ORSchedule.findOne({
+          "period.0": {
+            $lte: now
+              .clone()
+              .add({ day: 1 })
+              .endOf("day")
+              .toDate()
+          },
+          "period.1": {
+            $gte: now
+              .clone()
+              .add({ day: 1 })
+              .startOf("day")
+              .toDate()
+          }
+        }).exec(cb);
       }
     },
-    (err, result) => res.json(result)
+    (err, result) => {
+      let arr_return = {
+        ...result
+      };
+
+      let electives = [...result.electives];
+
+      /* console.log(util.inspect(result.waiting_electives, false, null, true)); */
+
+      let room_electives = [];
+
+      Object.entries(constants.OPERATING_ROOMS).forEach(([key, value]) => {
+        let _id = value;
+        let elective_room = electives.find(o => o._id === key);
+        let items = elective_room ? [...elective_room.items] : [];
+
+        if (items.length <= 0) {
+          items = [
+            {
+              procedure: "STATS"
+            }
+          ];
+        }
+
+        room_electives = [
+          ...room_electives,
+          {
+            _id,
+            items
+          }
+        ];
+      });
+
+      let on_duty_anes = [];
+      let team_captain_anes = [];
+      let pacu_anes = [];
+      const schedule = result.schedule;
+
+      if (schedule) {
+        on_duty_anes = schedule.on_duty;
+        pacu_anes = schedule.pacu;
+        team_captain_anes = schedule.team_captains;
+      }
+
+      arr_return["on_duty_anes"] = on_duty_anes;
+      arr_return["team_captain_anes"] = team_captain_anes;
+      arr_return["pacu_anes"] = pacu_anes;
+      arr_return["electives"] = room_electives;
+
+      /**
+       * ORDER ROOMS
+       */
+
+      return res.json(arr_return);
+    }
   );
 });
 
@@ -460,6 +538,7 @@ router.post("/display-monitor", (req, res) => {
           })
           .exec(cb);
       },
+
       on_duty_anes: cb => {
         Anesthesiologist.find({
           on_duty: true
@@ -490,6 +569,23 @@ router.post("/display-monitor", (req, res) => {
           })
           .exec(cb);
       }
+
+      /* schedule: cb => {
+        ORSchedule.findOne({
+          "period.0": {
+            $lte: now
+              .clone()
+              .endOf("day")
+              .toDate()
+          },
+          "period.1": {
+            $gte: now
+              .clone()
+              .startOf("day")
+              .toDate()
+          }
+        }).exec(cb);
+      } */
     },
     (err, result) => {
       let arr_return = {};
@@ -515,6 +611,21 @@ router.post("/display-monitor", (req, res) => {
         arr_return["in_holding_room"] = in_holding_room;
         arr_return["elective_list"] = elective_list;
         arr_return["emergency_list"] = emergency_list;
+
+        /* let on_duty_anes = [];
+        let team_captain_anes = [];
+        let pacu_anes = [];
+        const schedule = result.schedule;
+
+        if (schedule) {
+          on_duty_anes = schedule.on_duty;
+          pacu_anes = schedule.pacu;
+          team_captain_anes = schedule.team_captains;
+        }
+
+        arr_return["on_duty_anes"] = on_duty_anes;
+        arr_return["team_captain_anes"] = team_captain_anes;
+        arr_return["pacu_anes"] = pacu_anes; */
 
         return res.json(arr_return);
       }
@@ -548,6 +659,9 @@ router.post("/:id", (req, res) => {
 
       const body = {
         ...filtered_body,
+        operating_room_number: filtered_body.operating_room_number
+          ? filtered_body.operating_room_number
+          : null,
         logs
       };
 

@@ -109,6 +109,15 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
             </Link>
           </Menu.Item>
         </SubMenu>
+        <Menu.Item key="/or-schedules">
+          <Link to="/or-schedules">
+            <span>
+              <Icon type="appstore" />
+              OR Schedule
+            </span>
+          </Link>
+        </Menu.Item>
+
         <Menu.Item key="/main-display">
           <Link to="/main-display">
             <span>
@@ -155,7 +164,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
       </Menu>
     </Sider>
     <Layout style={{ marginLeft: 200 }} className="is-full-height">
-      <Content style={{ overflow: "initial" }} className="is-full-height">
+      <Content style={{ overflow: "auto" }} className="is-full-height">
         <Route
           {...rest}
           render={props =>

@@ -18,6 +18,7 @@ import ORLogs from "../components/clmmrh/ORLogs";
 import RelativeValueScaleForm from "../components/clmmrh/RelativeValueScaleForm";
 import SurgicalMemorandumReport from "../components/clmmrh/SurgicalMemorandumReport";
 import ORElectiveOperations from "../components/clmmrh/ORElectiveOperations";
+import ORScheduleForm from "../components/clmmrh/ORScheduleForm";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -43,9 +44,16 @@ const AppRouter = () => (
           component={RelativeValueScaleForm}
           exact={true}
         />
+
         <PrivateRoute
           path="/anesthesiologists"
           component={AnesForm}
+          exact={true}
+        />
+
+        <PrivateRoute
+          path="/or-schedules"
+          component={ORScheduleForm}
           exact={true}
         />
 

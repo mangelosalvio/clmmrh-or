@@ -24,7 +24,7 @@ const form_data = {
   errors: {}
 };
 
-class NurseForm extends Component {
+class RVSForm extends Component {
   state = {
     title: "RVS Form",
     url: "/api/relative-value-scales/",
@@ -282,4 +282,4 @@ const mapToState = state => {
   };
 };
 
-export default connect(mapToState)(NurseForm);
+export default connect(mapToState)(RVSForm);
