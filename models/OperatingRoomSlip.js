@@ -33,6 +33,7 @@ const OperatingRoomSlipSchema = new Schema({
   main_anes: Object,
   laterality: String,
   operating_room_number: String,
+  bed_number: String,
 
   /**
    * POST OPERATION

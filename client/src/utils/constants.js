@@ -9,3 +9,5 @@ export const ELECTIVE_SURGERY = "Elective Surgery";
 export const EMERGENCY_PROCEDURE = "Emergency Procedure";
 export const OPERATION_STATUS_ON_SCHEDULE = "ON SCHEDULE";
 export const SOCKET_ENDPOINT = "http://:5007";
+export const IN_HOLDING_ROOM = "IN HOLDING ROOM";
+export const ON_RECOVERY = "ON RECOVERY";

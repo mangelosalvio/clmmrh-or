@@ -35,7 +35,8 @@ import {
   laterality_options,
   operating_room_number_options,
   operation_status_options,
-  weight_unit_options
+  weight_unit_options,
+  bed_number_options
 } from "../../utils/Options";
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
@@ -44,7 +45,11 @@ import DateTimePickerFieldGroup from "../../commons/DateTimePickerFieldGroup";
 import CheckboxFieldGroup from "../../commons/CheckboxFieldGroup";
 import TextAreaAutocompleteGroup from "../../commons/TextAreaAutocompleteGroup";
 import { debounce } from "lodash";
-import { OPERATION_STATUS_ON_SCHEDULE } from "./../../utils/constants";
+import {
+  OPERATION_STATUS_ON_SCHEDULE,
+  IN_HOLDING_ROOM,
+  ON_RECOVERY
+} from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 
 const { Content } = Layout;
@@ -85,6 +90,7 @@ const form_data = {
   main_anes: "",
   laterality: "",
   operating_room_number: "",
+  bed_number: "",
 
   assistant_surgeon: "",
   instrument_nurse: "",
@@ -152,7 +158,7 @@ class OperatingRoomSlipForm extends Component {
   constructor(props) {
     super(props);
     this.onRvsSearch = debounce(this.onRvsSearch, 300);
-    this.onSearchPatient = debounce(this.onSearchPatient, 300);
+    this.onSearchPatient = debounce(this.onSearchPatient, 500);
   }
 
   onChange = e => {
@@ -200,7 +206,9 @@ class OperatingRoomSlipForm extends Component {
           } = data;
 
           message.success("Transaction Saved");
-          loading();
+          this.searchRecords();
+
+          /* loading();
           this.setState({
             ...form_data,
             ...data,
@@ -253,7 +261,7 @@ class OperatingRoomSlipForm extends Component {
               ? moment(surgical_safety_checklist)
               : null,
             errors: {}
-          });
+          }); */
         })
         .catch(err => {
           loading();
@@ -289,9 +297,10 @@ class OperatingRoomSlipForm extends Component {
             surgical_safety_checklist
           } = data;
 
-          loading(0);
+          loading();
           message.success("Transaction Updated");
-          this.setState({
+          this.searchRecords();
+          /* this.setState({
             ...form_data,
             ...data,
             date_of_birth: date_of_birth ? moment(date_of_birth) : null,
@@ -342,7 +351,7 @@ class OperatingRoomSlipForm extends Component {
               ? moment(surgical_safety_checklist)
               : null,
             errors: {}
-          });
+          }); */
         })
         .catch(err => {
           loading();
@@ -354,7 +363,10 @@ class OperatingRoomSlipForm extends Component {
 
   onSearch = (value, e) => {
     e.preventDefault();
+    this.searchRecords();
+  };
 
+  searchRecords = () => {
     const loading = message.loading("Loading...");
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
@@ -680,7 +692,7 @@ class OperatingRoomSlipForm extends Component {
   };
 
   onSelectPatient = name => {
-    const patient = this.state.options.patients.find(o => o.name === name);
+    const patient = this.state.options.patients.find(o => o.fullname === name);
 
     if (patient) {
       console.log(patient);
@@ -694,7 +706,7 @@ class OperatingRoomSlipForm extends Component {
       const ward = patient.rmno;
 
       let now = moment();
-      const dob = moment(patient.birth_date);
+      const dob = moment(patient.birthdate);
       let years = now.diff(dob, "years");
       dob.add(years, "years");
 
@@ -702,8 +714,8 @@ class OperatingRoomSlipForm extends Component {
       dob.add(months, "months");
 
       let days = now.diff(dob, "days");
-      let age = `${years}Y${months}M${days}D`;
-
+      //let age = `${years}Y${months}M${days}D`;
+      let age = patient.age.trim();
       this.setState({
         hospital_number,
         diagnosis,
@@ -713,7 +725,8 @@ class OperatingRoomSlipForm extends Component {
         sex,
         ward,
         weight_unit,
-        age
+        age,
+        date_of_birth: moment(patient.birthdate)
       });
     }
   };
@@ -1325,6 +1338,18 @@ class OperatingRoomSlipForm extends Component {
                     error={errors.operating_room_number}
                     options={operating_room_number_options}
                   />
+
+                  {this.state.operation_status === ON_RECOVERY && (
+                    <SimpleSelectFieldGroup
+                      label="Bed No."
+                      name="bed_number"
+                      value={this.state.bed_number}
+                      onChange={value => this.setState({ bed_number: value })}
+                      formItemLayout={formItemLayout}
+                      error={errors.bed_number}
+                      options={bed_number_options}
+                    />
+                  )}
 
                   <Form.Item className="m-t-1" {...tailFormItemLayout}>
                     <div className="field is-grouped">

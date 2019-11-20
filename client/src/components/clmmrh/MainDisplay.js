@@ -293,7 +293,7 @@ class MainDisplay extends Component {
                     <div>
                       <div className="is-flex">
                         <div className="has-text-weight-bold or-room-number-display">
-                          {record.operating_room_number}
+                          {record.bed_number}
                         </div>
                         <div className="is-flex-1">
                           {record.service} {record.case_order}{" "}

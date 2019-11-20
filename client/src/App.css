@@ -552,6 +552,9 @@ input[type="checkbox"] {
 }
 
 @media print {
+  html {
+    background-color: #fff !important;
+  }
   body {
     background-color: #fff !important;
   }

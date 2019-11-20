@@ -18,6 +18,8 @@ const round = require("./../../utils/round");
 const numberFormat = require("./../../utils/numberFormat");
 const constants = require("./../../config/constants");
 const util = require("util");
+const capitalize = require("lodash").capitalize;
+const toUpper = require("lodash").toUpper;
 
 const numeral = require("numeral");
 const async = require("async");
@@ -126,7 +128,7 @@ router.post("/patients", (req, res) => {
                 FROM datacenter dc INNER JOIN admission ad ON dc.dcno = ad.dcno
                 INNER JOIN patient pat ON dc.dcno = pat.dcno 
                 INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
-                WHERE (dc.fullname LIKE '%$data%' OR fname LIKE '%$data%')
+                WHERE (dc.fullname LIKE '${search_text}%' OR fname LIKE '${search_text}%')
       AND (addm.address is not null and addm.address <> '(N/A)')
                 ORDER BY ad.regdate DESC
                 UNION
@@ -139,7 +141,7 @@ router.post("/patients", (req, res) => {
                 FROM datacenter dc INNER JOIN outpatient opd ON dc.dcno = opd.dcno
                 INNER JOIN patient pat ON dc.dcno = pat.dcno
                 INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
-                WHERE (dc.fullname LIKE '%${search_text}%' OR fname LIKE '%${search_text}%')
+                WHERE (dc.fullname LIKE '${search_text}%' OR fname LIKE '${search_text}%')
       AND (addm.address is not null and addm.address <> '(N/A)')
                 ORDER BY opd.regdate DESC
                 ) united ORDER BY convert(date,united.regisdate) DESC) gani) gd
@@ -154,7 +156,9 @@ router.post("/patients", (req, res) => {
 
       updated_records = updated_records.map(record => {
         const { fname, mname, lname } = record;
-        const fullname = `${lname}, ${fname} ${mname.charAt(0)}`;
+        const fullname = `${toUpper(lname.trim())}, ${capitalize(
+          fname.trim()
+        )} ${toUpper(mname.charAt(0))}`;
 
         return {
           ...record,
@@ -190,7 +194,7 @@ router.post("/or-elective-operations", (req, res) => {
           },
           {
             $sort: {
-              name: 1
+              case_order: 1
             }
           },
           {
@@ -207,7 +211,8 @@ router.post("/or-elective-operations", (req, res) => {
                   procedure: "$procedure",
                   surgeon: "$surgeon",
                   main_anes: "$main_anes",
-                  classification: "$classification"
+                  classification: "$classification",
+                  case_order: "$case_order"
                 }
               }
             }
@@ -245,7 +250,7 @@ router.post("/or-elective-operations", (req, res) => {
           },
           {
             $sort: {
-              name: 1
+              case_order: 1
             }
           }
         ]).exec(cb);
@@ -414,6 +419,7 @@ router.post("/display-monitor", (req, res) => {
           {
             $sort: {
               date_time_of_surgery: -1,
+              service: 1,
               case_order: 1
             }
           },
@@ -474,8 +480,8 @@ router.post("/display-monitor", (req, res) => {
           {
             $match: {
               operation_status: constants.ON_SCHEDULE,
-              case: constants.EMERGENCY_PROCEDURE,
-              date_time_of_surgery: {
+              case: constants.EMERGENCY_PROCEDURE
+              /* date_time_of_surgery: {
                 $lte: now
                   .clone()
                   .endOf("day")
@@ -484,7 +490,7 @@ router.post("/display-monitor", (req, res) => {
                   .clone()
                   .startOf("day")
                   .toDate()
-              }
+              } */
             }
           },
           {

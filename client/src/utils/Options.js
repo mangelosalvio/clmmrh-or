@@ -71,6 +71,19 @@ export const operation_status_options = [
   "ON RECOVERY"
 ];
 
+export const bed_number_options = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "I1",
+  "I2",
+  "I3",
+  "I4",
+  "I5"
+];
+
 export const laterality_options = [
   "Left",
   "Right",
