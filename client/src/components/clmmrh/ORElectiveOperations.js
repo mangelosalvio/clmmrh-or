@@ -197,7 +197,7 @@ class ORElectiveOperations extends Component {
                     </Col>
                   </Row>
                   <Row gutter={48}>
-                    <Col offset={1} span={3}>
+                    <Col offset={1} span={4}>
                       <div className="signatory">
                         <div contentEditable="true">
                           Krejmer R. Magalona, RN{" "}
@@ -205,7 +205,7 @@ class ORElectiveOperations extends Component {
                         <div>OR/PACU Supervisor</div>
                       </div>
                     </Col>
-                    <Col offset={11} span={3}>
+                    <Col offset={10} span={4}>
                       <div className="signatory">
                         <div contentEditable="true">
                           Jose Dominador J. Nalumen, MD
@@ -349,7 +349,7 @@ class ORElectiveOperations extends Component {
                     </Col>
                   </Row>
                   <Row gutter={48}>
-                    <Col offset={1} span={3}>
+                    <Col offset={1} span={4}>
                       <div className="signatory">
                         <div contentEditable="true">
                           Krejmer R. Magalona, RN{" "}
@@ -357,7 +357,7 @@ class ORElectiveOperations extends Component {
                         <div>OR/PACU Supervisor</div>
                       </div>
                     </Col>
-                    <Col offset={11} span={3}>
+                    <Col offset={10} span={4}>
                       <div className="signatory">
                         <div contentEditable="true">
                           Jose Dominador J. Nalumen, MD

@@ -81,7 +81,13 @@ export const bed_number_options = [
   "I2",
   "I3",
   "I4",
-  "I5"
+  "I5",
+  "WT 1",
+  "WT 2",
+  "WT 3",
+  "OB 1",
+  "OB 2",
+  "OB 3"
 ];
 
 export const laterality_options = [
