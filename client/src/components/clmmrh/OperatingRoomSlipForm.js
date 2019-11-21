@@ -19,9 +19,15 @@ import {
   Row,
   Col,
   Input,
-  Select
+  Select,
+  Modal
 } from "antd";
-import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
+import {
+  formItemLayout,
+  tailFormItemLayout,
+  smallFormItemLayout,
+  smallTailFormItemLayout
+} from "./../../utils/Layouts";
 import DatePickerFieldGroup from "../../commons/DatePickerFieldGroup";
 import TextAreaGroup from "../../commons/TextAreaGroup";
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
@@ -55,6 +61,7 @@ import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
 const { Option } = Select;
+const { confirm } = Modal;
 
 const collection_name = "slips";
 
@@ -152,13 +159,19 @@ class OperatingRoomSlipForm extends Component {
       nurses: [],
       rvs: [],
       patients: []
-    }
+    },
+    current_page: 1,
+    selected_row_keys: []
   };
 
   constructor(props) {
     super(props);
     this.onRvsSearch = debounce(this.onRvsSearch, 300);
     this.onSearchPatient = debounce(this.onSearchPatient, 500);
+  }
+
+  componentDidMount() {
+    this.searchRecords();
   }
 
   onChange = e => {
@@ -491,10 +504,11 @@ class OperatingRoomSlipForm extends Component {
       .delete(this.state.url + this.state._id)
       .then(response => {
         message.success("Transaction Deleted");
-        this.setState({
+        this.searchRecords();
+        /* this.setState({
           ...form_data,
           message: "Transaction Deleted"
-        });
+        });*/
       })
       .catch(err => {
         message.error(err.response.data.message);
@@ -731,7 +745,55 @@ class OperatingRoomSlipForm extends Component {
     }
   };
 
+  onChangePage = current_page => {
+    this.setState({
+      current_page
+    });
+  };
+
+  onDeleteSelection = () => {
+    confirm({
+      title: "Do you Want to delete these items?",
+      content: "Would you like to proceed?",
+      onOk: () => {
+        const form_data = {
+          items: this.state.selected_row_keys,
+          search_keyword: this.state.search_keyword
+        };
+
+        const loading = message.loading("Processing...");
+        axios
+          .delete(`/api/operating-room-slips/selection`, {
+            data: form_data
+          })
+          .then(response => {
+            loading();
+            message.success("Items Deleted");
+            this.searchRecords();
+            this.setState({
+              selected_row_keys: []
+            });
+          })
+          .catch(err => {
+            loading();
+            message.error("There was an error processing your request.");
+          });
+      },
+      onCancel: () => {
+        console.log("Cancel");
+      },
+      okText: "Delete",
+      okType: "danger"
+    });
+  };
+
   render() {
+    const rowSelection = {
+      onChange: (selected_row_keys, selected_rows) => {
+        this.setState({ selected_row_keys });
+      }
+    };
+
     const rvs_column = [
       {
         title: "RVS Code",
@@ -850,259 +912,278 @@ class OperatingRoomSlipForm extends Component {
           <span className="is-size-5">{this.state.title}</span> <hr />
           <MessageBoxInfo message={this.state.message} onHide={this.onHide} />
           {isEmpty(this.state[collection_name]) ? (
-            <Form onSubmit={this.onSubmit} className="tab-content">
+            <Form onSubmit={this.onSubmit} className="tab-content or-slip-form">
               <Tabs>
                 <TabPane tab="Operating Complex Receiving" key="1">
                   <Divider orientation="left">Patient Information</Divider>
 
-                  <TextFieldAutocompleteGroup
-                    label="Name"
-                    value={this.state.name}
-                    dataSource={patients}
-                    onSelect={this.onSelectPatient}
-                    onChange={value => this.setState({ name: value })}
-                    onSearch={this.onSearchPatient}
-                    placeholder="Patient Name"
-                    formItemLayout={formItemLayout}
-                  />
+                  <Row className>
+                    <Col span={12}>
+                      <TextFieldAutocompleteGroup
+                        label="Name"
+                        value={this.state.name}
+                        dataSource={patients}
+                        onSelect={this.onSelectPatient}
+                        onChange={value => this.setState({ name: value })}
+                        onSearch={this.onSearchPatient}
+                        formItemLayout={smallFormItemLayout}
+                      />
 
-                  <DatePickerFieldGroup
-                    label="Date of Birth"
-                    name="date_of_birth"
-                    value={this.state.date_of_birth}
-                    onChange={this.onChangeDateOfBirth}
-                    error={errors.date_of_birth}
-                    formItemLayout={formItemLayout}
-                  />
+                      <DatePickerFieldGroup
+                        label="Date of Birth"
+                        name="date_of_birth"
+                        value={this.state.date_of_birth}
+                        onChange={this.onChangeDateOfBirth}
+                        error={errors.date_of_birth}
+                        formItemLayout={smallFormItemLayout}
+                      />
 
-                  <TextFieldGroup
-                    label="Age"
-                    name="age"
-                    value={this.state.age}
-                    error={errors.age}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <RadioGroupFieldGroup
-                    label="Sex"
-                    name="sex"
-                    value={this.state.sex}
-                    onChange={this.onChange}
-                    error={errors.sex}
-                    formItemLayout={formItemLayout}
-                    options={gender_options}
-                  />
-
-                  <Row className="ant-form-item" gutter={4}>
-                    <Col span={4} className="ant-form-item-label">
-                      <label>Weight</label>
-                    </Col>
-                    <Col span={16} className="ant-form-item-control-wrapper">
-                      <Input
-                        name="weight"
-                        value={this.state.weight}
+                      <TextFieldGroup
+                        label="Age"
+                        name="age"
+                        value={this.state.age}
+                        error={errors.age}
+                        formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
                       />
+
+                      <RadioGroupFieldGroup
+                        label="Sex"
+                        name="sex"
+                        value={this.state.sex}
+                        onChange={this.onChange}
+                        error={errors.sex}
+                        formItemLayout={smallFormItemLayout}
+                        options={gender_options}
+                      />
+
+                      <Row className="ant-form-item" gutter={4}>
+                        <Col span={8} className="ant-form-item-label">
+                          <label>Weight</label>
+                        </Col>
+                        <Col
+                          span={12}
+                          className="ant-form-item-control-wrapper"
+                        >
+                          <Input
+                            name="weight"
+                            value={this.state.weight}
+                            onChange={this.onChange}
+                          />
+                        </Col>
+                        <Col span={4}>
+                          <Select
+                            value={this.state.weight_unit}
+                            name="weight_unit"
+                            onChange={value =>
+                              this.setState({ weight_unit: value })
+                            }
+                          >
+                            {weight_unit_options.map((d, index) => (
+                              <Option key={d} value={d}>
+                                {d}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Col>
+                      </Row>
                     </Col>
-                    <Col span={4}>
-                      <Select
-                        value={this.state.weight_unit}
-                        name="weight_unit"
+                    <Col span={12}>
+                      <TextAreaGroup
+                        label="Address"
+                        name="address"
+                        value={this.state.address}
+                        error={errors.address}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+
+                      <DatePickerFieldGroup
+                        label="Registration Date"
+                        name="registration_date"
+                        value={this.state.registration_date}
                         onChange={value =>
-                          this.setState({ weight_unit: value })
+                          this.setState({ registration_date: value })
                         }
-                      >
-                        {weight_unit_options.map((d, index) => (
-                          <Option key={d} value={d}>
-                            {d}
-                          </Option>
-                        ))}
-                      </Select>
+                        error={errors.registration_date}
+                        formItemLayout={smallFormItemLayout}
+                      />
+
+                      <TextFieldGroup
+                        label="Hospital #"
+                        name="hospital_number"
+                        value={this.state.hospital_number}
+                        error={errors.hospital_number}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+
+                      <TextFieldGroup
+                        label="Ward"
+                        name="ward"
+                        value={this.state.ward}
+                        error={errors.ward}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+
+                      <SimpleSelectFieldGroup
+                        label="Service"
+                        name="service"
+                        value={this.state.service}
+                        onChange={value => this.setState({ service: value })}
+                        formItemLayout={smallFormItemLayout}
+                        error={errors.service}
+                        options={service_options}
+                      />
                     </Col>
                   </Row>
 
-                  <TextAreaGroup
-                    label="Address"
-                    name="address"
-                    value={this.state.address}
-                    error={errors.address}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <DatePickerFieldGroup
-                    label="Registration Date"
-                    name="registration_date"
-                    value={this.state.registration_date}
-                    onChange={value =>
-                      this.setState({ registration_date: value })
-                    }
-                    error={errors.registration_date}
-                    formItemLayout={formItemLayout}
-                  />
-
-                  <TextFieldGroup
-                    label="Hospital #"
-                    name="hospital_number"
-                    value={this.state.hospital_number}
-                    error={errors.hospital_number}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <TextFieldGroup
-                    label="Ward"
-                    name="ward"
-                    value={this.state.ward}
-                    error={errors.ward}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <SimpleSelectFieldGroup
-                    label="Service"
-                    name="service"
-                    value={this.state.service}
-                    onChange={value => this.setState({ service: value })}
-                    formItemLayout={formItemLayout}
-                    error={errors.service}
-                    options={service_options}
-                  />
-
                   <Divider orientation="left">Surgical Procedures</Divider>
 
-                  <TextAreaGroup
-                    label="Diagnosis"
-                    name="diagnosis"
-                    value={this.state.diagnosis}
-                    error={errors.diagnosis}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                  <Row>
+                    <Col span={12}>
+                      <TextAreaGroup
+                        label="Diagnosis"
+                        name="diagnosis"
+                        value={this.state.diagnosis}
+                        error={errors.diagnosis}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Procedure"
-                    name="procedure"
-                    value={this.state.procedure}
-                    error={errors.procedure}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Procedure"
+                        name="procedure"
+                        value={this.state.procedure}
+                        error={errors.procedure}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <RadioGroupFieldGroup
-                    label="Case"
-                    name="case"
-                    value={this.state.case}
-                    onChange={this.onChange}
-                    error={errors.case}
-                    formItemLayout={formItemLayout}
-                    options={case_options}
-                  />
+                      <RadioGroupFieldGroup
+                        label="Case"
+                        name="case"
+                        value={this.state.case}
+                        onChange={this.onChange}
+                        error={errors.case}
+                        formItemLayout={smallFormItemLayout}
+                        options={case_options}
+                      />
 
-                  <RadioGroupFieldGroup
-                    label="Classification"
-                    name="classification"
-                    value={this.state.classification}
-                    onChange={this.onChange}
-                    error={errors.classification}
-                    formItemLayout={formItemLayout}
-                    options={classification_options}
-                  />
+                      <RadioGroupFieldGroup
+                        label="Classification"
+                        name="classification"
+                        value={this.state.classification}
+                        onChange={this.onChange}
+                        error={errors.classification}
+                        formItemLayout={smallFormItemLayout}
+                        options={classification_options}
+                      />
 
-                  <SelectFieldGroup
-                    label="Surgeon"
-                    name="surgeon"
-                    value={this.state.surgeon && this.state.surgeon.full_name}
-                    onChange={index => this.onSurgeonChange(index, "surgeon")}
-                    onSearch={this.onSurgeonSearch}
-                    error={errors.surgeon}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.surgeons}
-                    column="full_name"
-                  />
+                      <SelectFieldGroup
+                        label="Surgeon"
+                        name="surgeon"
+                        value={
+                          this.state.surgeon && this.state.surgeon.full_name
+                        }
+                        onChange={index =>
+                          this.onSurgeonChange(index, "surgeon")
+                        }
+                        onSearch={this.onSurgeonSearch}
+                        error={errors.surgeon}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.surgeons}
+                        column="full_name"
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Date/Time Ordered"
-                    name="date_time_ordered"
-                    value={this.state.date_time_ordered}
-                    onChange={value =>
-                      this.setState({ date_time_ordered: value })
-                    }
-                    error={errors.date_time_ordered}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Date/Time Ordered"
+                        name="date_time_ordered"
+                        value={this.state.date_time_ordered}
+                        onChange={value =>
+                          this.setState({ date_time_ordered: value })
+                        }
+                        error={errors.date_time_ordered}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <DateTimePickerFieldGroup
+                        label="Date/Time Received"
+                        name="date_time_received"
+                        value={this.state.date_time_received}
+                        onChange={value =>
+                          this.setState({ date_time_received: value })
+                        }
+                        error={errors.date_time_received}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Date/Time Received"
-                    name="date_time_received"
-                    value={this.state.date_time_received}
-                    onChange={value =>
-                      this.setState({ date_time_received: value })
-                    }
-                    error={errors.date_time_received}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <CheckboxFieldGroup
+                        label="Surgery is Date only"
+                        name="surgery_is_date"
+                        checked={this.state.surgery_is_date}
+                        onChange={this.onChange}
+                        error={errors.surgery_is_date}
+                        formItemLayout={smallFormItemLayout}
+                      />
 
-                  <CheckboxFieldGroup
-                    label="Surgery is Date only"
-                    name="surgery_is_date"
-                    checked={this.state.surgery_is_date}
-                    onChange={this.onChange}
-                    error={errors.surgery_is_date}
-                    formItemLayout={formItemLayout}
-                  />
+                      {this.state.surgery_is_date ? (
+                        <DatePickerFieldGroup
+                          label="Date/Time of Surgery"
+                          name="date_time_of_surgery"
+                          value={this.state.date_time_of_surgery}
+                          onChange={value =>
+                            this.setState({ date_time_of_surgery: value })
+                          }
+                          error={errors.date_time_of_surgery}
+                          formItemLayout={smallFormItemLayout}
+                        />
+                      ) : (
+                        <DateTimePickerFieldGroup
+                          label="Date/Time of Surgery"
+                          name="date_time_of_surgery"
+                          value={this.state.date_time_of_surgery}
+                          onChange={value =>
+                            this.setState({ date_time_of_surgery: value })
+                          }
+                          error={errors.date_time_of_surgery}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+                      )}
 
-                  {this.state.surgery_is_date ? (
-                    <DatePickerFieldGroup
-                      label="Date/Time of Surgery"
-                      name="date_time_of_surgery"
-                      value={this.state.date_time_of_surgery}
-                      onChange={value =>
-                        this.setState({ date_time_of_surgery: value })
-                      }
-                      error={errors.date_time_of_surgery}
-                      formItemLayout={formItemLayout}
-                    />
-                  ) : (
-                    <DateTimePickerFieldGroup
-                      label="Date/Time of Surgery"
-                      name="date_time_of_surgery"
-                      value={this.state.date_time_of_surgery}
-                      onChange={value =>
-                        this.setState({ date_time_of_surgery: value })
-                      }
-                      error={errors.date_time_of_surgery}
-                      formItemLayout={formItemLayout}
-                      showTime={true}
-                    />
-                  )}
+                      <SimpleSelectFieldGroup
+                        label="Case Order"
+                        name="case_order"
+                        value={this.state.case_order}
+                        onChange={value => this.setState({ case_order: value })}
+                        formItemLayout={smallFormItemLayout}
+                        error={errors.case_order}
+                        options={case_order_options}
+                      />
 
-                  <SimpleSelectFieldGroup
-                    label="Case Order"
-                    name="case_order"
-                    value={this.state.case_order}
-                    onChange={value => this.setState({ case_order: value })}
-                    formItemLayout={formItemLayout}
-                    error={errors.case_order}
-                    options={case_order_options}
-                  />
-
-                  <SelectFieldGroup
-                    label="Received By"
-                    name="received_by"
-                    value={
-                      this.state.received_by && this.state.received_by.full_name
-                    }
-                    onChange={index => this.onNurseChange(index, "received_by")}
-                    onSearch={this.onNurseSearch}
-                    error={errors.received_by}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.nurses}
-                    column="full_name"
-                  />
+                      <SelectFieldGroup
+                        label="Received By"
+                        name="received_by"
+                        value={
+                          this.state.received_by &&
+                          this.state.received_by.full_name
+                        }
+                        onChange={index =>
+                          this.onNurseChange(index, "received_by")
+                        }
+                        onSearch={this.onNurseSearch}
+                        error={errors.received_by}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.nurses}
+                        column="full_name"
+                      />
+                    </Col>
+                  </Row>
 
                   <Form.Item className="m-t-1" {...tailFormItemLayout}>
                     <div className="field is-grouped">
@@ -1127,229 +1208,249 @@ class OperatingRoomSlipForm extends Component {
                 </TabPane>
                 <TabPane tab="Pre Operation" key="2">
                   <Divider orientation="left">Patient Information</Divider>
-                  <TextFieldGroup
-                    label="Name"
-                    name="name"
-                    value={this.state.name}
-                    error={errors.name}
-                    formItemLayout={formItemLayout}
-                    disabled
-                  />
+                  <Row>
+                    <Col span={12}>
+                      <TextFieldGroup
+                        label="Name"
+                        name="name"
+                        value={this.state.name}
+                        error={errors.name}
+                        formItemLayout={smallFormItemLayout}
+                        disabled
+                      />
 
-                  <DatePickerFieldGroup
-                    label="Date of Birth"
-                    name="date_of_birth"
-                    value={this.state.date_of_birth}
-                    onChange={value => this.setState({ date_of_birth: value })}
-                    error={errors.date_of_birth}
-                    formItemLayout={formItemLayout}
-                    disabled
-                  />
+                      <DatePickerFieldGroup
+                        label="Date of Birth"
+                        name="date_of_birth"
+                        value={this.state.date_of_birth}
+                        onChange={value =>
+                          this.setState({ date_of_birth: value })
+                        }
+                        error={errors.date_of_birth}
+                        formItemLayout={smallFormItemLayout}
+                        disabled
+                      />
 
-                  <TextFieldGroup
-                    label="Age"
-                    name="age"
-                    value={this.state.age}
-                    error={errors.age}
-                    formItemLayout={formItemLayout}
-                    disabled
-                  />
+                      <TextFieldGroup
+                        label="Age"
+                        name="age"
+                        value={this.state.age}
+                        error={errors.age}
+                        formItemLayout={smallFormItemLayout}
+                        disabled
+                      />
 
-                  <RadioGroupFieldGroup
-                    label="Sex"
-                    name="sex"
-                    value={this.state.sex}
-                    onChange={this.onChange}
-                    error={errors.sex}
-                    formItemLayout={formItemLayout}
-                    options={gender_options}
-                    disabled
-                  />
+                      <RadioGroupFieldGroup
+                        label="Sex"
+                        name="sex"
+                        value={this.state.sex}
+                        onChange={this.onChange}
+                        error={errors.sex}
+                        formItemLayout={smallFormItemLayout}
+                        options={gender_options}
+                        disabled
+                      />
 
-                  <Row className="ant-form-item" gutter={4}>
-                    <Col span={4} className="ant-form-item-label">
-                      <label>Weight</label>
+                      <Row className="ant-form-item" gutter={4}>
+                        <Col span={8} className="ant-form-item-label">
+                          <label>Weight</label>
+                        </Col>
+                        <Col
+                          span={12}
+                          className="ant-form-item-control-wrapper"
+                        >
+                          <Input
+                            name="weight"
+                            value={this.state.weight}
+                            onChange={this.onChange}
+                            disabled
+                          />
+                        </Col>
+                        <Col span={4}>
+                          <Select
+                            value={this.state.weight_unit}
+                            name="weight_unit"
+                            onChange={value =>
+                              this.setState({ weight_unit: value })
+                            }
+                            disabled
+                          >
+                            {weight_unit_options.map((d, index) => (
+                              <Option key={d} value={d}>
+                                {d}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Col>
+                      </Row>
                     </Col>
-                    <Col span={16} className="ant-form-item-control-wrapper">
-                      <Input
-                        name="weight"
-                        value={this.state.weight}
+                    <Col span={12}>
+                      <TextAreaGroup
+                        label="Address"
+                        name="address"
+                        value={this.state.address}
+                        error={errors.address}
+                        formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
                         disabled
                       />
-                    </Col>
-                    <Col span={4}>
-                      <Select
-                        value={this.state.weight_unit}
-                        name="weight_unit"
+
+                      <DatePickerFieldGroup
+                        label="Registration Date"
+                        name="registration_date"
+                        value={this.state.registration_date}
                         onChange={value =>
-                          this.setState({ weight_unit: value })
+                          this.setState({ registration_date: value })
                         }
+                        error={errors.registration_date}
+                        formItemLayout={smallFormItemLayout}
                         disabled
-                      >
-                        {weight_unit_options.map((d, index) => (
-                          <Option key={d} value={d}>
-                            {d}
-                          </Option>
-                        ))}
-                      </Select>
+                      />
+
+                      <TextFieldGroup
+                        label="Hospital #"
+                        name="hospital_number"
+                        value={this.state.hospital_number}
+                        error={errors.hospital_number}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        disabled
+                      />
+
+                      <TextFieldGroup
+                        label="Ward"
+                        name="ward"
+                        value={this.state.ward}
+                        error={errors.ward}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        disabled
+                      />
+
+                      <SimpleSelectFieldGroup
+                        label="Service"
+                        name="service"
+                        value={this.state.service}
+                        onChange={value => this.setState({ service: value })}
+                        formItemLayout={smallFormItemLayout}
+                        error={errors.service}
+                        options={service_options}
+                        disabled
+                      />
                     </Col>
                   </Row>
 
-                  <TextAreaGroup
-                    label="Address"
-                    name="address"
-                    value={this.state.address}
-                    error={errors.address}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
-
-                  <DatePickerFieldGroup
-                    label="Registration Date"
-                    name="registration_date"
-                    value={this.state.registration_date}
-                    onChange={value =>
-                      this.setState({ registration_date: value })
-                    }
-                    error={errors.registration_date}
-                    formItemLayout={formItemLayout}
-                    disabled
-                  />
-
-                  <TextFieldGroup
-                    label="Hospital #"
-                    name="hospital_number"
-                    value={this.state.hospital_number}
-                    error={errors.hospital_number}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
-
-                  <TextFieldGroup
-                    label="Ward"
-                    name="ward"
-                    value={this.state.ward}
-                    error={errors.ward}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
-
-                  <SimpleSelectFieldGroup
-                    label="Service"
-                    name="service"
-                    value={this.state.service}
-                    onChange={value => this.setState({ service: value })}
-                    formItemLayout={formItemLayout}
-                    error={errors.service}
-                    options={service_options}
-                    disabled
-                  />
-
                   <Divider orientation="left">Surgical Procedures</Divider>
+                  <Row>
+                    <Col span={12}>
+                      <TextAreaGroup
+                        label="Diagnosis"
+                        name="diagnosis"
+                        value={this.state.diagnosis}
+                        error={errors.diagnosis}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Diagnosis"
-                    name="diagnosis"
-                    value={this.state.diagnosis}
-                    error={errors.diagnosis}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Procedure"
+                        name="procedure"
+                        value={this.state.procedure}
+                        error={errors.procedure}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Procedure"
-                    name="procedure"
-                    value={this.state.procedure}
-                    error={errors.procedure}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <SelectFieldGroup
+                        label="Surgeon"
+                        name="surgeon"
+                        value={
+                          this.state.surgeon && this.state.surgeon.full_name
+                        }
+                        onChange={index =>
+                          this.onSurgeonChange(index, "surgeon")
+                        }
+                        onSearch={this.onSurgeonSearch}
+                        error={errors.surgeon}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.surgeons}
+                        column="full_name"
+                      />
 
-                  <SelectFieldGroup
-                    label="Surgeon"
-                    name="surgeon"
-                    value={this.state.surgeon && this.state.surgeon.full_name}
-                    onChange={index => this.onSurgeonChange(index, "surgeon")}
-                    onSearch={this.onSurgeonSearch}
-                    error={errors.surgeon}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.surgeons}
-                    column="full_name"
-                  />
+                      <SelectFieldGroup
+                        label="Main Anes"
+                        name="main_anes"
+                        value={
+                          this.state.main_anes && this.state.main_anes.full_name
+                        }
+                        onChange={this.onAnesChange}
+                        onSearch={this.onAnesSearch}
+                        error={errors.main_anes}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.anesthesiologists}
+                        column="full_name"
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <RadioGroupFieldGroup
+                        label="Operation Type"
+                        name="operation_type"
+                        value={this.state.operation_type}
+                        onChange={this.onChange}
+                        error={errors.operation_type}
+                        formItemLayout={smallFormItemLayout}
+                        options={operation_type_options}
+                      />
 
-                  <SelectFieldGroup
-                    label="Main Anes"
-                    name="main_anes"
-                    value={
-                      this.state.main_anes && this.state.main_anes.full_name
-                    }
-                    onChange={this.onAnesChange}
-                    onSearch={this.onAnesSearch}
-                    error={errors.main_anes}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.anesthesiologists}
-                    column="full_name"
-                  />
+                      <RadioGroupFieldGroup
+                        label="Laterality"
+                        name="laterality"
+                        value={this.state.laterality}
+                        onChange={this.onChange}
+                        error={errors.laterality}
+                        formItemLayout={smallFormItemLayout}
+                        options={laterality_options}
+                      />
 
-                  <RadioGroupFieldGroup
-                    label="Operation Type"
-                    name="operation_type"
-                    value={this.state.operation_type}
-                    onChange={this.onChange}
-                    error={errors.operation_type}
-                    formItemLayout={formItemLayout}
-                    options={operation_type_options}
-                  />
+                      <SimpleSelectFieldGroup
+                        label="Status"
+                        name="operation_status"
+                        value={this.state.operation_status}
+                        onChange={value =>
+                          this.setState({ operation_status: value })
+                        }
+                        formItemLayout={smallFormItemLayout}
+                        error={errors.operation_status}
+                        options={operation_status_options}
+                      />
 
-                  <RadioGroupFieldGroup
-                    label="Laterality"
-                    name="laterality"
-                    value={this.state.laterality}
-                    onChange={this.onChange}
-                    error={errors.laterality}
-                    formItemLayout={formItemLayout}
-                    options={laterality_options}
-                  />
+                      <SimpleSelectFieldGroup
+                        label="OR Number"
+                        name="operating_room_number"
+                        value={this.state.operating_room_number}
+                        onChange={value =>
+                          this.setState({ operating_room_number: value })
+                        }
+                        formItemLayout={smallFormItemLayout}
+                        error={errors.operating_room_number}
+                        options={operating_room_number_options}
+                      />
 
-                  <SimpleSelectFieldGroup
-                    label="Status"
-                    name="operation_status"
-                    value={this.state.operation_status}
-                    onChange={value =>
-                      this.setState({ operation_status: value })
-                    }
-                    formItemLayout={formItemLayout}
-                    error={errors.operation_status}
-                    options={operation_status_options}
-                  />
-
-                  <SimpleSelectFieldGroup
-                    label="OR Number"
-                    name="operating_room_number"
-                    value={this.state.operating_room_number}
-                    onChange={value =>
-                      this.setState({ operating_room_number: value })
-                    }
-                    formItemLayout={formItemLayout}
-                    error={errors.operating_room_number}
-                    options={operating_room_number_options}
-                  />
-
-                  {this.state.operation_status === ON_RECOVERY && (
-                    <SimpleSelectFieldGroup
-                      label="Bed No."
-                      name="bed_number"
-                      value={this.state.bed_number}
-                      onChange={value => this.setState({ bed_number: value })}
-                      formItemLayout={formItemLayout}
-                      error={errors.bed_number}
-                      options={bed_number_options}
-                    />
-                  )}
+                      {this.state.operation_status === ON_RECOVERY && (
+                        <SimpleSelectFieldGroup
+                          label="Bed No."
+                          name="bed_number"
+                          value={this.state.bed_number}
+                          onChange={value =>
+                            this.setState({ bed_number: value })
+                          }
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.bed_number}
+                          options={bed_number_options}
+                        />
+                      )}
+                    </Col>
+                  </Row>
 
                   <Form.Item className="m-t-1" {...tailFormItemLayout}>
                     <div className="field is-grouped">
@@ -1374,462 +1475,491 @@ class OperatingRoomSlipForm extends Component {
                 </TabPane>
                 <TabPane tab="Post Operation" key="3">
                   <Divider orientation="left">Patient Information</Divider>
-                  <TextFieldGroup
-                    label="Name"
-                    name="name"
-                    value={this.state.name}
-                    error={errors.name}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
-
-                  <DatePickerFieldGroup
-                    label="Date of Birth"
-                    name="date_of_birth"
-                    value={this.state.date_of_birth}
-                    onChange={value => this.setState({ date_of_birth: value })}
-                    error={errors.date_of_birth}
-                    formItemLayout={formItemLayout}
-                    disabled
-                  />
-
-                  <TextFieldGroup
-                    label="Age"
-                    name="age"
-                    value={this.state.age}
-                    error={errors.age}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
-
-                  <RadioGroupFieldGroup
-                    label="Sex"
-                    name="sex"
-                    value={this.state.sex}
-                    onChange={this.onChange}
-                    error={errors.sex}
-                    formItemLayout={formItemLayout}
-                    options={gender_options}
-                    disabled
-                  />
-
-                  <Row className="ant-form-item" gutter={4}>
-                    <Col span={4} className="ant-form-item-label">
-                      <label>Weight</label>
-                    </Col>
-                    <Col span={16} className="ant-form-item-control-wrapper">
-                      <Input
-                        name="weight"
-                        value={this.state.weight}
+                  <Row>
+                    <Col span={12}>
+                      <TextFieldGroup
+                        label="Name"
+                        name="name"
+                        value={this.state.name}
+                        error={errors.name}
+                        formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
                         disabled
                       />
-                    </Col>
-                    <Col span={4}>
-                      <Select
-                        value={this.state.weight_unit}
-                        name="weight_unit"
+
+                      <DatePickerFieldGroup
+                        label="Date of Birth"
+                        name="date_of_birth"
+                        value={this.state.date_of_birth}
                         onChange={value =>
-                          this.setState({ weight_unit: value })
+                          this.setState({ date_of_birth: value })
                         }
+                        error={errors.date_of_birth}
+                        formItemLayout={smallFormItemLayout}
                         disabled
-                      >
-                        {weight_unit_options.map((d, index) => (
-                          <Option key={d} value={d}>
-                            {d}
-                          </Option>
-                        ))}
-                      </Select>
+                      />
+
+                      <TextFieldGroup
+                        label="Age"
+                        name="age"
+                        value={this.state.age}
+                        error={errors.age}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        disabled
+                      />
+
+                      <RadioGroupFieldGroup
+                        label="Sex"
+                        name="sex"
+                        value={this.state.sex}
+                        onChange={this.onChange}
+                        error={errors.sex}
+                        formItemLayout={smallFormItemLayout}
+                        options={gender_options}
+                        disabled
+                      />
+
+                      <Row className="ant-form-item" gutter={4}>
+                        <Col span={8} className="ant-form-item-label">
+                          <label>Weight</label>
+                        </Col>
+                        <Col
+                          span={12}
+                          className="ant-form-item-control-wrapper"
+                        >
+                          <Input
+                            name="weight"
+                            value={this.state.weight}
+                            onChange={this.onChange}
+                            disabled
+                          />
+                        </Col>
+                        <Col span={4}>
+                          <Select
+                            value={this.state.weight_unit}
+                            name="weight_unit"
+                            onChange={value =>
+                              this.setState({ weight_unit: value })
+                            }
+                            disabled
+                          >
+                            {weight_unit_options.map((d, index) => (
+                              <Option key={d} value={d}>
+                                {d}
+                              </Option>
+                            ))}
+                          </Select>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col span={12}>
+                      <TextAreaGroup
+                        label="Address"
+                        name="address"
+                        value={this.state.address}
+                        error={errors.address}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        disabled
+                      />
+
+                      <DatePickerFieldGroup
+                        label="Registration Date"
+                        name="registration_date"
+                        value={this.state.registration_date}
+                        onChange={value =>
+                          this.setState({ registration_date: value })
+                        }
+                        error={errors.registration_date}
+                        formItemLayout={smallFormItemLayout}
+                        disabled
+                      />
+
+                      <TextFieldGroup
+                        label="Hospital #"
+                        name="hospital_number"
+                        value={this.state.hospital_number}
+                        error={errors.hospital_number}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        disabled
+                      />
+
+                      <TextFieldGroup
+                        label="ASA"
+                        name="asa"
+                        value={this.state.asa}
+                        error={errors.asa}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+
+                      <TextFieldGroup
+                        label="Ward"
+                        name="ward"
+                        value={this.state.ward}
+                        error={errors.ward}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        disabled
+                      />
+
+                      <SimpleSelectFieldGroup
+                        label="Service"
+                        name="service"
+                        value={this.state.service}
+                        onChange={value => this.setState({ service: value })}
+                        formItemLayout={smallFormItemLayout}
+                        error={errors.service}
+                        options={service_options}
+                        disabled
+                      />
                     </Col>
                   </Row>
 
-                  <TextAreaGroup
-                    label="Address"
-                    name="address"
-                    value={this.state.address}
-                    error={errors.address}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
-
-                  <DatePickerFieldGroup
-                    label="Registration Date"
-                    name="registration_date"
-                    value={this.state.registration_date}
-                    onChange={value =>
-                      this.setState({ registration_date: value })
-                    }
-                    error={errors.registration_date}
-                    formItemLayout={formItemLayout}
-                    disabled
-                  />
-
-                  <TextFieldGroup
-                    label="Hospital #"
-                    name="hospital_number"
-                    value={this.state.hospital_number}
-                    error={errors.hospital_number}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
-
-                  <TextFieldGroup
-                    label="ASA"
-                    name="asa"
-                    value={this.state.asa}
-                    error={errors.asa}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <TextFieldGroup
-                    label="Ward"
-                    name="ward"
-                    value={this.state.ward}
-                    error={errors.ward}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    disabled
-                  />
-
-                  <SimpleSelectFieldGroup
-                    label="Service"
-                    name="service"
-                    value={this.state.service}
-                    onChange={value => this.setState({ service: value })}
-                    formItemLayout={formItemLayout}
-                    error={errors.service}
-                    options={service_options}
-                    disabled
-                  />
-
                   <Divider orientation="left">Surgical Procedures</Divider>
 
-                  <SelectFieldGroup
-                    label="Main Surgeon"
-                    name="surgeon"
-                    value={this.state.surgeon && this.state.surgeon.full_name}
-                    onChange={index => this.onSurgeonChange(index, "surgeon")}
-                    onSearch={this.onSurgeonSearch}
-                    error={errors.surgeon}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.surgeons}
-                    column="full_name"
-                  />
+                  <Row>
+                    <Col span={12}>
+                      <SelectFieldGroup
+                        label="Main Surgeon"
+                        name="surgeon"
+                        value={
+                          this.state.surgeon && this.state.surgeon.full_name
+                        }
+                        onChange={index =>
+                          this.onSurgeonChange(index, "surgeon")
+                        }
+                        onSearch={this.onSurgeonSearch}
+                        error={errors.surgeon}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.surgeons}
+                        column="full_name"
+                      />
 
-                  <SelectFieldGroup
-                    label="Asst. Surgeon"
-                    name="assistant_surgeon"
-                    value={
-                      this.state.assistant_surgeon &&
-                      this.state.assistant_surgeon.full_name
-                    }
-                    onChange={index =>
-                      this.onSurgeonChange(index, "assistant_surgeon")
-                    }
-                    onSearch={this.onSurgeonSearch}
-                    error={errors.assistant_surgeon}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.surgeons}
-                    column="full_name"
-                  />
+                      <SelectFieldGroup
+                        label="Asst. Surgeon"
+                        name="assistant_surgeon"
+                        value={
+                          this.state.assistant_surgeon &&
+                          this.state.assistant_surgeon.full_name
+                        }
+                        onChange={index =>
+                          this.onSurgeonChange(index, "assistant_surgeon")
+                        }
+                        onSearch={this.onSurgeonSearch}
+                        error={errors.assistant_surgeon}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.surgeons}
+                        column="full_name"
+                      />
 
-                  <SelectFieldGroup
-                    label="Inst. Nurse"
-                    name="instrument_nurse"
-                    value={
-                      this.state.instrument_nurse &&
-                      this.state.instrument_nurse.full_name
-                    }
-                    onChange={index =>
-                      this.onNurseChange(index, "instrument_nurse")
-                    }
-                    onSearch={this.onNurseSearch}
-                    error={errors.instrument_nurse}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.nurses}
-                    column="full_name"
-                  />
+                      <SelectFieldGroup
+                        label="Inst. Nurse"
+                        name="instrument_nurse"
+                        value={
+                          this.state.instrument_nurse &&
+                          this.state.instrument_nurse.full_name
+                        }
+                        onChange={index =>
+                          this.onNurseChange(index, "instrument_nurse")
+                        }
+                        onSearch={this.onNurseSearch}
+                        error={errors.instrument_nurse}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.nurses}
+                        column="full_name"
+                      />
 
-                  <SelectFieldGroup
-                    label="Sponge Nurse"
-                    name="sponge_nurse"
-                    value={
-                      this.state.sponge_nurse &&
-                      this.state.sponge_nurse.full_name
-                    }
-                    onChange={index =>
-                      this.onNurseChange(index, "sponge_nurse")
-                    }
-                    onSearch={this.onNurseSearch}
-                    error={errors.sponge_nurse}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.nurses}
-                    column="full_name"
-                  />
+                      <SelectFieldGroup
+                        label="Sponge Nurse"
+                        name="sponge_nurse"
+                        value={
+                          this.state.sponge_nurse &&
+                          this.state.sponge_nurse.full_name
+                        }
+                        onChange={index =>
+                          this.onNurseChange(index, "sponge_nurse")
+                        }
+                        onSearch={this.onNurseSearch}
+                        error={errors.sponge_nurse}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.nurses}
+                        column="full_name"
+                      />
 
-                  <SelectFieldGroup
-                    label="Main Anes"
-                    name="main_anes"
-                    value={
-                      this.state.main_anes && this.state.main_anes.full_name
-                    }
-                    onChange={this.onAnesChange}
-                    onSearch={this.onAnesSearch}
-                    error={errors.main_anes}
-                    formItemLayout={formItemLayout}
-                    data={this.state.options.anesthesiologists}
-                    column="full_name"
-                  />
+                      <SelectFieldGroup
+                        label="Main Anes"
+                        name="main_anes"
+                        value={
+                          this.state.main_anes && this.state.main_anes.full_name
+                        }
+                        onChange={this.onAnesChange}
+                        onSearch={this.onAnesSearch}
+                        error={errors.main_anes}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.anesthesiologists}
+                        column="full_name"
+                      />
 
-                  <TextFieldGroup
-                    label="Method"
-                    name="anes_method"
-                    value={this.state.anes_method}
-                    error={errors.anes_method}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextFieldGroup
+                        label="Method"
+                        name="anes_method"
+                        value={this.state.anes_method}
+                        error={errors.anes_method}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextFieldGroup
-                    label="Anesthetic Used"
-                    name="anes_used"
-                    value={this.state.anes_used}
-                    error={errors.anes_used}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextFieldGroup
+                        label="Anesthetic Used"
+                        name="anes_used"
+                        value={this.state.anes_used}
+                        error={errors.anes_used}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <TextFieldGroup
+                        type="number"
+                        label="Quantity"
+                        name="anes_quantity"
+                        value={this.state.anes_quantity}
+                        error={errors.anes_quantity}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextFieldGroup
-                    type="number"
-                    label="Quantity"
-                    name="anes_quantity"
-                    value={this.state.anes_quantity}
-                    error={errors.anes_quantity}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextFieldGroup
+                        label="Route"
+                        name="anes_route"
+                        value={this.state.anes_route}
+                        error={errors.anes_route}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextFieldGroup
-                    label="Route"
-                    name="anes_route"
-                    value={this.state.anes_route}
-                    error={errors.anes_route}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Anesthesia Started"
+                        name="anes_start"
+                        value={this.state.anes_start}
+                        onChange={value => this.setState({ anes_start: value })}
+                        error={errors.anes_start}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Anesthesia Started"
-                    name="anes_start"
-                    value={this.state.anes_start}
-                    onChange={value => this.setState({ anes_start: value })}
-                    error={errors.anes_start}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Operation Started"
+                        name="operation_started"
+                        value={this.state.operation_started}
+                        onChange={value =>
+                          this.setState({ operation_started: value })
+                        }
+                        error={errors.operation_started}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Operation Started"
-                    name="operation_started"
-                    value={this.state.operation_started}
-                    onChange={value =>
-                      this.setState({ operation_started: value })
-                    }
-                    error={errors.operation_started}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Operation Finished"
+                        name="operation_finished"
+                        value={this.state.operation_finished}
+                        onChange={value =>
+                          this.setState({ operation_finished: value })
+                        }
+                        error={errors.operation_finished}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Operation Finished"
-                    name="operation_finished"
-                    value={this.state.operation_finished}
-                    onChange={value =>
-                      this.setState({ operation_finished: value })
-                    }
-                    error={errors.operation_finished}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <TextAreaGroup
+                        label="Tentative Diagnosis"
+                        name="tentative_diagnosis"
+                        value={this.state.tentative_diagnosis}
+                        error={errors.tentative_diagnosis}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Tentative Diagnosis"
-                    name="tentative_diagnosis"
-                    value={this.state.tentative_diagnosis}
-                    error={errors.tentative_diagnosis}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <TextAreaGroup
-                    label="Final Diagnosis"
-                    name="final_diagnosis"
-                    value={this.state.final_diagnosis}
-                    error={errors.final_diagnosis}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Final Diagnosis"
+                        name="final_diagnosis"
+                        value={this.state.final_diagnosis}
+                        error={errors.final_diagnosis}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+                    </Col>
+                  </Row>
 
                   <Divider orientation="left">RVS</Divider>
+                  <Row>
+                    <Col span={12}>
+                      <TextFieldGroup
+                        label="RVS Code"
+                        name="rvs_code"
+                        value={this.state.rvs_code}
+                        error={errors.rvs_code}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        onPressEnter={this.onRvsCodeLookup}
+                      />
 
-                  <TextFieldGroup
-                    label="RVS Code"
-                    name="rvs_code"
-                    value={this.state.rvs_code}
-                    error={errors.rvs_code}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                    onPressEnter={this.onRvsCodeLookup}
-                  />
+                      <TextAreaAutocompleteGroup
+                        label="RVS Desc"
+                        name="rvs_description"
+                        value={this.state.rvs_description}
+                        error={errors.rvs_description}
+                        formItemLayout={smallFormItemLayout}
+                        rows="4"
+                        onChange={value =>
+                          this.setState({ rvs_description: value })
+                        }
+                        dataSource={rvs_desc_data_source}
+                        onSelect={this.onRvsSelect}
+                        onSearch={this.onRvsSearch}
+                      />
 
-                  <TextAreaAutocompleteGroup
-                    label="RVS Desc"
-                    name="rvs_description"
-                    value={this.state.rvs_description}
-                    error={errors.rvs_description}
-                    formItemLayout={formItemLayout}
-                    rows="4"
-                    onChange={value =>
-                      this.setState({ rvs_description: value })
-                    }
-                    dataSource={rvs_desc_data_source}
-                    onSelect={this.onRvsSelect}
-                    onSearch={this.onRvsSearch}
-                  />
+                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
+                        <div className="field is-grouped">
+                          <div className="control">
+                            <Button
+                              className="button is-small"
+                              onClick={this.onAddRvs}
+                            >
+                              Add RVS
+                            </Button>
+                          </div>
+                        </div>
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Table
+                        dataSource={this.state.rvs}
+                        columns={rvs_column}
+                        rowKey={record => record._id}
+                        locale={{ emptyText: "No Records Found" }}
+                        pagination={false}
+                      />
+                    </Col>
+                  </Row>
 
-                  <Form.Item className="m-t-1" {...tailFormItemLayout}>
-                    <div className="field is-grouped">
-                      <div className="control">
-                        <Button
-                          className="button is-small"
-                          onClick={this.onAddRvs}
-                        >
-                          Add RVS
-                        </Button>
-                      </div>
-                    </div>
-                  </Form.Item>
+                  <Row>
+                    <Col span={12}>
+                      <Divider orientation="left">
+                        Treatment in the Operating Room
+                      </Divider>
 
-                  <Table
-                    dataSource={this.state.rvs}
-                    columns={rvs_column}
-                    rowKey={record => record._id}
-                    pagination={false}
-                  />
+                      <TextAreaGroup
+                        label="Before Operation"
+                        name="before_operation"
+                        value={this.state.before_operation}
+                        error={errors.before_operation}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <Divider orientation="left">
-                    Treatment in the Operating Room
-                  </Divider>
+                      <TextAreaGroup
+                        label="During Operation"
+                        name="during_operation"
+                        value={this.state.during_operation}
+                        error={errors.during_operation}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Before Operation"
-                    name="before_operation"
-                    value={this.state.before_operation}
-                    error={errors.before_operation}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="After Operation"
+                        name="after_operation"
+                        value={this.state.after_operation}
+                        error={errors.after_operation}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="During Operation"
-                    name="during_operation"
-                    value={this.state.during_operation}
-                    error={errors.during_operation}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Comp. during oper"
+                        name="complications_during_operation"
+                        value={this.state.complications_during_operation}
+                        error={errors.complications_during_operation}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="After Operation"
-                    name="after_operation"
-                    value={this.state.after_operation}
-                    error={errors.after_operation}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Comp. after oper"
+                        name="complications_after_operation"
+                        value={this.state.complications_after_operation}
+                        error={errors.complications_after_operation}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Comp. during oper"
-                    name="complications_during_operation"
-                    value={this.state.complications_during_operation}
-                    error={errors.complications_during_operation}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <Divider orientation="left">Operation Performed</Divider>
 
-                  <TextAreaGroup
-                    label="Comp. after oper"
-                    name="complications_after_operation"
-                    value={this.state.complications_after_operation}
-                    error={errors.complications_after_operation}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Operation Performed"
+                        name="operation_performed"
+                        value={this.state.operation_performed}
+                        error={errors.operation_performed}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Divider orientation="left">
+                        Immediate Post Operative Treatment
+                      </Divider>
 
-                  <Divider orientation="left">Operation Performed</Divider>
+                      <TextAreaGroup
+                        label="Position in Bed"
+                        name="position_in_bed"
+                        value={this.state.position_in_bed}
+                        error={errors.position_in_bed}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Operation Performed"
-                    name="operation_performed"
-                    value={this.state.operation_performed}
-                    error={errors.operation_performed}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Proctoclysis"
+                        name="proctoclysis"
+                        value={this.state.proctoclysis}
+                        error={errors.proctoclysis}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <Divider orientation="left">
-                    Immediate Post Operative Treatment
-                  </Divider>
+                      <TextAreaGroup
+                        label="Hypodermoclysis"
+                        name="hypodermoclysis"
+                        value={this.state.hypodermoclysis}
+                        error={errors.hypodermoclysis}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Position in Bed"
-                    name="position_in_bed"
-                    value={this.state.position_in_bed}
-                    error={errors.position_in_bed}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Nutrition"
+                        name="nutrition"
+                        value={this.state.nutrition}
+                        error={errors.nutrition}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
 
-                  <TextAreaGroup
-                    label="Proctoclysis"
-                    name="proctoclysis"
-                    value={this.state.proctoclysis}
-                    error={errors.proctoclysis}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <TextAreaGroup
-                    label="Hypodermoclysis"
-                    name="hypodermoclysis"
-                    value={this.state.hypodermoclysis}
-                    error={errors.hypodermoclysis}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <TextAreaGroup
-                    label="Nutrition"
-                    name="nutrition"
-                    value={this.state.nutrition}
-                    error={errors.nutrition}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
-
-                  <TextAreaGroup
-                    label="Stimulant and other med."
-                    name="stimulant"
-                    value={this.state.stimulant}
-                    error={errors.stimulant}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Stimulant and other med."
+                        name="stimulant"
+                        value={this.state.stimulant}
+                        error={errors.stimulant}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+                    </Col>
+                  </Row>
 
                   <Form.Item className="m-t-1" {...tailFormItemLayout}>
                     <div className="field is-grouped">
@@ -1867,157 +1997,170 @@ class OperatingRoomSlipForm extends Component {
                   </Form.Item>
                 </TabPane>
                 <TabPane tab="Time Logs" key="4">
-                  <DateTimePickerFieldGroup
-                    label="Time Ward Informed"
-                    name="time_ward_informed"
-                    value={this.state.time_ward_informed}
-                    onChange={value =>
-                      this.setState({ time_ward_informed: value })
-                    }
-                    error={errors.time_ward_informed}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                  <Row>
+                    <Col span={12}>
+                      <DateTimePickerFieldGroup
+                        label="Time Ward Informed"
+                        name="time_ward_informed"
+                        value={this.state.time_ward_informed}
+                        onChange={value =>
+                          this.setState({ time_ward_informed: value })
+                        }
+                        error={errors.time_ward_informed}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Arrival Time"
-                    name="arrival_time"
-                    value={this.state.arrival_time}
-                    onChange={value => this.setState({ arrival_time: value })}
-                    error={errors.arrival_time}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Arrival Time"
+                        name="arrival_time"
+                        value={this.state.arrival_time}
+                        onChange={value =>
+                          this.setState({ arrival_time: value })
+                        }
+                        error={errors.arrival_time}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Room is Ready"
-                    name="room_is_ready"
-                    value={this.state.room_is_ready}
-                    onChange={value => this.setState({ room_is_ready: value })}
-                    error={errors.room_is_ready}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Room is Ready"
+                        name="room_is_ready"
+                        value={this.state.room_is_ready}
+                        onChange={value =>
+                          this.setState({ room_is_ready: value })
+                        }
+                        error={errors.room_is_ready}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Equip/Inst ready"
-                    name="equip_ready"
-                    value={this.state.equip_ready}
-                    onChange={value => this.setState({ equip_ready: value })}
-                    error={errors.equip_ready}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Equip/Inst ready"
+                        name="equip_ready"
+                        value={this.state.equip_ready}
+                        onChange={value =>
+                          this.setState({ equip_ready: value })
+                        }
+                        error={errors.equip_ready}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Patient Placed in OR Table"
-                    name="patient_placed_in_or_table"
-                    value={this.state.patient_placed_in_or_table}
-                    onChange={value =>
-                      this.setState({ patient_placed_in_or_table: value })
-                    }
-                    error={errors.patient_placed_in_or_table}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Patient Placed in OR Table"
+                        name="patient_placed_in_or_table"
+                        value={this.state.patient_placed_in_or_table}
+                        onChange={value =>
+                          this.setState({ patient_placed_in_or_table: value })
+                        }
+                        error={errors.patient_placed_in_or_table}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Time Anes Arrived"
-                    name="time_anes_arrived"
-                    value={this.state.time_anes_arrived}
-                    onChange={value =>
-                      this.setState({ time_anes_arrived: value })
-                    }
-                    error={errors.time_anes_arrived}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Time Anes Arrived"
+                        name="time_anes_arrived"
+                        value={this.state.time_anes_arrived}
+                        onChange={value =>
+                          this.setState({ time_anes_arrived: value })
+                        }
+                        error={errors.time_anes_arrived}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <DateTimePickerFieldGroup
+                        label="Time Surgeon Arrived"
+                        name="time_surgeon_arrived"
+                        value={this.state.time_surgeon_arrived}
+                        onChange={value =>
+                          this.setState({ time_surgeon_arrived: value })
+                        }
+                        error={errors.time_surgeon_arrived}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Time Surgeon Arrived"
-                    name="time_surgeon_arrived"
-                    value={this.state.time_surgeon_arrived}
-                    onChange={value =>
-                      this.setState({ time_surgeon_arrived: value })
-                    }
-                    error={errors.time_surgeon_arrived}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Induction Time"
+                        name="induction_time"
+                        value={this.state.induction_time}
+                        onChange={value =>
+                          this.setState({ induction_time: value })
+                        }
+                        error={errors.induction_time}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Induction Time"
-                    name="induction_time"
-                    value={this.state.induction_time}
-                    onChange={value => this.setState({ induction_time: value })}
-                    error={errors.induction_time}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Induction Completed"
+                        name="induction_completed"
+                        value={this.state.induction_completed}
+                        onChange={value =>
+                          this.setState({ induction_completed: value })
+                        }
+                        error={errors.induction_completed}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Induction Completed"
-                    name="induction_completed"
-                    value={this.state.induction_completed}
-                    onChange={value =>
-                      this.setState({ induction_completed: value })
-                    }
-                    error={errors.induction_completed}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Time OR Started"
+                        name="time_or_started"
+                        value={this.state.time_or_started}
+                        onChange={value =>
+                          this.setState({ time_or_started: value })
+                        }
+                        error={errors.time_or_started}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Time OR Started"
-                    name="time_or_started"
-                    value={this.state.time_or_started}
-                    onChange={value =>
-                      this.setState({ time_or_started: value })
-                    }
-                    error={errors.time_or_started}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="OR Ended"
+                        name="or_ended"
+                        value={this.state.or_ended}
+                        onChange={value => this.setState({ or_ended: value })}
+                        error={errors.or_ended}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="OR Ended"
-                    name="or_ended"
-                    value={this.state.or_ended}
-                    onChange={value => this.setState({ or_ended: value })}
-                    error={errors.or_ended}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <DateTimePickerFieldGroup
+                        label="Trans out from OR"
+                        name="trans_out_from_or"
+                        value={this.state.trans_out_from_or}
+                        onChange={value =>
+                          this.setState({ trans_out_from_or: value })
+                        }
+                        error={errors.trans_out_from_or}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
 
-                  <DateTimePickerFieldGroup
-                    label="Trans out from OR"
-                    name="trans_out_from_or"
-                    value={this.state.trans_out_from_or}
-                    onChange={value =>
-                      this.setState({ trans_out_from_or: value })
-                    }
-                    error={errors.trans_out_from_or}
-                    formItemLayout={formItemLayout}
-                    showTime={true}
-                  />
+                      <CheckboxFieldGroup
+                        label="Surgical Safety Checklist"
+                        name="surgical_safety_checklist"
+                        checked={this.state.surgical_safety_checklist}
+                        onChange={this.onChange}
+                        error={errors.surgical_safety_checklist}
+                        formItemLayout={smallFormItemLayout}
+                      />
 
-                  <CheckboxFieldGroup
-                    label="Surgical Safety Checklist"
-                    name="surgical_safety_checklist"
-                    checked={this.state.surgical_safety_checklist}
-                    onChange={this.onChange}
-                    error={errors.surgical_safety_checklist}
-                    formItemLayout={formItemLayout}
-                  />
-
-                  <TextAreaGroup
-                    label="Remarks"
-                    name="remarks"
-                    value={this.state.remarks}
-                    error={errors.remarks}
-                    formItemLayout={formItemLayout}
-                    onChange={this.onChange}
-                  />
+                      <TextAreaGroup
+                        label="Remarks"
+                        name="remarks"
+                        value={this.state.remarks}
+                        error={errors.remarks}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      />
+                    </Col>
+                  </Row>
 
                   <Form.Item className="m-t-1" {...tailFormItemLayout}>
                     <div className="field is-grouped">
@@ -2043,11 +2186,32 @@ class OperatingRoomSlipForm extends Component {
               </Tabs>
             </Form>
           ) : (
-            <Table
-              dataSource={this.state[collection_name]}
-              columns={records_column}
-              rowKey={record => record._id}
-            />
+            <div>
+              <div className="m-b-1 ">
+                {this.state.selected_row_keys.length > 0 && (
+                  <Button
+                    type="danger"
+                    icon="delete"
+                    size="small"
+                    onClick={this.onDeleteSelection}
+                  >
+                    {" "}
+                    Delete
+                  </Button>
+                )}
+              </div>
+              <Table
+                dataSource={this.state[collection_name]}
+                columns={records_column}
+                rowKey={record => record._id}
+                pagination={{
+                  current: this.state.current_page,
+                  defaultCurrent: this.state.current_page,
+                  onChange: this.onChangePage
+                }}
+                rowSelection={rowSelection}
+              />
+            </div>
           )}
         </div>
       </Content>

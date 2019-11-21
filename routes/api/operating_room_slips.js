@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const { Sequelize } = require("sequelize");
 const sqldatabase = require("./../../config/sqldatabase");
@@ -10,6 +11,7 @@ const Nurse = require("./../../models/Nurse");
 const Counter = require("./../../models/Counter");
 const isEmpty = require("./../../validators/is-empty");
 const filterId = require("./../../utils/filterId");
+const asyncForeach = require("./../../utils/asyncForeach");
 const validateInput = require("./../../validators/operating_room_slips");
 const multer = require("multer");
 const fs = require("fs");
@@ -687,6 +689,17 @@ router.post("/:id", (req, res) => {
       console.log("ID not found");
     }
   });
+});
+
+router.delete("/selection", async (req, res) => {
+  const items = req.body.items;
+  await asyncForeach(items, async item => {
+    await OperatingRoomSlip.deleteOne({
+      _id: mongoose.Types.ObjectId(item)
+    }).exec();
+  });
+
+  return res.json({ success: 1 });
 });
 
 router.delete("/:id", (req, res) => {

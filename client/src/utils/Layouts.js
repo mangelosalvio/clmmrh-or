@@ -1,3 +1,18 @@
+export const smallFormItemLayout = {
+  labelCol: {
+    sm: { span: 8 }
+  },
+  wrapperCol: {
+    sm: { span: 12 }
+  }
+};
+
+export const smallTailFormItemLayout = {
+  wrapperCol: {
+    sm: { span: 20, offset: 4 }
+  }
+};
+
 export const formItemLayout = {
   labelCol: {
     sm: { span: 4 }
