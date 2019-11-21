@@ -29,6 +29,7 @@ module.exports = {
   HOLDING_ROOM_NURSE: "HOLDING ROOM",
   TEAM_CAPTAIN_ANES: "TEAM CAPTAIN",
   PACU_ANES: "PACU",
+  ON_DUTY_ANES: "24 HOURS",
   OPERATING_ROOMS: {
     "1": "Heritage OR 1",
     "2": "Heritage OR 2",

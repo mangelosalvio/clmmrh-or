@@ -6,6 +6,7 @@ import axios from "axios";
 import isEmpty from "../../validation/is-empty";
 import MessageBoxInfo from "../../commons/MessageBoxInfo";
 import Searchbar from "../../commons/Searchbar";
+import classnames from "classnames";
 import {
   Layout,
   Breadcrumb,
@@ -20,7 +21,8 @@ import {
   Col,
   Input,
   Select,
-  Modal
+  Modal,
+  PageHeader
 } from "antd";
 import {
   formItemLayout,
@@ -54,9 +56,13 @@ import { debounce } from "lodash";
 import {
   OPERATION_STATUS_ON_SCHEDULE,
   IN_HOLDING_ROOM,
-  ON_RECOVERY
+  ON_RECOVERY,
+  EMERGENCY_PROCEDURE,
+  ELECTIVE_SURGERY
 } from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
+import CheckboxGroup from "antd/lib/checkbox/Group";
+import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
@@ -161,7 +167,14 @@ class OperatingRoomSlipForm extends Component {
       patients: []
     },
     current_page: 1,
-    selected_row_keys: []
+    selected_row_keys: [],
+
+    search_period_covered: [null, null],
+    search_procedure: "",
+    search_operating_room_number: "",
+    search_main_anes: "",
+    search_surgeon: "",
+    search_classification: ""
   };
 
   constructor(props) {
@@ -787,6 +800,38 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onAdvancedSearch = () => {
+    const {
+      search_period_covered,
+      search_operating_room_number,
+      search_surgeon,
+      search_procedure,
+      search_classification,
+      search_main_anes
+    } = this.state;
+
+    const form_data = {
+      search_period_covered,
+      search_operating_room_number,
+      search_surgeon,
+      search_procedure,
+      search_classification,
+      search_main_anes
+    };
+
+    axios
+      .post("/api/operating-room-slips/advanced-search", form_data)
+      .then(response => {
+        if (response.data.length > 0) {
+          this.setState({
+            [collection_name]: response.data
+          });
+        } else {
+          message.info("No records were found");
+        }
+      });
+  };
+
   render() {
     const rowSelection = {
       onChange: (selected_row_keys, selected_rows) => {
@@ -861,9 +906,34 @@ class OperatingRoomSlipForm extends Component {
         title: "OR Room",
         dataIndex: "operating_room_number"
       },
+
       {
         title: "Classification",
         dataIndex: "classification"
+      },
+      {
+        title: "Status",
+        dataIndex: "operation_status"
+      },
+      {
+        title: "Case",
+        dataIndex: "case",
+        render: value => (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              padding: "3px",
+              textAlign: "center"
+            }}
+            className={classnames("case", {
+              "is-emergency": value === EMERGENCY_PROCEDURE,
+              elective: value === ELECTIVE_SURGERY
+            })}
+          >
+            {value}
+          </div>
+        )
       },
       {
         title: "",
@@ -907,6 +977,132 @@ class OperatingRoomSlipForm extends Component {
             />
           </div>
         </div>
+
+        <Row>
+          <Col span={24} className="m-b-1">
+            <PageHeader
+              backIcon={false}
+              style={{
+                border: "1px solid rgb(235, 237, 240)"
+              }}
+              onBack={() => null}
+              title="Advance Filter"
+              subTitle="Enter appropriate data to filter records"
+            >
+              <div className="or-slip-form">
+                <Row>
+                  <Col span={8}>
+                    <RangeDatePickerFieldGroup
+                      label="Date of Surgery"
+                      name="period_covered"
+                      value={this.state.search_period_covered}
+                      onChange={dates =>
+                        this.setState({ search_period_covered: dates })
+                      }
+                      error={errors.period_covered}
+                      formItemLayout={smallFormItemLayout}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <SimpleSelectFieldGroup
+                      label="OR Number"
+                      name="search_operating_room_number"
+                      value={this.state.search_operating_room_number}
+                      onChange={value =>
+                        this.setState({ search_operating_room_number: value })
+                      }
+                      formItemLayout={smallFormItemLayout}
+                      error={errors.operating_room_number}
+                      options={operating_room_number_options}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <SelectFieldGroup
+                      label="Surgeon"
+                      name="search_surgeon"
+                      value={
+                        this.state.search_surgeon &&
+                        this.state.search_surgeon.full_name
+                      }
+                      onChange={index =>
+                        this.setState({
+                          search_surgeon: this.state.options.surgeons[index]
+                        })
+                      }
+                      onSearch={this.onSurgeonSearch}
+                      error={errors.search_surgeon}
+                      formItemLayout={smallFormItemLayout}
+                      data={this.state.options.surgeons}
+                      column="full_name"
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={8}>
+                    <TextFieldGroup
+                      label="Procedure"
+                      name="search_procedure"
+                      value={this.state.search_procedure}
+                      error={errors.search_procedure}
+                      formItemLayout={smallFormItemLayout}
+                      onChange={this.onChange}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <RadioGroupFieldGroup
+                      label="Classification"
+                      name="search_classification"
+                      value={this.state.search_classification}
+                      onChange={this.onChange}
+                      error={errors.search_classification}
+                      formItemLayout={smallFormItemLayout}
+                      options={["All", ...classification_options]}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <SelectFieldGroup
+                      label="Main Anes"
+                      name="search_main_anes"
+                      value={
+                        this.state.search_main_anes &&
+                        this.state.search_main_anes.full_name
+                      }
+                      onChange={index =>
+                        this.setState({
+                          search_main_anes: this.state.options
+                            .anesthesiologists[index]
+                        })
+                      }
+                      onSearch={this.onAnesSearch}
+                      error={errors.search_main_anes}
+                      formItemLayout={smallFormItemLayout}
+                      data={this.state.options.anesthesiologists}
+                      column="full_name"
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={8}>
+                    <Row>
+                      <Col offset={8} span={12}>
+                        <Button
+                          type="info"
+                          size="small"
+                          icon="search"
+                          onClick={() => this.onAdvancedSearch()}
+                        >
+                          Search
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Col>
+                  <Col span={8}></Col>
+                  <Col span={8}></Col>
+                </Row>
+              </div>
+            </PageHeader>
+          </Col>
+        </Row>
 
         <div style={{ background: "#fff", padding: 24, minHeight: 280 }}>
           <span className="is-size-5">{this.state.title}</span> <hr />
@@ -2201,6 +2397,7 @@ class OperatingRoomSlipForm extends Component {
                 )}
               </div>
               <Table
+                className="or-slip-table"
                 dataSource={this.state[collection_name]}
                 columns={records_column}
                 rowKey={record => record._id}

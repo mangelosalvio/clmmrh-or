@@ -97,9 +97,9 @@ router.post("/:id/on-duty", (req, res) => {
   });
 });
 
-router.post("/:id/assignment", (req, res) => {
+router.post("/:id/assignments", (req, res) => {
   Model.findById(req.params.id).then(record => {
-    record.assignment = req.body.assignment;
+    record.assignments = req.body.assignments;
     record
       .save()
       .then(record => {

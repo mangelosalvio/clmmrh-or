@@ -111,7 +111,7 @@ export const operating_room_number_options = [
   "EC"
 ];
 
-export const assignment_options = ["NA", "TEAM CAPTAIN", "PACU"];
+export const assignment_options = ["NA", "TEAM CAPTAIN", "PACU", "24 HOURS"];
 export const year_level_options = [
   "NA",
   "1ST YEAR",

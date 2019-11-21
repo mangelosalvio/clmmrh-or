@@ -18,6 +18,8 @@ import {
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 import SimpleSelect from "../../commons/SimpleSelect";
+import CheckboxGroup from "antd/lib/checkbox/Group";
+import CheckboxGroupFieldGroup from "../../commons/CheckboxGroupFieldGroup";
 
 const { Content } = Layout;
 
@@ -45,6 +47,10 @@ class AnesForm extends Component {
     search_keyword: "",
     ...form_data
   };
+
+  componentDidMount() {
+    this.searchRecords();
+  }
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -90,7 +96,10 @@ class AnesForm extends Component {
 
   onSearch = (value, e) => {
     e.preventDefault();
+    this.searchRecords();
+  };
 
+  searchRecords = () => {
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
       .then(response =>
@@ -148,11 +157,11 @@ class AnesForm extends Component {
 
   onChangeAssignment = (value, record, index) => {
     const form_data = {
-      assignment: value
+      assignments: value
     };
     const loading = message.loading("Processing...");
     axios
-      .post(`/api/anesthesiologists/${record._id}/assignment`, form_data)
+      .post(`/api/anesthesiologists/${record._id}/assignments`, form_data)
       .then(response => {
         loading();
         const records = [...this.state[collection_name]];
@@ -198,10 +207,11 @@ class AnesForm extends Component {
       },
 
       {
-        title: "Assignment",
-        dataIndex: "assignment",
+        title: "Assignments",
+        dataIndex: "assignments",
         render: (value, record, index) => (
-          <SimpleSelect
+          <CheckboxGroup
+            size
             value={value}
             onChange={value => this.onChangeAssignment(value, record, index)}
             options={assignment_options}
@@ -212,15 +222,6 @@ class AnesForm extends Component {
       {
         title: "Year Level",
         dataIndex: "year_level"
-      },
-      {
-        title: "On Duty",
-        dataIndex: "on_duty",
-        render: (value, record, index) => (
-          <Button onClick={() => this.updateOnDuty(record, index)}>
-            {value ? "YES" : "NO"}
-          </Button>
-        )
       },
       {
         title: "",
@@ -312,11 +313,11 @@ class AnesForm extends Component {
                 onChange={this.onChange}
               />
 
-              <SimpleSelectFieldGroup
-                label="Assignment"
-                name="assignment"
-                value={this.state.assignment}
-                onChange={value => this.setState({ assignment: value })}
+              <CheckboxGroupFieldGroup
+                label="Assignments"
+                name="assignments"
+                value={this.state.assignments}
+                onChange={value => this.setState({ assignments: value })}
                 error={errors.assignment}
                 formItemLayout={formItemLayout}
                 options={assignment_options}

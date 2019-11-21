@@ -7,7 +7,7 @@ const AnesSchema = new Schema({
   first_name: String,
   sex: String,
   contact_number: String,
-  assignment: String,
+  assignments: [String],
   year_level: String,
   on_duty: {
     type: Boolean,

@@ -99,6 +99,55 @@ router.put("/", (req, res) => {
     .catch(err => console.log(err));
 });
 
+router.post("/advanced-search", (req, res) => {
+  const {
+    search_period_covered,
+    search_operating_room_number,
+    search_surgeon,
+    search_procedure,
+    search_classification,
+    search_main_anes
+  } = req.body;
+
+  const form_data = {
+    ...(search_period_covered[0] &&
+      search_period_covered[1] && {
+        date_time_of_surgery: {
+          $gte: moment(search_period_covered[0])
+            .startOf("day")
+            .toDate(),
+          $lte: moment(search_period_covered[1])
+            .endOf("day")
+            .toDate()
+        }
+      }),
+    ...(search_procedure && {
+      procedure: {
+        $regex: new RegExp(search_procedure, "i")
+      }
+    }),
+    ...(search_operating_room_number && {
+      operating_room_number: search_operating_room_number
+    }),
+    ...(!["All", ""].includes(search_classification) && {
+      classification: search_classification
+    }),
+    ...(search_surgeon && {
+      "surgeon._id": search_surgeon._id
+    }),
+    ...(search_main_anes && {
+      "main_anes._id": search_main_anes._id
+    })
+  };
+
+  OperatingRoomSlip.find(form_data)
+    .sort({
+      _id: -1,
+      name: 1
+    })
+    .then(records => res.json(records));
+});
+
 /**
  * GET PATIENT FROM BIZBOX
  */
@@ -335,15 +384,51 @@ router.post("/or-elective-operations", (req, res) => {
 });
 
 router.post("/logs", (req, res) => {
-  const from_date = moment(req.body.period_covered[0]);
-  const to_date = moment(req.body.period_covered[1]);
+  const {
+    search_period_covered,
+    search_operating_room_number,
+    search_surgeon,
+    search_procedure,
+    search_classification,
+    search_main_anes
+  } = req.body;
 
-  OperatingRoomSlip.find({
-    date_time_of_surgery: {
-      $gte: from_date.startOf("day").toDate(),
-      $lte: to_date.endOf("day").toDate()
-    }
-  }).then(records => res.json(records));
+  const form_data = {
+    ...(search_period_covered[0] &&
+      search_period_covered[1] && {
+        date_time_of_surgery: {
+          $gte: moment(search_period_covered[0])
+            .startOf("day")
+            .toDate(),
+          $lte: moment(search_period_covered[1])
+            .endOf("day")
+            .toDate()
+        }
+      }),
+    ...(search_procedure && {
+      procedure: {
+        $regex: new RegExp(search_procedure, "i")
+      }
+    }),
+    ...(search_operating_room_number && {
+      operating_room_number: search_operating_room_number
+    }),
+    ...(!["All", ""].includes(search_classification) && {
+      classification: search_classification
+    }),
+    ...(search_surgeon && {
+      "surgeon._id": search_surgeon._id
+    }),
+    ...(search_main_anes && {
+      "main_anes._id": search_main_anes._id
+    })
+  };
+
+  OperatingRoomSlip.find(form_data)
+    .sort({
+      date_time_of_surgery: 1
+    })
+    .then(records => res.json(records));
 });
 
 router.post("/display-monitor", (req, res) => {
@@ -549,7 +634,7 @@ router.post("/display-monitor", (req, res) => {
 
       on_duty_anes: cb => {
         Anesthesiologist.find({
-          on_duty: true
+          assignments: constants.ON_DUTY_ANES
         })
           .sort({
             last_name: 1,
@@ -559,7 +644,7 @@ router.post("/display-monitor", (req, res) => {
       },
       pacu_anes: cb => {
         Anesthesiologist.find({
-          assignment: constants.PACU_ANES
+          assignments: constants.PACU_ANES
         })
           .sort({
             last_name: 1,
@@ -569,7 +654,7 @@ router.post("/display-monitor", (req, res) => {
       },
       team_captain_anes: cb => {
         Anesthesiologist.find({
-          assignment: constants.TEAM_CAPTAIN_ANES
+          assignments: constants.TEAM_CAPTAIN_ANES
         })
           .sort({
             last_name: 1,

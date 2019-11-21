@@ -563,6 +563,10 @@ input[type="checkbox"] {
   margin: 0px;
 }
 
+.or-slip-form .ant-select {
+  width: 100%;
+}
+
 @media screen {
   .is-full-height {
     background-color: #fff;
@@ -590,4 +594,31 @@ input[type="checkbox"] {
   .or-report table {
     page-break-after: always;
   }
+}
+
+.case {
+  background-color: #22301e !important;
+}
+
+.elective {
+  color: #fff !important;
+  font-weight: bold;
+}
+
+.or-slip-table .ant-table-body td {
+  background-color: #22301e !important;
+  color: #fff;
+}
+.or-slip-table .ant-table-thead th {
+  background-color: #357ca5 !important;
+  color: #fff;
+  font-weight: bold;
+}
+
+.ant-checkbox-group * {
+  font-size: 11px !important;
+}
+
+.small-table * {
+  font-size: 8px !important;
 }
