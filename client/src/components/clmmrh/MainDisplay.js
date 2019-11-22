@@ -480,44 +480,44 @@ class MainDisplay extends Component {
         </div>
         <div className="is-flex-1" style={{ margin: "1rem 0rem" }}>
           <Row>
-            <Col span={6} className="display-footer-label">
+            <Col span={1} className="display-footer-label">
               Charge Nurse:
             </Col>
-            <Col span={6} className="display-footer-accent">
+            <Col span={3} className="display-footer-accent">
               {charge_nurse}
             </Col>
-            <Col span={6} className="display-footer-label">
-              24 hour duty:
-            </Col>
-            <Col span={6} className="display-footer-accent">
-              {on_duty_anes}
-            </Col>
-          </Row>
-          <Row>
-            <Col span={6} className="display-footer-label">
+
+            <Col span={1} className="display-footer-label">
               Receiving Nurse:
             </Col>
-            <Col span={6} className="display-footer-accent">
+            <Col span={3} className="display-footer-accent">
               {receiving_nurse}
             </Col>
-            <Col span={6} className="display-footer-label">
-              Team Captain:
-            </Col>
-            <Col span={6} className="display-footer-accent">
-              {team_captain_anes}
-            </Col>
-          </Row>
-          <Row>
-            <Col span={6} className="display-footer-label">
+
+            <Col span={1} className="display-footer-label">
               Holding Room:
             </Col>
-            <Col span={6} className="display-footer-accent">
+            <Col span={3} className="display-footer-accent">
               {holding_room_nurse}
             </Col>
-            <Col span={6} className="display-footer-label">
+
+            <Col span={1} className="display-footer-label">
+              24 hour duty:
+            </Col>
+            <Col span={3} className="display-footer-accent">
+              {on_duty_anes}
+            </Col>
+
+            <Col span={1} className="display-footer-label">
+              Team Captain:
+            </Col>
+            <Col span={3} className="display-footer-accent">
+              {team_captain_anes}
+            </Col>
+            <Col span={1} className="display-footer-label">
               PACU:
             </Col>
-            <Col span={6} className="display-footer-accent">
+            <Col span={3} className="display-footer-accent">
               {pacu_anes}
             </Col>
           </Row>
