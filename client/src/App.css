@@ -423,14 +423,14 @@ input[type="checkbox"] {
 
 .display-footer-label {
   text-align: right;
-  font-size: 0.5vw;
+  font-size: 0.6vw;
 }
 
 .display-footer-accent {
   font-weight: bold;
   color: yellow;
   padding-left: 1rem;
-  font-size: 0.5vw;
+  font-size: 0.6vw;
 }
 
 .or-room-number-display {

@@ -637,8 +637,7 @@ router.post("/display-monitor", (req, res) => {
           assignments: constants.ON_DUTY_ANES
         })
           .sort({
-            last_name: 1,
-            first_name: 1
+            year_level: 1
           })
           .exec(cb);
       },
@@ -647,8 +646,7 @@ router.post("/display-monitor", (req, res) => {
           assignments: constants.PACU_ANES
         })
           .sort({
-            last_name: 1,
-            first_name: 1
+            year_level: 1
           })
           .exec(cb);
       },
@@ -657,8 +655,7 @@ router.post("/display-monitor", (req, res) => {
           assignments: constants.TEAM_CAPTAIN_ANES
         })
           .sort({
-            last_name: 1,
-            first_name: 1
+            year_level: 1
           })
           .exec(cb);
       }
