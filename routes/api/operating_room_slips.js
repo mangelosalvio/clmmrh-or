@@ -22,6 +22,8 @@ const numberFormat = require("./../../utils/numberFormat");
 const constants = require("./../../config/constants");
 const util = require("util");
 const capitalize = require("lodash").capitalize;
+const startCase = require("lodash").startCase;
+const toLower = require("lodash").toLower;
 const toUpper = require("lodash").toUpper;
 
 const numeral = require("numeral");
@@ -208,9 +210,9 @@ router.post("/patients", (req, res) => {
 
       updated_records = updated_records.map(record => {
         const { fname, mname, lname } = record;
-        const fullname = `${toUpper(lname.trim())}, ${capitalize(
-          fname.trim()
-        )} ${capitalize(mname.trim())}`;
+        const fullname = `${toUpper(lname.trim())}, ${startCase(
+          toLower(fname.trim())
+        )} ${startCase(toLower(mname.trim()))}`;
 
         return {
           ...record,
