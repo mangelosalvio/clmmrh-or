@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const { Sequelize } = require("sequelize");
+const sortBy = require("lodash").sortBy;
 const sqldatabase = require("./../../config/sqldatabase");
 
 const OperatingRoomSlip = require("./../../models/OperatingRoomSlip");

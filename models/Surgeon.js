@@ -14,7 +14,8 @@ const SurgeonSchema = new Schema({
       datetime: Date,
       log: String
     }
-  ]
+  ],
+  license_number: String
 });
 
 SurgeonSchema.set("toObject", {

@@ -19,7 +19,8 @@ const AnesSchema = new Schema({
       datetime: Date,
       log: String
     }
-  ]
+  ],
+  license_number: String
 });
 
 AnesSchema.set("toObject", {

@@ -46,6 +46,10 @@ class NurseForm extends Component {
     ...form_data
   };
 
+  componentDidMount() {
+    this.searchRecords();
+  }
+
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -90,7 +94,10 @@ class NurseForm extends Component {
 
   onSearch = (value, e) => {
     e.preventDefault();
+    this.searchRecords();
+  };
 
+  searchRecords = () => {
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
       .then(response =>

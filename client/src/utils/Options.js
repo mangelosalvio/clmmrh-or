@@ -113,6 +113,7 @@ export const operating_room_number_options = [
 ];
 
 export const assignment_options = ["NA", "TEAM CAPTAIN", "PACU", "24 HOURS"];
+
 export const year_level_options = [
   "NA",
   "1ST YEAR",
@@ -120,6 +121,14 @@ export const year_level_options = [
   "3RD YEAR",
   "CONSULTANT"
 ];
+
+export const year_level_order = {
+  NA: 5,
+  "1ST YEAR": 4,
+  "2ND YEAR": 3,
+  "3RD YEAR": 2,
+  CONSULTANT: 1
+};
 
 export const nurse_assignment_options = [
   "NA",

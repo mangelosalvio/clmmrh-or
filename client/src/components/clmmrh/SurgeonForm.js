@@ -25,7 +25,7 @@ const form_data = {
   sex: "",
   contact_number: "",
   department: "",
-
+  license_number: "",
   errors: {}
 };
 
@@ -36,6 +36,10 @@ class SurgeonForm extends Component {
     search_keyword: "",
     ...form_data
   };
+
+  componentDidMount() {
+    this.searchRecords();
+  }
 
   onChange = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -81,7 +85,10 @@ class SurgeonForm extends Component {
 
   onSearch = (value, e) => {
     e.preventDefault();
+    this.searchRecords();
+  };
 
+  searchRecords = () => {
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
       .then(response =>
@@ -150,6 +157,10 @@ class SurgeonForm extends Component {
       {
         title: "Contact #",
         dataIndex: "contact_number"
+      },
+      {
+        title: "Lic. No.",
+        dataIndex: "license_number"
       },
 
       {
@@ -250,6 +261,15 @@ class SurgeonForm extends Component {
                 error={errors.department}
                 formItemLayout={formItemLayout}
                 options={service_options}
+              />
+
+              <TextFieldGroup
+                label="Licese No."
+                name="license_number"
+                value={this.state.license_number}
+                error={errors.license_number}
+                formItemLayout={formItemLayout}
+                onChange={this.onChange}
               />
 
               <Form.Item className="m-t-1" {...tailFormItemLayout}>

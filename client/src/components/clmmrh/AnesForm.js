@@ -36,6 +36,7 @@ const form_data = {
   contact_number: "",
   assignment: "",
   year_level: "",
+  license_number: "",
 
   errors: {}
 };
@@ -224,6 +225,10 @@ class AnesForm extends Component {
         dataIndex: "year_level"
       },
       {
+        title: "Lic. No.",
+        dataIndex: "license_number"
+      },
+      {
         title: "",
         key: "action",
         width: 10,
@@ -331,6 +336,15 @@ class AnesForm extends Component {
                 error={errors.year_level}
                 formItemLayout={formItemLayout}
                 options={year_level_options}
+              />
+
+              <TextFieldGroup
+                label="Licese No."
+                name="license_number"
+                value={this.state.license_number}
+                error={errors.license_number}
+                formItemLayout={formItemLayout}
+                onChange={this.onChange}
               />
 
               <Form.Item className="m-t-1" {...tailFormItemLayout}>

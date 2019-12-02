@@ -5,8 +5,10 @@ import isEmpty from "../../validation/is-empty";
 import moment from "moment";
 import { message, Row, Col } from "antd";
 import classnames from "classnames";
+import { sortBy } from "lodash";
 import { EMERGENCY_PROCEDURE, SOCKET_ENDPOINT } from "./../../utils/constants";
 import socketIoClient from "socket.io-client";
+import { year_level_order } from "../../utils/Options";
 
 const collection_name = "anesthesiologists";
 
@@ -210,15 +212,44 @@ class MainDisplay extends Component {
       .map(o => this.getScreenName(o))
       .join("/");
 
-    const on_duty_anes = this.state.on_duty_anes
-      .map(o => this.getScreenName(o))
-      .join("/");
+    /**
+     * ON DUTY ANES
+     */
 
-    const pacu_anes = this.state.pacu_anes
-      .map(o => this.getScreenName(o))
-      .join("/");
+    let on_duty_anes = sortBy(this.state.on_duty_anes, [
+      o => {
+        let order = year_level_order[o.year_level];
+        return isEmpty(order) ? 10 : order;
+      }
+    ]);
 
-    const team_captain_anes = this.state.team_captain_anes
+    on_duty_anes = on_duty_anes.map(o => this.getScreenName(o)).join("/");
+
+    /**
+     * PACU ANES
+     */
+
+    let pacu_anes = sortBy(this.state.pacu_anes, [
+      o => {
+        let order = year_level_order[o.year_level];
+        return isEmpty(order) ? 10 : order;
+      }
+    ]);
+
+    pacu_anes = pacu_anes.map(o => this.getScreenName(o)).join("/");
+
+    /**
+     * TEAM CAPTAIN ANES
+     */
+
+    let team_captain_anes = sortBy(this.state.team_captain_anes, [
+      o => {
+        let order = year_level_order[o.year_level];
+        return isEmpty(order) ? 10 : order;
+      }
+    ]);
+
+    team_captain_anes = team_captain_anes
       .map(o => this.getScreenName(o))
       .join("/");
 
@@ -495,7 +526,7 @@ class MainDisplay extends Component {
             </Col>
 
             <Col span={1} className="display-footer-label">
-              Holding Room:
+              Holding Room Nurse:
             </Col>
             <Col span={3} className="display-footer-accent">
               {holding_room_nurse}
