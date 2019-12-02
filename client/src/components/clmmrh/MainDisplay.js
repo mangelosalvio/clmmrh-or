@@ -355,7 +355,7 @@ class MainDisplay extends Component {
           </div>
           <div className="outline-full-bordered is-flex is-flex-1">
             <div className="outline-full-bordered accent is-flex">
-              <div className="display-wrapper-accent">HOLD</div>
+              <div className="display-wrapper-accent">HOLDING</div>
             </div>
             {this.state.in_holding_room.map(record => (
               <div className="outline-full-bordered is-flex-1 is-flex">
@@ -393,7 +393,7 @@ class MainDisplay extends Component {
           </div>
           <div className="outline-full-bordered is-flex is-flex-2">
             <div className="outline-full-bordered accent is-flex">
-              <div className="display-wrapper-accent">ELEC OR</div>
+              <div className="display-wrapper-accent">ELECTIVE OR</div>
             </div>
             <div
               className="outline-full-bordered is-flex"
@@ -455,7 +455,7 @@ class MainDisplay extends Component {
           </div>
           <div className="outline-full-bordered is-flex is-flex-2">
             <div className="outline-full-bordered accent is-flex">
-              <div className="display-wrapper-accent">STAT OR</div>
+              <div className="display-wrapper-accent">EMERGENCY OR</div>
             </div>
             <div
               className="outline-full-bordered is-flex"
