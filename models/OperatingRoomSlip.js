@@ -82,7 +82,8 @@ const OperatingRoomSlipSchema = new Schema({
   rvs: [
     {
       rvs_code: String,
-      rvs_description: String
+      rvs_description: String,
+      rvs_laterality: String
     }
   ],
 

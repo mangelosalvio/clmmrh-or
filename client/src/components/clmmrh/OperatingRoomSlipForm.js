@@ -22,7 +22,8 @@ import {
   Input,
   Select,
   Modal,
-  PageHeader
+  PageHeader,
+  Collapse
 } from "antd";
 import {
   formItemLayout,
@@ -68,6 +69,7 @@ const { Content } = Layout;
 const TabPane = Tabs.TabPane;
 const { Option } = Select;
 const { confirm } = Modal;
+const { Panel } = Collapse;
 
 const collection_name = "slips";
 
@@ -147,6 +149,7 @@ const form_data = {
 
   rvs_code: "",
   rvs_description: "",
+  rvs_laterality: "",
 
   rvs: [],
 
@@ -661,14 +664,16 @@ class OperatingRoomSlipForm extends Component {
       ...this.state.rvs,
       {
         rvs_code: this.state.rvs_code,
-        rvs_description: this.state.rvs_description
+        rvs_description: this.state.rvs_description,
+        rvs_laterality: this.state.rvs_laterality
       }
     ];
 
     this.setState({
       rvs,
       rvs_code: "",
-      rvs_description: ""
+      rvs_description: "",
+      rvs_laterality: ""
     });
   };
 
@@ -849,6 +854,14 @@ class OperatingRoomSlipForm extends Component {
         dataIndex: "rvs_description"
       },
       {
+        title: "RVS Description",
+        dataIndex: "rvs_description"
+      },
+      {
+        title: "Laterality",
+        dataIndex: "rvs_laterality"
+      },
+      {
         title: "",
         key: "action",
         width: 10,
@@ -980,132 +993,138 @@ class OperatingRoomSlipForm extends Component {
 
         <Row>
           <Col span={24} className="m-b-1">
-            <PageHeader
-              backIcon={false}
-              style={{
-                border: "1px solid rgb(235, 237, 240)"
-              }}
-              onBack={() => null}
-              title="Advance Filter"
-              subTitle="Enter appropriate data to filter records"
-            >
-              <div className="or-slip-form">
-                <Row>
-                  <Col span={8}>
-                    <RangeDatePickerFieldGroup
-                      label="Date of Surgery"
-                      name="period_covered"
-                      value={this.state.search_period_covered}
-                      onChange={dates =>
-                        this.setState({ search_period_covered: dates })
-                      }
-                      error={errors.period_covered}
-                      formItemLayout={smallFormItemLayout}
-                    />
-                  </Col>
-                  <Col span={8}>
-                    <SimpleSelectFieldGroup
-                      label="OR Number"
-                      name="search_operating_room_number"
-                      value={this.state.search_operating_room_number}
-                      onChange={value =>
-                        this.setState({ search_operating_room_number: value })
-                      }
-                      formItemLayout={smallFormItemLayout}
-                      error={errors.operating_room_number}
-                      options={operating_room_number_options}
-                    />
-                  </Col>
-                  <Col span={8}>
-                    <SelectFieldGroup
-                      label="Surgeon"
-                      name="search_surgeon"
-                      value={
-                        this.state.search_surgeon &&
-                        this.state.search_surgeon.full_name
-                      }
-                      onChange={index =>
-                        this.setState({
-                          search_surgeon: this.state.options.surgeons[index]
-                        })
-                      }
-                      onSearch={this.onSurgeonSearch}
-                      error={errors.search_surgeon}
-                      formItemLayout={smallFormItemLayout}
-                      data={this.state.options.surgeons}
-                      column="full_name"
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col span={8}>
-                    <TextFieldGroup
-                      label="Procedure"
-                      name="search_procedure"
-                      value={this.state.search_procedure}
-                      error={errors.search_procedure}
-                      formItemLayout={smallFormItemLayout}
-                      onChange={this.onChange}
-                    />
-                  </Col>
-                  <Col span={8}>
-                    <RadioGroupFieldGroup
-                      label="Classification"
-                      name="search_classification"
-                      value={this.state.search_classification}
-                      onChange={this.onChange}
-                      error={errors.search_classification}
-                      formItemLayout={smallFormItemLayout}
-                      options={["All", ...classification_options]}
-                    />
-                  </Col>
-                  <Col span={8}>
-                    <SelectFieldGroup
-                      label="Main Anes"
-                      name="search_main_anes"
-                      value={
-                        this.state.search_main_anes &&
-                        this.state.search_main_anes.full_name
-                      }
-                      onChange={index =>
-                        this.setState({
-                          search_main_anes: this.state.options
-                            .anesthesiologists[index]
-                        })
-                      }
-                      onSearch={this.onAnesSearch}
-                      error={errors.search_main_anes}
-                      formItemLayout={smallFormItemLayout}
-                      data={this.state.options.anesthesiologists}
-                      column="full_name"
-                    />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col span={8}>
+            <Collapse>
+              <Panel header="Advance Search">
+                <PageHeader
+                  backIcon={false}
+                  style={{
+                    border: "1px solid rgb(235, 237, 240)"
+                  }}
+                  onBack={() => null}
+                  title="Advance Filter"
+                  subTitle="Enter appropriate data to filter records"
+                >
+                  <div className="or-slip-form">
                     <Row>
-                      <Col offset={8} span={12}>
-                        <Button
-                          type="info"
-                          size="small"
-                          icon="search"
-                          onClick={() => this.onAdvancedSearch()}
-                        >
-                          Search
-                        </Button>
+                      <Col span={8}>
+                        <RangeDatePickerFieldGroup
+                          label="Date of Surgery"
+                          name="period_covered"
+                          value={this.state.search_period_covered}
+                          onChange={dates =>
+                            this.setState({ search_period_covered: dates })
+                          }
+                          error={errors.period_covered}
+                          formItemLayout={smallFormItemLayout}
+                        />
+                      </Col>
+                      <Col span={8}>
+                        <SimpleSelectFieldGroup
+                          label="OR Number"
+                          name="search_operating_room_number"
+                          value={this.state.search_operating_room_number}
+                          onChange={value =>
+                            this.setState({
+                              search_operating_room_number: value
+                            })
+                          }
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.operating_room_number}
+                          options={operating_room_number_options}
+                        />
+                      </Col>
+                      <Col span={8}>
+                        <SelectFieldGroup
+                          label="Surgeon"
+                          name="search_surgeon"
+                          value={
+                            this.state.search_surgeon &&
+                            this.state.search_surgeon.full_name
+                          }
+                          onChange={index =>
+                            this.setState({
+                              search_surgeon: this.state.options.surgeons[index]
+                            })
+                          }
+                          onSearch={this.onSurgeonSearch}
+                          error={errors.search_surgeon}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.surgeons}
+                          column="full_name"
+                        />
                       </Col>
                     </Row>
-                  </Col>
-                  <Col span={8}></Col>
-                  <Col span={8}></Col>
-                </Row>
-              </div>
-            </PageHeader>
+                    <Row>
+                      <Col span={8}>
+                        <TextFieldGroup
+                          label="Procedure"
+                          name="search_procedure"
+                          value={this.state.search_procedure}
+                          error={errors.search_procedure}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
+                      </Col>
+                      <Col span={8}>
+                        <RadioGroupFieldGroup
+                          label="Classification"
+                          name="search_classification"
+                          value={this.state.search_classification}
+                          onChange={this.onChange}
+                          error={errors.search_classification}
+                          formItemLayout={smallFormItemLayout}
+                          options={["All", ...classification_options]}
+                        />
+                      </Col>
+                      <Col span={8}>
+                        <SelectFieldGroup
+                          label="Main Anes"
+                          name="search_main_anes"
+                          value={
+                            this.state.search_main_anes &&
+                            this.state.search_main_anes.full_name
+                          }
+                          onChange={index =>
+                            this.setState({
+                              search_main_anes: this.state.options
+                                .anesthesiologists[index]
+                            })
+                          }
+                          onSearch={this.onAnesSearch}
+                          error={errors.search_main_anes}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.anesthesiologists}
+                          column="full_name"
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={8}>
+                        <Row>
+                          <Col offset={8} span={12}>
+                            <Button
+                              type="info"
+                              size="small"
+                              icon="search"
+                              onClick={() => this.onAdvancedSearch()}
+                            >
+                              Search
+                            </Button>
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Col span={8}></Col>
+                      <Col span={8}></Col>
+                    </Row>
+                  </div>
+                </PageHeader>
+              </Panel>
+            </Collapse>
           </Col>
         </Row>
 
         <div style={{ background: "#fff", padding: 24, minHeight: 280 }}>
-          <span className="is-size-5">{this.state.title}</span> <hr />
+          <span className="is-size-6">{this.state.title}</span> <hr />
           <MessageBoxInfo message={this.state.message} onHide={this.onHide} />
           {isEmpty(this.state[collection_name]) ? (
             <Form onSubmit={this.onSubmit} className="tab-content or-slip-form">
@@ -1246,6 +1265,7 @@ class OperatingRoomSlipForm extends Component {
                         error={errors.diagnosis}
                         formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
+                        rows={5}
                       />
 
                       <TextAreaGroup
@@ -1255,6 +1275,7 @@ class OperatingRoomSlipForm extends Component {
                         error={errors.procedure}
                         formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
+                        rows={5}
                       />
 
                       <RadioGroupFieldGroup
@@ -1546,6 +1567,7 @@ class OperatingRoomSlipForm extends Component {
                         error={errors.diagnosis}
                         formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
+                        rows={5}
                       />
 
                       <TextAreaGroup
@@ -1555,6 +1577,7 @@ class OperatingRoomSlipForm extends Component {
                         error={errors.procedure}
                         formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
+                        rows={5}
                       />
 
                       <SelectFieldGroup
@@ -1596,16 +1619,6 @@ class OperatingRoomSlipForm extends Component {
                         error={errors.operation_type}
                         formItemLayout={smallFormItemLayout}
                         options={operation_type_options}
-                      />
-
-                      <RadioGroupFieldGroup
-                        label="Laterality"
-                        name="laterality"
-                        value={this.state.laterality}
-                        onChange={this.onChange}
-                        error={errors.laterality}
-                        formItemLayout={smallFormItemLayout}
-                        options={laterality_options}
                       />
 
                       <SimpleSelectFieldGroup
@@ -2017,6 +2030,16 @@ class OperatingRoomSlipForm extends Component {
                         dataSource={rvs_desc_data_source}
                         onSelect={this.onRvsSelect}
                         onSearch={this.onRvsSearch}
+                      />
+
+                      <RadioGroupFieldGroup
+                        label="Laterality"
+                        name="rvs_laterality"
+                        value={this.state.rvs_laterality}
+                        onChange={this.onChange}
+                        error={errors.rvs_laterality}
+                        formItemLayout={smallFormItemLayout}
+                        options={laterality_options}
                       />
 
                       <Form.Item className="m-t-1" {...smallTailFormItemLayout}>

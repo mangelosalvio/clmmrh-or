@@ -235,8 +235,8 @@ class MainDisplay extends Component {
         </div>
         <div className="is-flex is-flex-column" style={{ flex: "16 auto" }}>
           <div className="outline-full-bordered is-flex is-flex-1">
-            <div className="outline-full-bordered is-flex is-flex-1">
-              <div className="display-wrapper-accent">ONGOING OPERATIONS</div>
+            <div className=" accent outline-full-bordered is-flex">
+              <div className="display-wrapper-accent">ONGOING</div>
             </div>
             <div className="is-flex" style={{ flex: "8" }}>
               {this.state.on_going.map(record => (
@@ -258,7 +258,7 @@ class MainDisplay extends Component {
                           {record.name}
                         </span>{" "}
                         <br />
-                        {record.age}
+                        {record.age}/{record.sex && record.sex.charAt(0)}
                         <br />
                         {record.ward}
                         <br />
@@ -278,7 +278,7 @@ class MainDisplay extends Component {
             </div>
           </div>
           <div className="outline-full-bordered is-flex is-flex-1">
-            <div className="outline-full-bordered is-flex-1 is-flex">
+            <div className="outline-full-bordered accent is-flex">
               <div className="display-wrapper-accent">PACU</div>
             </div>
             {this.state.pacu.map(record => (
@@ -302,7 +302,7 @@ class MainDisplay extends Component {
                             {record.name}
                           </span>{" "}
                           <br />
-                          {record.age}
+                          {record.age}/{record.sex && record.sex.charAt(0)}
                           <br />
                           {record.ward}
                           <br />
@@ -323,8 +323,8 @@ class MainDisplay extends Component {
             ))}
           </div>
           <div className="outline-full-bordered is-flex is-flex-1">
-            <div className="outline-full-bordered is-flex-1 is-flex">
-              <div className="display-wrapper-accent">HOLDING ROOM</div>
+            <div className="outline-full-bordered accent is-flex">
+              <div className="display-wrapper-accent">HOLD</div>
             </div>
             {this.state.in_holding_room.map(record => (
               <div className="outline-full-bordered is-flex-1 is-flex">
@@ -342,7 +342,7 @@ class MainDisplay extends Component {
                         {record.name}
                       </span>{" "}
                       <br />
-                      {record.age}
+                      {record.age} /{record.sex && record.sex.charAt(0)}
                       <br />
                       {record.ward}
                       <br />
@@ -361,8 +361,8 @@ class MainDisplay extends Component {
             ))}
           </div>
           <div className="outline-full-bordered is-flex is-flex-2">
-            <div className="outline-full-bordered is-flex-1 is-flex">
-              <div className="display-wrapper-accent">ELECTIVE OR LIST</div>
+            <div className="outline-full-bordered accent is-flex">
+              <div className="display-wrapper-accent">ELEC OR</div>
             </div>
             <div
               className="outline-full-bordered is-flex"
@@ -392,7 +392,7 @@ class MainDisplay extends Component {
                             {record.name}
                           </span>{" "}
                           <br />
-                          {record.age}
+                          {record.age} / {record.sex && record.sex.charAt(0)}
                           <br />
                           {record.ward}
                         </div>
@@ -423,8 +423,8 @@ class MainDisplay extends Component {
             </div>
           </div>
           <div className="outline-full-bordered is-flex is-flex-2">
-            <div className="outline-full-bordered is-flex-1 is-flex">
-              <div className="display-wrapper-accent">EMERGENCY OR LIST</div>
+            <div className="outline-full-bordered accent is-flex">
+              <div className="display-wrapper-accent">STAT OR</div>
             </div>
             <div
               className="outline-full-bordered is-flex"
@@ -454,7 +454,7 @@ class MainDisplay extends Component {
                             {record.name}
                           </span>{" "}
                           <br />
-                          {record.age}
+                          {record.age} / {record.sex && record.sex.charAt(0)}
                           <br />
                           {record.ward}
                         </div>

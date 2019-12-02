@@ -3,7 +3,7 @@ export const smallFormItemLayout = {
     sm: { span: 8 }
   },
   wrapperCol: {
-    sm: { span: 12 }
+    sm: { span: 16 }
   }
 };
 

@@ -209,7 +209,7 @@ router.post("/patients", (req, res) => {
         const { fname, mname, lname } = record;
         const fullname = `${toUpper(lname.trim())}, ${capitalize(
           fname.trim()
-        )} ${toUpper(mname.charAt(0))}`;
+        )} ${capitalize(mname.trim())}`;
 
         return {
           ...record,
@@ -232,8 +232,14 @@ router.post("/or-elective-operations", (req, res) => {
           {
             $match: {
               date_time_of_surgery: {
-                $gt: now
+                $gte: now
                   .clone()
+                  .add({ day: 1 })
+                  .startOf("day")
+                  .toDate(),
+                $lte: now
+                  .clone()
+                  .add({ day: 1 })
                   .endOf("day")
                   .toDate()
               },
@@ -460,6 +466,9 @@ router.post("/display-monitor", (req, res) => {
               name: {
                 $first: "$name"
               },
+              sex: {
+                $first: "$sex"
+              },
               case: {
                 $first: "$case"
               },
@@ -505,9 +514,7 @@ router.post("/display-monitor", (req, res) => {
           },
           {
             $sort: {
-              date_time_of_surgery: -1,
-              service: 1,
-              case_order: 1
+              bed_number: 1
             }
           },
           {

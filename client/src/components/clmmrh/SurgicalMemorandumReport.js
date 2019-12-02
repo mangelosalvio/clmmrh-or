@@ -343,13 +343,13 @@ class SurgicalMemorandumReport extends Component {
           </Col>
           <Col span={3}>Anesthetic Method</Col>
           <Col span={9} className="b-b-1">
-            {this.state.anes_method}
+            {this.state.anes_method || `\xa0`}
           </Col>
         </Row>
         <Row>
           <Col span={3}>Anesthetic Used</Col>
           <Col span={12} className="b-b-1">
-            {this.state.anes_used}
+            {this.state.anes_used || `\xa0`}
           </Col>
           <Col span={2}>Quantity</Col>
           <Col span={3} className="b-b-1">
@@ -358,7 +358,7 @@ class SurgicalMemorandumReport extends Component {
           </Col>
           <Col span={2}>Route</Col>
           <Col span={2} className="b-b-1">
-            {this.state.anes_route}
+            {this.state.anes_route || `\xa0`}
           </Col>
         </Row>
 

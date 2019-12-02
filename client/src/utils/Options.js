@@ -45,7 +45,8 @@ export const service_options = [
   "ORTHO",
   "OPHTHA",
   "IM",
-  "PEDIATRICS"
+  "PEDIATRICS",
+  "DENTAL"
 ];
 
 export const case_order_options = [
