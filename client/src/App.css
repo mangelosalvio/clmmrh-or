@@ -630,3 +630,14 @@ input[type="checkbox"] {
 .small-table * {
   font-size: 8px !important;
 }
+
+.ant-table-row-selected td {
+  font-weight: bold;
+  color: #fff !important;
+}
+
+li.ant-select-dropdown-menu-item.ant-select-dropdown-menu-item-active {
+  background-color: #347ca5;
+  color: #fff;
+  font-weight: bold;
+}

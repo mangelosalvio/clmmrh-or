@@ -95,7 +95,7 @@ const form_data = {
   classification: "",
   date_time_ordered: null,
   date_time_received: null,
-  surgery_is_date: false,
+  surgery_is_date: true,
   date_time_of_surgery: null,
   case_order: "",
   received_by: "",
@@ -731,7 +731,7 @@ class OperatingRoomSlipForm extends Component {
       const hospital_number = patient.abbrev;
       const diagnosis = patient.diagnosis;
       const weight = patient.weight;
-      const weight_unit = patient.weightunit;
+      /* const weight_unit = patient.weightunit; */
       const address = patient.address;
       const registration_date = moment(patient.regisdate);
       const sex = patient.sex === "F" ? "Female" : "Male";
@@ -756,7 +756,7 @@ class OperatingRoomSlipForm extends Component {
         registration_date,
         sex,
         ward,
-        weight_unit,
+        /* weight_unit, */
         age,
         date_of_birth: moment(patient.birthdate)
       });
@@ -1339,14 +1339,14 @@ class OperatingRoomSlipForm extends Component {
                         showTime={true}
                       />
 
-                      <CheckboxFieldGroup
+                      {/* <CheckboxFieldGroup
                         label="Surgery is Date only"
                         name="surgery_is_date"
                         checked={this.state.surgery_is_date}
                         onChange={this.onChange}
                         error={errors.surgery_is_date}
                         formItemLayout={smallFormItemLayout}
-                      />
+                      /> */}
 
                       {this.state.surgery_is_date ? (
                         <DatePickerFieldGroup
