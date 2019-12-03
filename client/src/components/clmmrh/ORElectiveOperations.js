@@ -46,7 +46,7 @@ class ORElectiveOperations extends Component {
       .post("/api/operating-room-slips/or-elective-operations")
       .then(response => {
         this.setState({ ...response.data }, () => {
-          window.print();
+          //window.print();
         });
       })
       .catch(err => {

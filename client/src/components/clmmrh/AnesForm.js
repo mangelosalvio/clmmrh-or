@@ -201,12 +201,6 @@ class AnesForm extends Component {
         title: "Name",
         dataIndex: "full_name"
       },
-
-      {
-        title: "Contact #",
-        dataIndex: "contact_number"
-      },
-
       {
         title: "Assignments",
         dataIndex: "assignments",
@@ -216,17 +210,8 @@ class AnesForm extends Component {
             value={value}
             onChange={value => this.onChangeAssignment(value, record, index)}
             options={assignment_options}
-            style={{ width: 150 }}
           />
         )
-      },
-      {
-        title: "Year Level",
-        dataIndex: "year_level"
-      },
-      {
-        title: "Lic. No.",
-        dataIndex: "license_number"
       },
       {
         title: "",

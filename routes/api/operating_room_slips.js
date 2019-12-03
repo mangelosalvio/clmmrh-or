@@ -293,8 +293,14 @@ router.post("/or-elective-operations", (req, res) => {
           {
             $match: {
               date_time_of_surgery: {
-                $gt: now
+                $gte: now
                   .clone()
+                  .add({ day: 1 })
+                  .startOf("day")
+                  .toDate(),
+                $lte: now
+                  .clone()
+                  .add({ day: 1 })
                   .endOf("day")
                   .toDate()
               },

@@ -154,14 +154,6 @@ class SurgeonForm extends Component {
         title: "Department",
         dataIndex: "department"
       },
-      {
-        title: "Contact #",
-        dataIndex: "contact_number"
-      },
-      {
-        title: "Lic. No.",
-        dataIndex: "license_number"
-      },
 
       {
         title: "",

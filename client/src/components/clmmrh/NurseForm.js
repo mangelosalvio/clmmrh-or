@@ -200,10 +200,6 @@ class NurseForm extends Component {
         dataIndex: "full_name"
       },
       {
-        title: "Contact #",
-        dataIndex: "contact_number"
-      },
-      {
         title: "Assignment",
         dataIndex: "assignment",
         render: (value, record, index) => (
@@ -215,20 +211,6 @@ class NurseForm extends Component {
           />
         )
       },
-      {
-        title: "Job Status",
-        dataIndex: "job_status"
-      },
-      {
-        title: "On Duty",
-        dataIndex: "on_duty",
-        render: (value, record, index) => (
-          <Button onClick={() => this.updateOnDuty(record, index)}>
-            {value ? "YES" : "NO"}
-          </Button>
-        )
-      },
-
       {
         title: "",
         key: "action",
