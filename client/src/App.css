@@ -636,7 +636,9 @@ input[type="checkbox"] {
   color: #fff !important;
 }
 
-li.ant-select-dropdown-menu-item.ant-select-dropdown-menu-item-active {
+li.ant-select-dropdown-menu-item.ant-select-dropdown-menu-item-active,
+li.ant-select-dropdown-menu-item.ant-select-dropdown-menu-item-active:hover,
+li.ant-select-dropdown-menu-item:hover {
   background-color: #347ca5;
   color: #fff;
   font-weight: bold;

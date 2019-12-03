@@ -177,7 +177,8 @@ class OperatingRoomSlipForm extends Component {
     search_operating_room_number: "",
     search_main_anes: "",
     search_surgeon: "",
-    search_classification: ""
+    search_classification: "",
+    search_service: ""
   };
 
   constructor(props) {
@@ -812,7 +813,8 @@ class OperatingRoomSlipForm extends Component {
       search_surgeon,
       search_procedure,
       search_classification,
-      search_main_anes
+      search_main_anes,
+      search_service
     } = this.state;
 
     const form_data = {
@@ -821,7 +823,8 @@ class OperatingRoomSlipForm extends Component {
       search_surgeon,
       search_procedure,
       search_classification,
-      search_main_anes
+      search_main_anes,
+      search_service
     };
 
     axios
@@ -1107,6 +1110,23 @@ class OperatingRoomSlipForm extends Component {
                           column="full_name"
                         />
                       </Col>
+                    </Row>
+                    <Row>
+                      <Col span={8}>
+                        <SimpleSelectFieldGroup
+                          label="Service"
+                          name="search_service"
+                          value={this.state.search_service}
+                          onChange={value =>
+                            this.setState({ search_service: value })
+                          }
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.search_service}
+                          options={service_options}
+                        />
+                      </Col>
+                      <Col span={8} />
+                      <Col span={8} />
                     </Row>
                     <Row>
                       <Col span={8}>

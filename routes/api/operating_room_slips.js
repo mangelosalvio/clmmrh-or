@@ -109,7 +109,8 @@ router.post("/advanced-search", (req, res) => {
     search_surgeon,
     search_procedure,
     search_classification,
-    search_main_anes
+    search_main_anes,
+    search_service
   } = req.body;
 
   const form_data = {
@@ -140,6 +141,9 @@ router.post("/advanced-search", (req, res) => {
     }),
     ...(search_main_anes && {
       "main_anes._id": search_main_anes._id
+    }),
+    ...(search_service && {
+      service: search_service
     })
   };
 
