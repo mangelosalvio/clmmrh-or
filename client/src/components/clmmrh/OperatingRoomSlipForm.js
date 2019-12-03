@@ -919,7 +919,17 @@ class OperatingRoomSlipForm extends Component {
         title: "OR Room",
         dataIndex: "operating_room_number"
       },
-
+      {
+        title: "Service",
+        dataIndex: "service"
+      },
+      {
+        title: "Surgery Date",
+        dataIndex: "date_time_of_surgery",
+        render: value => (
+          <span>{value && moment(value).format("MM/DD/YYYY")}</span>
+        )
+      },
       {
         title: "Classification",
         dataIndex: "classification"
