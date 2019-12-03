@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Surgeon = require("./../../models/Surgeon");
+const OperatingRoomSlip = require("./../../models/OperatingRoomSlip");
+
 const Counter = require("./../../models/Counter");
 const isEmpty = require("./../../validators/is-empty");
 const filterId = require("./../../utils/filterId");
@@ -118,6 +120,21 @@ router.post("/:id", (req, res) => {
       record
         .save()
         .then(record => {
+          OperatingRoomSlip.update(
+            {
+              "surgeon._id": record._id.toString()
+            },
+            {
+              surgeon: {
+                ...record.toObject(),
+                _id: record._id.toString()
+              }
+            },
+            {
+              multi: true
+            }
+          ).exec();
+
           return res.json(record);
         })
         .catch(err => console.log(err));

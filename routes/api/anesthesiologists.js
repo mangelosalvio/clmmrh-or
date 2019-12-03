@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Anesthesiologist = require("./../../models/Anesthesiologist");
+const OperatingRoomSlip = require("./../../models/OperatingRoomSlip");
 const Counter = require("./../../models/Counter");
 const isEmpty = require("./../../validators/is-empty");
 const filterId = require("./../../utils/filterId");
@@ -149,6 +150,22 @@ router.post("/:id", (req, res) => {
         .then(record => {
           const io = req.app.get("socketio");
           io.emit("refresh-display", true);
+
+          OperatingRoomSlip.update(
+            {
+              "main_anes._id": record._id.toString()
+            },
+            {
+              main_anes: {
+                ...record.toObject(),
+                _id: record._id.toString()
+              }
+            },
+            {
+              multi: true
+            }
+          ).exec();
+
           return res.json(record);
         })
         .catch(err => console.log(err));

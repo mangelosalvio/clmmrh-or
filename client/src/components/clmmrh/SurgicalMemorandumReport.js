@@ -196,7 +196,7 @@ class SurgicalMemorandumReport extends Component {
             };
           },
           () => {
-            window.print();
+            //window.print();
           }
         );
       })
@@ -285,14 +285,14 @@ class SurgicalMemorandumReport extends Component {
           <Col span={4}>Admission Date</Col>
           <Col span={10} className="b-b-1">
             {this.state.registration_date &&
-              this.state.registration_date.format("MM/DD/YYYY")}
+              this.state.registration_date.format("MM-DD-YY")}
           </Col>
         </Row>
         <Row>
           <Col span={3}>Date of OR</Col>
           <Col span={3} className="b-b-1">
             {this.state.date_time_of_surgery &&
-              this.state.date_time_of_surgery.format("MM/DD/YYYY")}
+              this.state.date_time_of_surgery.format("MM-DD-YY")}
           </Col>
           <Col span={3}>Surgeon</Col>
           <Col span={6} className="b-b-1">
@@ -479,14 +479,55 @@ class SurgicalMemorandumReport extends Component {
         </Row>
 
         <Row style={{ marginTop: "64px" }}>
-          <Col offset={2} span={8} className="b-b-1 has-text-centered">
+          <Col
+            offset={2}
+            span={8}
+            className="b-b-1 has-text-centered"
+            style={{ height: "48px" }}
+          >
             {this.state.surgeon && this.state.surgeon.full_name}
+            {this.state.surgeon &&
+              this.state.surgeon.license_number && [
+                <br />,
+                `Lic. No.${this.state.surgeon.license_number}`
+              ]}
+            {this.state.surgeon &&
+              this.state.surgeon.department && [
+                <br />,
+                this.state.surgeon.department
+              ]}
           </Col>
-          <Col span={1}>M.D.</Col>
-          <Col offset={2} span={8} className="b-b-1 has-text-centered">
+          <Col span={1} className="is-flex" style={{ height: "48px" }}>
+            <span
+              style={{
+                alignSelf: "flex-end"
+              }}
+            >
+              M.D.
+            </span>
+          </Col>
+          <Col
+            offset={2}
+            span={8}
+            className="b-b-1 has-text-centered"
+            style={{ height: "48px" }}
+          >
             {this.state.main_anes && this.state.main_anes.full_name}
+            {this.state.main_anes &&
+              this.state.main_anes.license_number && [
+                <br />,
+                `Lic. No.${this.state.main_anes.license_number}`
+              ]}
           </Col>
-          <Col span={1}>M.D.</Col>
+          <Col span={1} className="is-flex" style={{ height: "48px" }}>
+            <span
+              style={{
+                alignSelf: "flex-end"
+              }}
+            >
+              M.D.
+            </span>
+          </Col>
         </Row>
         <Row>
           <Col offset={2} span={8} className="has-text-centered">
