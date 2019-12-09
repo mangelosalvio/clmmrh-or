@@ -13,7 +13,8 @@ const TextFieldAutocompleteGroup = ({
   placeholder,
   disabled,
   formItemLayout,
-  readOnly
+  readOnly,
+  filterOption
 }) => (
   <Form.Item
     label={label}
@@ -30,6 +31,7 @@ const TextFieldAutocompleteGroup = ({
       onSearch={onSearch}
       placeholder={placeholder}
       readOnly={readOnly}
+      filterOption={filterOption}
     />
   </Form.Item>
 );

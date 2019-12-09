@@ -237,14 +237,14 @@ class SurgicalMemorandumReport extends Component {
   render() {
     return (
       <Content className="content report">
-        <div className="has-text-centered has-text-weight-bold">
+        <div className="has-text-centered has-text-weight-bold surgical-memo-heading">
           CORAZON LOCSIN MONTELIBANO MEMORIAL REGIONAL HOSPITAL
         </div>
-        <div className="has-text-centered">
+        <div className="has-text-centered surgical-memo-heading">
           Lacson - Burgos Streets, Bacolod City
         </div>
         <div
-          className="has-text-centered has-text-weight-bold"
+          className="has-text-centered has-text-weight-bold surgical-memo-heading"
           style={{ marginTop: "32px" }}
         >
           SURGICAL MEMORANDUM
@@ -256,7 +256,7 @@ class SurgicalMemorandumReport extends Component {
           </Col>
           <Col span={3}>ASA</Col>
           <Col span={3} className="b-b-1">
-            &nbsp;
+            {this.state.asa}
           </Col>
           <Col span={3}>Hospital No.</Col>
           <Col span={5} className="b-b-1">
@@ -322,18 +322,19 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <div className="m-t-1">
-          <div className="has-text-weight-bold">TENTATIVE DIAGNOSIS</div>
-          <div
-            className="p-8 underline-paragraph"
-            style={{ minHeight: "80px" }}
-          >
-            {this.state.tentative_diagnosis.padEnd(819, "\u00A0")}
+          <div className="has-text-weight-bold surgical-memo-heading">
+            TENTATIVE DIAGNOSIS
+          </div>
+          <div className="p-8 " style={{ minHeight: "80px" }}>
+            {this.state.tentative_diagnosis}
           </div>
         </div>
         <div className="m-t-1">
-          <span className="has-text-weight-bold">FINAL DIAGNOSIS</span>
-          <p className="p-8 underline-paragraph" style={{ minHeight: "80px" }}>
-            {this.state.final_diagnosis.padEnd(819, "\u00A0")}
+          <span className="has-text-weight-bold surgical-memo-heading">
+            FINAL DIAGNOSIS
+          </span>
+          <p className="p-8 " style={{ minHeight: "80px" }}>
+            {this.state.final_diagnosis}
           </p>
         </div>
         <Row className="m-t-16">
@@ -382,7 +383,7 @@ class SurgicalMemorandumReport extends Component {
               moment(this.state.operation_finished).format("hh:mm A")}
           </Col>
         </Row>
-        <div className="m-t-16 has-text-weight-bold">
+        <div className="m-t-16 has-text-weight-bold surgical-memo-heading">
           TREATMENT IN THE OPERATING ROOM
         </div>
         <Row>
@@ -426,15 +427,16 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <div className="m-t-1">
-          <span className="has-text-weight-bold">OPERATION PERFORMED</span>
-          <div className="b-b-1">{this.state.operation_performed}</div>
+          <span className="has-text-weight-bold surgical-memo-heading">
+            OPERATION PERFORMED
+          </span>
           {this.state.rvs.map(r => (
-            <div className="b-b-1">
-              {r.rvs_description} - {r.rvs_code}
+            <div>
+              {r.rvs_description} - {r.rvs_laterality} - {r.rvs_code}
             </div>
           ))}
         </div>
-        <div className="m-t-16 has-text-weight-bold">
+        <div className="m-t-16 has-text-weight-bold surgical-memo-heading">
           IMMEDIATE POST OPERATIVE TREATMENT
         </div>
         <Row>
@@ -512,6 +514,7 @@ class SurgicalMemorandumReport extends Component {
             className="b-b-1 has-text-centered"
             style={{ height: "48px" }}
           >
+            <br />
             {this.state.main_anes && this.state.main_anes.full_name}
             {this.state.main_anes &&
               this.state.main_anes.license_number && [

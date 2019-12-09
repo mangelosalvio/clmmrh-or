@@ -44,7 +44,7 @@ const OperatingRoomSlipSchema = new Schema({
   sponge_nurse: Object,
   anes_method: String,
   anes_used: String,
-  anes_quantity: Number,
+  anes_quantity: String,
   anes_route: String,
   anes_start: Date,
   operation_started: Date,

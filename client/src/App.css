@@ -643,3 +643,7 @@ li.ant-select-dropdown-menu-item:hover {
   color: #fff;
   font-weight: bold;
 }
+
+.surgical-memo-heading {
+  font-size: 12px;
+}

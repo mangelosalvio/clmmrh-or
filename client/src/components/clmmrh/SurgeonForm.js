@@ -10,6 +10,7 @@ import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import { gender_options, service_options } from "../../utils/Options";
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
+import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 
 const { Content } = Layout;
 
@@ -245,14 +246,18 @@ class SurgeonForm extends Component {
                 onChange={this.onChange}
               />
 
-              <SimpleSelectFieldGroup
+              <TextFieldAutocompleteGroup
                 label="Department"
-                name="department"
                 value={this.state.department}
+                dataSource={service_options}
+                onSelect={this.onSelectPatient}
                 onChange={value => this.setState({ department: value })}
-                error={errors.department}
                 formItemLayout={formItemLayout}
-                options={service_options}
+                filterOption={(inputValue, option) =>
+                  option.props.children
+                    .toUpperCase()
+                    .indexOf(inputValue.toUpperCase()) !== -1
+                }
               />
 
               <TextFieldGroup
