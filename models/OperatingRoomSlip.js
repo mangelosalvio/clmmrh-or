@@ -45,7 +45,18 @@ const OperatingRoomSlipSchema = new Schema({
   anes_method: String,
   anes_used: String,
   anes_quantity: String,
+  anes_quantity_unit: String,
   anes_route: String,
+
+  anesthetics: [
+    {
+      anes_used: String,
+      anes_quantity: String,
+      anes_quantity_unit: String,
+      anes_route: String
+    }
+  ],
+
   anes_start: Date,
   operation_started: Date,
   operation_finished: Date,

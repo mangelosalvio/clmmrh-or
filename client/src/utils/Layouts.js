@@ -9,7 +9,7 @@ export const smallFormItemLayout = {
 
 export const smallTailFormItemLayout = {
   wrapperCol: {
-    sm: { span: 20, offset: 4 }
+    sm: { span: 16, offset: 8 }
   }
 };
 

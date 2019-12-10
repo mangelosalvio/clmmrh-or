@@ -137,6 +137,16 @@ export const nurse_assignment_options = [
   "HOLDING ROOM"
 ];
 
+export const anes_route_options = [
+  "Intravenous",
+  "Inhalation",
+  "Epidural",
+  "Rectal",
+  "Perineural"
+];
+
+export const anes_unit_options = ["ml", "mg", "mcg"];
+
 export const weight_unit_options = ["kg", "lbs"];
 
 export const job_status_options = ["REGULAR", "CONTRACTUAL"];

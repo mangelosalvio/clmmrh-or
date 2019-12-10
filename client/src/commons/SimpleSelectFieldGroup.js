@@ -13,7 +13,8 @@ const SimpleSelectFieldGroup = ({
   value,
   onChange,
   options,
-  disabled
+  disabled,
+  inputRef
 }) => (
   <Form.Item
     label={label}
@@ -27,6 +28,7 @@ const SimpleSelectFieldGroup = ({
       value={value}
       onChange={onChange}
       allowClear={true}
+      ref={inputRef}
     >
       {options.map(o => (
         <Option key={o} value={o}>

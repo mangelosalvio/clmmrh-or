@@ -472,7 +472,7 @@ input[type="checkbox"] {
 
 .content.report {
   background: #fff;
-  font-size: 10px;
+  font-size: 12px;
   color: #000;
 }
 
@@ -498,7 +498,7 @@ input[type="checkbox"] {
   position: fixed;
   bottom: 0px;
   left: 0px;
-  font-size: 6px;
+  font-size: 8px;
   font-family: "Times New Roman", Times, serif;
 }
 
@@ -645,5 +645,5 @@ li.ant-select-dropdown-menu-item:hover {
 }
 
 .surgical-memo-heading {
-  font-size: 12px;
+  font-size: 14px;
 }

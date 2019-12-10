@@ -46,9 +46,12 @@ const form_data = {
   instrument_nurse: "",
   sponge_nurse: "",
   anes_method: "",
+
+  anesthetics: [],
   anes_used: "",
   anes_quantity: "",
   anes_route: "",
+
   anes_start: null,
   operation_started: null,
   operation_finished: null,
@@ -347,21 +350,25 @@ class SurgicalMemorandumReport extends Component {
             {this.state.anes_method || `\xa0`}
           </Col>
         </Row>
-        <Row>
-          <Col span={3}>Anesthetic Used</Col>
-          <Col span={12} className="b-b-1">
-            {this.state.anes_used || `\xa0`}
-          </Col>
-          <Col span={2}>Quantity</Col>
-          <Col span={3} className="b-b-1">
-            &nbsp;
-            {this.state.anes_quantity}
-          </Col>
-          <Col span={2}>Route</Col>
-          <Col span={2} className="b-b-1">
-            {this.state.anes_route || `\xa0`}
-          </Col>
-        </Row>
+        {this.state.anesthetics.map((o, index) => {
+          return (
+            <Row>
+              <Col span={3}>{index === 0 ? "Anesthetic Used" : "Others"}</Col>
+              <Col span={12} className="b-b-1">
+                {o.anes_used || `\xa0`}
+              </Col>
+              <Col span={2}>Quantity</Col>
+              <Col span={3} className="b-b-1">
+                &nbsp;
+                {o.anes_quantity} {o.anes_quantity_unit}
+              </Col>
+              <Col span={2}>Route</Col>
+              <Col span={2} className="b-b-1">
+                {o.anes_route || `\xa0`}
+              </Col>
+            </Row>
+          );
+        })}
 
         <Row>
           <Col span={4}>Anesthesia Began</Col>
@@ -485,7 +492,7 @@ class SurgicalMemorandumReport extends Component {
             offset={2}
             span={8}
             className="b-b-1 has-text-centered"
-            style={{ height: "48px" }}
+            style={{ height: "52px" }}
           >
             {this.state.surgeon && this.state.surgeon.full_name}
             {this.state.surgeon &&
@@ -512,7 +519,7 @@ class SurgicalMemorandumReport extends Component {
             offset={2}
             span={8}
             className="b-b-1 has-text-centered"
-            style={{ height: "48px" }}
+            style={{ height: "52px" }}
           >
             <br />
             {this.state.main_anes && this.state.main_anes.full_name}

@@ -45,7 +45,9 @@ import {
   operating_room_number_options,
   operation_status_options,
   weight_unit_options,
-  bed_number_options
+  bed_number_options,
+  anes_unit_options,
+  anes_route_options
 } from "../../utils/Options";
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
@@ -111,9 +113,13 @@ const form_data = {
   instrument_nurse: "",
   sponge_nurse: "",
   anes_method: "",
+
   anes_used: "",
   anes_quantity: "",
   anes_route: "",
+
+  anesthetics: [],
+
   anes_start: null,
   operation_started: null,
   operation_finished: null,
@@ -185,6 +191,10 @@ class OperatingRoomSlipForm extends Component {
     super(props);
     this.onRvsSearch = debounce(this.onRvsSearch, 300);
     this.onSearchPatient = debounce(this.onSearchPatient, 500);
+    this.anes_used_input = React.createRef();
+    this.anes_quantity_input = React.createRef();
+    this.anes_quantity_unit_input = React.createRef();
+    this.anes_route_input = React.createRef();
   }
 
   componentDidMount() {
@@ -686,6 +696,34 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onAddAnesthetic = () => {
+    const anesthetics = [
+      ...this.state.anesthetics,
+      {
+        anes_used: this.state.anes_used,
+        anes_quantity: this.state.anes_quantity,
+        anes_quantity_unit: this.state.anes_quantity_unit,
+        anes_route: this.state.anes_route
+      }
+    ];
+
+    this.setState({
+      anesthetics,
+      anes_used: "",
+      anes_quantity: "",
+      anes_quantity_unit: "",
+      anes_route: ""
+    });
+  };
+
+  onDeleteAnesthetics = index => {
+    const anesthetics = [...this.state.anesthetics];
+    anesthetics.splice(index, 1);
+    this.setState({
+      anesthetics
+    });
+  };
+
   onChangeDateOfBirth = date_of_birth => {
     let now = moment();
 
@@ -875,6 +913,40 @@ class OperatingRoomSlipForm extends Component {
               theme="filled"
               className="pointer"
               onClick={() => this.onDeleteRvs(index)}
+            />
+          </span>
+        )
+      }
+    ];
+
+    const anesthetics_column = [
+      {
+        title: "Used",
+        dataIndex: "anes_used"
+      },
+      {
+        title: "Qty",
+        dataIndex: "anes_quantity"
+      },
+      {
+        title: "Unit",
+        dataIndex: "anes_quantity_unit"
+      },
+      {
+        title: "Route",
+        dataIndex: "anes_route"
+      },
+      {
+        title: "",
+        key: "action",
+        width: 10,
+        render: (text, record, index) => (
+          <span>
+            <Icon
+              type="delete"
+              theme="filled"
+              className="pointer"
+              onClick={() => this.onDeleteAnesthetics(index)}
             />
           </span>
         )
@@ -1951,35 +2023,6 @@ class OperatingRoomSlipForm extends Component {
                         onChange={this.onChange}
                       />
 
-                      <TextFieldGroup
-                        label="Anesthetic Used"
-                        name="anes_used"
-                        value={this.state.anes_used}
-                        error={errors.anes_used}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <TextFieldGroup
-                        type="number"
-                        label="Quantity"
-                        name="anes_quantity"
-                        value={this.state.anes_quantity}
-                        error={errors.anes_quantity}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-
-                      <TextFieldGroup
-                        label="Route"
-                        name="anes_route"
-                        value={this.state.anes_route}
-                        error={errors.anes_route}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-
                       <DateTimePickerFieldGroup
                         label="Anesthesia Started"
                         name="anes_start"
@@ -2034,8 +2077,85 @@ class OperatingRoomSlipForm extends Component {
                     </Col>
                   </Row>
 
+                  <Divider orientation="left">Anesthetics</Divider>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <TextFieldGroup
+                        label="Anesthetic Used"
+                        name="anes_used"
+                        value={this.state.anes_used}
+                        error={errors.anes_used}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        inputRef={this.anes_used_input}
+                        onPressEnter={e => {
+                          e.preventDefault();
+                          this.anes_quantity_input.current.focus();
+                        }}
+                      />
+                      <TextFieldGroup
+                        label="Quantity"
+                        name="anes_quantity"
+                        value={this.state.anes_quantity}
+                        error={errors.anes_quantity}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        inputRef={this.anes_quantity_input}
+                        onPressEnter={e => {
+                          e.preventDefault();
+                          this.anes_quantity_unit_input.current.focus();
+                        }}
+                      />
+
+                      <SimpleSelectFieldGroup
+                        label="Unit"
+                        name="anes_quantity_unit"
+                        value={this.state.anes_quantity_unit}
+                        onChange={value =>
+                          this.setState({ anes_quantity_unit: value })
+                        }
+                        formItemLayout={smallFormItemLayout}
+                        error={errors.anes_quantity_unit}
+                        options={anes_unit_options}
+                        inputRef={this.anes_quantity_unit_input}
+                      />
+
+                      <SimpleSelectFieldGroup
+                        label="Route"
+                        name="anes_route"
+                        value={this.state.anes_route}
+                        onChange={value => this.setState({ anes_route: value })}
+                        formItemLayout={smallFormItemLayout}
+                        error={errors.anes_route}
+                        options={anes_route_options}
+                      />
+
+                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
+                        <div className="field is-grouped">
+                          <div className="control">
+                            <Button
+                              className="button is-small"
+                              onClick={this.onAddAnesthetic}
+                            >
+                              Add Anesthetic
+                            </Button>
+                          </div>
+                        </div>
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Table
+                        dataSource={this.state.anesthetics}
+                        columns={anesthetics_column}
+                        rowKey={record => record._id}
+                        locale={{ emptyText: "No Records Found" }}
+                        pagination={false}
+                      />
+                    </Col>
+                  </Row>
+
                   <Divider orientation="left">RVS</Divider>
-                  <Row>
+                  <Row gutter={12}>
                     <Col span={12}>
                       <TextFieldGroup
                         label="RVS Code"
