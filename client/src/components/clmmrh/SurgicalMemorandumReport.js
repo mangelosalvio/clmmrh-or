@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
 import { Layout, message, Col, Row } from "antd";
+import classnames from "classnames";
 
 import moment from "moment";
 
@@ -353,7 +354,15 @@ class SurgicalMemorandumReport extends Component {
         {this.state.anesthetics.map((o, index) => {
           return (
             <Row>
-              <Col span={3}>{index === 0 ? "Anesthetic Used" : "Others"}</Col>
+              <Col
+                className={classnames({
+                  "has-text-right": index > 0,
+                  "p-r-1": index > 0
+                })}
+                span={3}
+              >
+                {index === 0 ? "Anesthetic Used" : "Others"}
+              </Col>
               <Col span={12} className="b-b-1">
                 {o.anes_used || `\xa0`}
               </Col>
