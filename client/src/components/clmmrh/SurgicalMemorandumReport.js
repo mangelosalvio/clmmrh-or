@@ -278,16 +278,16 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={2}>Age</Col>
+          <Col span={3}>Age</Col>
           <Col span={3} className="b-b-1">
             {this.state.age}
           </Col>
           <Col span={2}>Sex</Col>
-          <Col span={3} className="b-b-1">
+          <Col span={4} className="b-b-1">
             {this.state.sex}
           </Col>
           <Col span={4}>Admission Date</Col>
-          <Col span={10} className="b-b-1">
+          <Col span={8} className="b-b-1">
             {this.state.registration_date &&
               this.state.registration_date.format("MM-DD-YY")}
           </Col>
@@ -343,10 +343,10 @@ class SurgicalMemorandumReport extends Component {
         </div>
         <Row className="m-t-16">
           <Col span={3}>Anesthesiologist</Col>
-          <Col span={9} className="b-b-1">
+          <Col span={7} className="b-b-1">
             {this.state.main_anes && this.state.main_anes.full_name}
           </Col>
-          <Col span={3}>Anesthetic Method</Col>
+          <Col span={5}>Anesthetic Method</Col>
           <Col span={9} className="b-b-1">
             {this.state.anes_method || `\xa0`}
           </Col>
@@ -427,10 +427,10 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={5} offset={2}>
+          <Col span={6} offset={2}>
             Complications during operation
           </Col>
-          <Col span={13} className="b-b-1">
+          <Col span={12} className="b-b-1">
             &nbsp;{this.state.complications_during_operation}
           </Col>
         </Row>
@@ -488,10 +488,10 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={5} offset={2}>
+          <Col span={7} offset={2}>
             Stimulant and other medications
           </Col>
-          <Col span={13} className="b-b-1">
+          <Col span={11} className="b-b-1">
             &nbsp;{this.state.stimulant}
           </Col>
         </Row>

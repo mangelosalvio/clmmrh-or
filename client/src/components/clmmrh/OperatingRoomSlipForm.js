@@ -47,7 +47,8 @@ import {
   weight_unit_options,
   bed_number_options,
   anes_unit_options,
-  anes_route_options
+  anes_route_options,
+  anes_method_options
 } from "../../utils/Options";
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
@@ -2014,13 +2015,16 @@ class OperatingRoomSlipForm extends Component {
                         column="full_name"
                       />
 
-                      <TextFieldGroup
+                      <SimpleSelectFieldGroup
                         label="Method"
                         name="anes_method"
                         value={this.state.anes_method}
-                        error={errors.anes_method}
+                        onChange={value =>
+                          this.setState({ anes_method: value })
+                        }
                         formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
+                        error={errors.anes_method}
+                        options={anes_method_options}
                       />
 
                       <DateTimePickerFieldGroup

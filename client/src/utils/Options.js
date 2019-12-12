@@ -142,7 +142,16 @@ export const anes_route_options = [
   "Inhalation",
   "Epidural",
   "Rectal",
-  "Perineural"
+  "Perineural",
+  "Intrathecal"
+];
+
+export const anes_method_options = [
+  "General anesthesia",
+  "Epidural anesthesia",
+  "Spiral anesthesia",
+  "Peripheral nerve block",
+  "Local anesthesia"
 ];
 
 export const anes_unit_options = ["ml", "mg", "mcg"];
