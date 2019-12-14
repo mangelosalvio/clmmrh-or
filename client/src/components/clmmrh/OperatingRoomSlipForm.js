@@ -767,7 +767,6 @@ class OperatingRoomSlipForm extends Component {
     const patient = this.state.options.patients.find(o => o.fullname === name);
 
     if (patient) {
-      console.log(patient);
       const hospital_number = patient.abbrev;
       const diagnosis = patient.diagnosis;
       const weight = patient.weight;
@@ -777,7 +776,7 @@ class OperatingRoomSlipForm extends Component {
       const sex = patient.sex === "F" ? "Female" : "Male";
       const ward = patient.rmno;
 
-      let now = moment();
+      let now = regisdate.clone();
       const dob = moment(patient.birthdate);
       let years = now.diff(dob, "years");
       dob.add(years, "years");
@@ -786,8 +785,8 @@ class OperatingRoomSlipForm extends Component {
       dob.add(months, "months");
 
       let days = now.diff(dob, "days");
-      //let age = `${years}Y${months}M${days}D`;
-      let age = patient.age.trim();
+      let age = `${years}Y${months}M${days}D`;
+      //let age = patient.age.trim();
       this.setState({
         hospital_number,
         diagnosis,
