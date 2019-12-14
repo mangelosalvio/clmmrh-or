@@ -776,7 +776,7 @@ class OperatingRoomSlipForm extends Component {
       const sex = patient.sex === "F" ? "Female" : "Male";
       const ward = patient.rmno;
 
-      let now = regisdate.clone();
+      let now = registration_date.clone();
       const dob = moment(patient.birthdate);
       let years = now.diff(dob, "years");
       dob.add(years, "years");
