@@ -47,6 +47,7 @@ const form_data = {
   instrument_nurse: "",
   sponge_nurse: "",
   anes_method: "",
+  anes_methods: [],
 
   anesthetics: [],
   anes_used: "",
@@ -269,25 +270,25 @@ class SurgicalMemorandumReport extends Component {
         </Row>
         <Row>
           <Col span={3}>Address</Col>
-          <Col span={12} className="b-b-1">
+          <Col span={13} className="b-b-1">
             {this.state.address}
           </Col>
-          <Col span={4}>Ward/Room</Col>
+          <Col span={3}>Ward/Room</Col>
           <Col span={5} className="b-b-1">
             {this.state.ward}
           </Col>
         </Row>
         <Row>
           <Col span={3}>Age</Col>
-          <Col span={3} className="b-b-1">
+          <Col span={5} className="b-b-1">
             {this.state.age}
           </Col>
-          <Col span={2}>Sex</Col>
-          <Col span={4} className="b-b-1">
+          <Col span={3}>Sex</Col>
+          <Col span={5} className="b-b-1">
             {this.state.sex}
           </Col>
-          <Col span={4}>Admission Date</Col>
-          <Col span={8} className="b-b-1">
+          <Col span={3}>Admission Date</Col>
+          <Col span={5} className="b-b-1">
             {this.state.registration_date &&
               this.state.registration_date.format("MM-DD-YY")}
           </Col>
@@ -348,7 +349,7 @@ class SurgicalMemorandumReport extends Component {
           </Col>
           <Col span={5}>Anesthetic Method</Col>
           <Col span={9} className="b-b-1">
-            {this.state.anes_method || `\xa0`}
+            {this.state.anes_methods.map(o => o.method).join("/") || `\xa0`}
           </Col>
         </Row>
         {this.state.anesthetics.map((o, index) => {

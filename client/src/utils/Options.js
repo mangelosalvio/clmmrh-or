@@ -151,7 +151,8 @@ export const anes_method_options = [
   "Epidural anesthesia",
   "Spiral anesthesia",
   "Peripheral nerve block",
-  "Local anesthesia"
+  "Local anesthesia",
+  "Others"
 ];
 
 export const anes_unit_options = ["ml", "mg", "mcg"];

@@ -113,7 +113,9 @@ const form_data = {
   assistant_surgeon: "",
   instrument_nurse: "",
   sponge_nurse: "",
+  anes_methods: [],
   anes_method: "",
+  anes_method_others: "",
 
   anes_used: "",
   anes_quantity: "",
@@ -725,6 +727,14 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onDeleteAnesMethod = index => {
+    const anes_methods = [...this.state.anes_methods];
+    anes_methods.splice(index, 1);
+    this.setState({
+      anes_methods
+    });
+  };
+
   onChangeDateOfBirth = date_of_birth => {
     let now = moment();
 
@@ -947,6 +957,28 @@ class OperatingRoomSlipForm extends Component {
               theme="filled"
               className="pointer"
               onClick={() => this.onDeleteAnesthetics(index)}
+            />
+          </span>
+        )
+      }
+    ];
+
+    const anes_methods_column = [
+      {
+        title: "Method",
+        dataIndex: "method"
+      },
+      {
+        title: "",
+        key: "action",
+        width: 10,
+        render: (text, record, index) => (
+          <span>
+            <Icon
+              type="delete"
+              theme="filled"
+              className="pointer"
+              onClick={() => this.onDeleteAnesMethod(index)}
             />
           </span>
         )
@@ -1931,7 +1963,7 @@ class OperatingRoomSlipForm extends Component {
 
                   <Divider orientation="left">Surgical Procedures</Divider>
 
-                  <Row>
+                  <Row gutter={12}>
                     <Col span={12}>
                       <SelectFieldGroup
                         label="Main Surgeon"
@@ -2018,13 +2050,51 @@ class OperatingRoomSlipForm extends Component {
                         label="Method"
                         name="anes_method"
                         value={this.state.anes_method}
-                        onChange={value =>
-                          this.setState({ anes_method: value })
-                        }
+                        onChange={value => {
+                          if (value !== "Others") {
+                            this.setState({
+                              anes_methods: [
+                                ...this.state.anes_methods,
+                                {
+                                  method: value
+                                }
+                              ]
+                            });
+                          } else {
+                            this.setState({
+                              anes_method: value
+                            });
+                          }
+                        }}
                         formItemLayout={smallFormItemLayout}
                         error={errors.anes_method}
                         options={anes_method_options}
                       />
+
+                      {this.state.anes_method === "Others" && (
+                        <TextFieldGroup
+                          label="Specify"
+                          name="anes_method_others"
+                          value={this.state.anes_method_others}
+                          error={errors.anes_method_others}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          extra="Press Enter to Add"
+                          onPressEnter={e => {
+                            e.preventDefault();
+                            this.setState({
+                              anes_methods: [
+                                ...this.state.anes_methods,
+                                {
+                                  method: this.state.anes_method_others
+                                }
+                              ],
+                              anes_method_others: "",
+                              anes_method: ""
+                            });
+                          }}
+                        />
+                      )}
 
                       <DateTimePickerFieldGroup
                         label="Anesthesia Started"
@@ -2076,6 +2146,15 @@ class OperatingRoomSlipForm extends Component {
                         error={errors.final_diagnosis}
                         formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Table
+                        dataSource={this.state.anes_methods}
+                        columns={anes_methods_column}
+                        rowKey={record => record._id}
+                        locale={{ emptyText: "No Records Found" }}
+                        pagination={false}
                       />
                     </Col>
                   </Row>
