@@ -62,7 +62,11 @@ import {
   IN_HOLDING_ROOM,
   ON_RECOVERY,
   EMERGENCY_PROCEDURE,
-  ELECTIVE_SURGERY
+  ELECTIVE_SURGERY,
+  RECEIVING_MODULE,
+  PRE_OPERATION_MODULE,
+  POST_OPERATION_MODULE,
+  TIME_LOGS_MODULE
 } from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
@@ -211,11 +215,12 @@ class OperatingRoomSlipForm extends Component {
     this.setState({ [e.target.name]: value });
   };
 
-  onSubmit = e => {
+  onSubmit = (e, { form }) => {
     e.preventDefault();
 
     const form_data = {
       ...this.state,
+      form,
       user: this.props.auth.user
     };
 
@@ -1261,9 +1266,12 @@ class OperatingRoomSlipForm extends Component {
           <span className="is-size-6">{this.state.title}</span> <hr />
           <MessageBoxInfo message={this.state.message} onHide={this.onHide} />
           {isEmpty(this.state[collection_name]) ? (
-            <Form onSubmit={this.onSubmit} className="tab-content or-slip-form">
-              <Tabs>
-                <TabPane tab="Operating Complex Receiving" key="1">
+            <Tabs>
+              <TabPane tab="Operating Complex Receiving" key="1">
+                <Form
+                  onSubmit={e => this.onSubmit(e, { form: RECEIVING_MODULE })}
+                  className="tab-content or-slip-form"
+                >
                   <Divider orientation="left">Patient Information</Divider>
 
                   <Row className>
@@ -1276,6 +1284,7 @@ class OperatingRoomSlipForm extends Component {
                         onChange={value => this.setState({ name: value })}
                         onSearch={this.onSearchPatient}
                         formItemLayout={smallFormItemLayout}
+                        error={errors.name}
                       />
 
                       <DatePickerFieldGroup
@@ -1314,26 +1323,37 @@ class OperatingRoomSlipForm extends Component {
                           span={12}
                           className="ant-form-item-control-wrapper"
                         >
-                          <Input
-                            name="weight"
-                            value={this.state.weight}
-                            onChange={this.onChange}
-                          />
+                          <Form.Item
+                            validateStatus={errors.weight ? "error" : ""}
+                            help={errors.weight}
+                          >
+                            <Input
+                              name="weight"
+                              value={this.state.weight}
+                              onChange={this.onChange}
+                              error={errors.weight}
+                            />
+                          </Form.Item>
                         </Col>
                         <Col span={4}>
-                          <Select
-                            value={this.state.weight_unit}
-                            name="weight_unit"
-                            onChange={value =>
-                              this.setState({ weight_unit: value })
-                            }
+                          <Form.Item
+                            validateStatus={errors.weight_unit ? "error" : ""}
+                            help={errors.weight_unit}
                           >
-                            {weight_unit_options.map((d, index) => (
-                              <Option key={d} value={d}>
-                                {d}
-                              </Option>
-                            ))}
-                          </Select>
+                            <Select
+                              value={this.state.weight_unit}
+                              name="weight_unit"
+                              onChange={value =>
+                                this.setState({ weight_unit: value })
+                              }
+                            >
+                              {weight_unit_options.map((d, index) => (
+                                <Option key={d} value={d}>
+                                  {d}
+                                </Option>
+                              ))}
+                            </Select>
+                          </Form.Item>
                         </Col>
                       </Row>
                     </Col>
@@ -1556,8 +1576,15 @@ class OperatingRoomSlipForm extends Component {
                       ) : null}
                     </div>
                   </Form.Item>
-                </TabPane>
-                <TabPane tab="Pre Operation" key="2">
+                </Form>
+              </TabPane>
+              <TabPane tab="Pre Operation" key="2">
+                <Form
+                  onSubmit={e =>
+                    this.onSubmit(e, { form: PRE_OPERATION_MODULE })
+                  }
+                  className="tab-content or-slip-form"
+                >
                   <Divider orientation="left">Patient Information</Divider>
                   <Row>
                     <Col span={12}>
@@ -1815,8 +1842,15 @@ class OperatingRoomSlipForm extends Component {
                       ) : null}
                     </div>
                   </Form.Item>
-                </TabPane>
-                <TabPane tab="Post Operation" key="3">
+                </Form>
+              </TabPane>
+              <TabPane tab="Post Operation" key="3">
+                <Form
+                  onSubmit={e =>
+                    this.onSubmit(e, { form: POST_OPERATION_MODULE })
+                  }
+                  className="tab-content or-slip-form"
+                >
                   <Divider orientation="left">Patient Information</Divider>
                   <Row>
                     <Col span={12}>
@@ -2446,8 +2480,13 @@ class OperatingRoomSlipForm extends Component {
                       ]}
                     </div>
                   </Form.Item>
-                </TabPane>
-                <TabPane tab="Time Logs" key="4">
+                </Form>
+              </TabPane>
+              <TabPane tab="Time Logs" key="4">
+                <Form
+                  onSubmit={e => this.onSubmit(e, { form: TIME_LOGS_MODULE })}
+                  className="tab-content or-slip-form"
+                >
                   <Row>
                     <Col span={12}>
                       <DateTimePickerFieldGroup
@@ -2633,9 +2672,9 @@ class OperatingRoomSlipForm extends Component {
                       ) : null}
                     </div>
                   </Form.Item>
-                </TabPane>
-              </Tabs>
-            </Form>
+                </Form>
+              </TabPane>
+            </Tabs>
           ) : (
             <div>
               <div className="m-b-1 ">
