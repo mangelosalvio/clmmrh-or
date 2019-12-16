@@ -5,7 +5,7 @@ const constants = require("./../config/constants");
 module.exports = function validateInput(data) {
   let errors = {};
 
-  if (data.form === constants.RECEIVING_MODULE) {
+  /* if (data.form === constants.RECEIVING_MODULE) {
     if (isEmpty(data.name)) {
       errors.name = "Patient name is required";
     }
@@ -109,7 +109,7 @@ module.exports = function validateInput(data) {
     if (isEmpty(data.operating_room_number)) {
       errors.operating_room_number = "OR Number is required";
     }
-  }
+  } */
 
   return {
     errors,
