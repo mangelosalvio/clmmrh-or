@@ -16,3 +16,5 @@ export const RECEIVING_MODULE = "RECEIVING MODULE";
 export const PRE_OPERATION_MODULE = "PRE OPERATION MODULE";
 export const POST_OPERATION_MODULE = "POST OPERATION MODULE";
 export const TIME_LOGS_MODULE = "TIME LOGS MODULE";
+export const CASE_ELECTIVE_SURGERY = "Elective Surgery";
+export const CASE_EMERGENCY_PROCEDURE = "Emergency Procedure";

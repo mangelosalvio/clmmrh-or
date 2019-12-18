@@ -66,7 +66,8 @@ import {
   RECEIVING_MODULE,
   PRE_OPERATION_MODULE,
   POST_OPERATION_MODULE,
-  TIME_LOGS_MODULE
+  TIME_LOGS_MODULE,
+  CASE_EMERGENCY_PROCEDURE
 } from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
@@ -213,6 +214,21 @@ class OperatingRoomSlipForm extends Component {
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
 
     this.setState({ [e.target.name]: value });
+  };
+
+  onChangeCase = e => {
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+
+    this.setState({ [e.target.name]: value });
+
+    if (
+      e.target.name === "case" &&
+      e.target.value === CASE_EMERGENCY_PROCEDURE &&
+      isEmpty(this.state.date_time_of_surgery)
+    ) {
+      this.setState({ date_time_of_surgery: moment() });
+    }
   };
 
   onSubmit = (e, { form }) => {
@@ -573,11 +589,17 @@ class OperatingRoomSlipForm extends Component {
   };
 
   onSurgeonChange = (index, name) => {
-    this.setState(prevState => {
-      return {
-        [name]: prevState.options.surgeons[index]
-      };
-    });
+    if (!isEmpty(index)) {
+      this.setState(prevState => {
+        return {
+          [name]: prevState.options.surgeons[index]
+        };
+      });
+    } else {
+      this.setState({
+        [name]: null
+      });
+    }
   };
 
   /**
@@ -599,11 +621,17 @@ class OperatingRoomSlipForm extends Component {
   };
 
   onNurseChange = (index, name) => {
-    this.setState(prevState => {
-      return {
-        [name]: prevState.options.nurses[index]
-      };
-    });
+    if (!isEmpty(index)) {
+      this.setState(prevState => {
+        return {
+          [name]: prevState.options.nurses[index]
+        };
+      });
+    } else {
+      this.setState({
+        [name]: null
+      });
+    }
   };
 
   /**
@@ -625,11 +653,17 @@ class OperatingRoomSlipForm extends Component {
   };
 
   onAnesChange = index => {
-    this.setState(prevState => {
-      return {
-        main_anes: prevState.options.anesthesiologists[index]
-      };
-    });
+    if (!isEmpty(index)) {
+      this.setState(prevState => {
+        return {
+          main_anes: prevState.options.anesthesiologists[index]
+        };
+      });
+    } else {
+      this.setState({
+        main_anes: null
+      });
+    }
   };
 
   onRvsCodeLookup = e => {
@@ -1436,7 +1470,7 @@ class OperatingRoomSlipForm extends Component {
                         label="Case"
                         name="case"
                         value={this.state.case}
-                        onChange={this.onChange}
+                        onChange={this.onChangeCase}
                         error={errors.case}
                         formItemLayout={smallFormItemLayout}
                         options={case_options}
