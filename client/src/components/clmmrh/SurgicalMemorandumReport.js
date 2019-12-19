@@ -562,7 +562,8 @@ class SurgicalMemorandumReport extends Component {
         <div className="print-iso-footer">
           Surgical Memorandum <br />
           CLMMRH-MRS.F.043 <br />
-          Issued: 2/5/14 Issue No. 001
+          Issued: 2/5/14 <br />
+          Issue No. 001
         </div>
       </Content>
     );
