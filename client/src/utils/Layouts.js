@@ -15,16 +15,16 @@ export const smallTailFormItemLayout = {
 
 export const formItemLayout = {
   labelCol: {
-    sm: { span: 4 }
+    sm: { span: 6 }
   },
   wrapperCol: {
-    sm: { span: 20 }
+    sm: { span: 18 }
   }
 };
 
 export const formItemButtonLayout = {
   labelCol: {
-    sm: { span: 4 }
+    sm: { span: 6 }
   },
   wrapperCol: {
     sm: { span: 16 }
@@ -33,15 +33,15 @@ export const formItemButtonLayout = {
 
 export const verticalItemLayout = {
   labelCol: {
-    sm: { span: 4 }
+    sm: { span: 6 }
   },
   wrapperCol: {
-    sm: { span: 24 }
+    sm: { span: 18 }
   }
 };
 
 export const tailFormItemLayout = {
   wrapperCol: {
-    sm: { span: 20, offset: 4 }
+    sm: { span: 18, offset: 6 }
   }
 };
