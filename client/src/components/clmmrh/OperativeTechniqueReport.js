@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
-import { Layout, message, Col, Row } from "antd";
+import { Layout, message, Col, Row, Input } from "antd";
+import { debounce } from "lodash";
 
 import moment from "moment";
 
@@ -87,10 +88,19 @@ const form_data = {
 
   rvs: [],
 
-  errors: {}
+  errors: {},
+
+  ob_operative_technique: {
+    anes: "",
+    cervix: "",
+    uterus: "",
+    adnexae: "",
+    discharges: "",
+    ligation_equipment: ""
+  }
 };
 
-class SurgicalMemorandumReport extends Component {
+class OperativeTechinqueReport extends Component {
   state = {
     title: "Operating Room Form",
     url: "/api/operating-room-slips/",
@@ -103,6 +113,11 @@ class SurgicalMemorandumReport extends Component {
       rvs: []
     }
   };
+
+  constructor(props) {
+    super(props);
+    this.updateRecord = debounce(this.updateRecord, 500);
+  }
 
   componentDidMount() {
     this.getRecord();
@@ -206,6 +221,40 @@ class SurgicalMemorandumReport extends Component {
       });
   };
 
+  onChange = e => {
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
+
+    this.setState(
+      {
+        ob_operative_technique: {
+          ...this.state.ob_operative_technique,
+          [e.target.name]: value
+        }
+      },
+      this.updateRecord
+    );
+  };
+
+  updateRecord = () => {
+    const { ob_operative_technique } = this.state;
+    const form_data = {
+      ob_operative_technique
+    };
+
+    axios
+      .post(
+        `${this.state.url}${this.state._id}/operative-technique/ob`,
+        form_data
+      )
+      .then(response => {
+        console.log("Updated");
+      })
+      .catch(err => {
+        message.error("There was an error updating your transaction");
+      });
+  };
+
   onSurgeonSearch = value => {
     axios
       .get(`/api/surgeons/?s=${value}`)
@@ -236,106 +285,135 @@ class SurgicalMemorandumReport extends Component {
 
   render() {
     return (
-      <Content className="content report">
+      <Content className="content report operative-technique-container">
         <div className="has-text-centered has-text-weight-bold surgical-memo-heading">
           OPERATIVE TECHNIQUE
         </div>
-        <div
-          className="has-text-centered has-text-weight-bold surgical-memo-heading"
-          style={{ marginTop: "32px" }}
-        >
-          SURGICAL MEMORANDUM
-        </div>
-        <Row className="m-t-16">
+        <Row style={{ marginTop: "3rem" }}>
           <Col span={3}>Name of Patient</Col>
-          <Col span={7} className="b-b-1">
-            {this.state.name}
-          </Col>
-          <Col span={3}>ASA</Col>
-          <Col span={3} className="b-b-1">
-            {this.state.asa}
+          <Col span={13} className="b-b-1">
+            {this.state.name || ""} &nbsp;
           </Col>
           <Col span={3}>Hospital No.</Col>
           <Col span={5} className="b-b-1">
-            {this.state.hospital_number}
+            {this.state.hospital_number || ""} &nbsp;
           </Col>
         </Row>
         <Row>
           <Col span={3}>Address</Col>
-          <Col span={12} className="b-b-1">
-            {this.state.address}
+          <Col span={13} className="b-b-1">
+            {this.state.address} &nbsp;
           </Col>
-          <Col span={4}>Ward/Room</Col>
+          <Col span={3}>Ward/Room</Col>
           <Col span={5} className="b-b-1">
-            {this.state.ward}
+            {this.state.ward} &nbsp;
           </Col>
         </Row>
         <Row>
-          <Col span={2}>Age</Col>
+          <Col span={3}>Age</Col>
           <Col span={3} className="b-b-1">
-            {this.state.age}
+            {this.state.age} &nbsp;
           </Col>
           <Col span={2}>Sex</Col>
-          <Col span={3} className="b-b-1">
-            {this.state.sex}
+          <Col span={2} className="b-b-1">
+            {this.state.sex} &nbsp;
           </Col>
-          <Col span={4}>Admission Date</Col>
-          <Col span={10} className="b-b-1">
+          <Col span={3}>Admission Date</Col>
+          <Col span={3} className="b-b-1">
             {this.state.registration_date &&
-              this.state.registration_date.format("MM-DD-YY")}
+              this.state.registration_date.format("MM-DD-YY")}{" "}
+            &nbsp;
           </Col>
-        </Row>
-        <Row>
           <Col span={3}>Date of OR</Col>
-          <Col span={3} className="b-b-1">
+          <Col span={5} className="b-b-1">
             {this.state.date_time_of_surgery &&
-              this.state.date_time_of_surgery.format("MM-DD-YY")}
-          </Col>
-          <Col span={3}>Surgeon</Col>
-          <Col span={6} className="b-b-1">
-            {this.state.surgeon && this.state.surgeon.full_name}
-          </Col>
-          <Col span={3}>Assistant</Col>
-          <Col span={6} className="b-b-1">
-            {" "}
+              this.state.date_time_of_surgery.format("MM-DD-YY")}{" "}
             &nbsp;
-            {this.state.assistant_surgeon &&
-              this.state.assistant_surgeon.full_name}
           </Col>
         </Row>
-        <Row>
-          <Col span={3}>Instrument Nurse</Col>
-          <Col span={9} className="b-b-1">
-            {" "}
-            &nbsp;
-            {this.state.instrument_nurse &&
-              this.state.instrument_nurse.full_name}
-          </Col>
-          <Col span={3}>Sponge Nurse</Col>
-          <Col span={9} className="b-b-1">
-            {" "}
-            &nbsp;
-            {this.state.sponge_nurse && this.state.sponge_nurse.full_name}
-          </Col>
-        </Row>
-        <div className="m-t-1">
+        <div style={{ marginTop: "3rem" }}>
           <span className="has-text-weight-bold surgical-memo-heading">
-            OPERATION PERFORMED
+            OPERATION DONE
           </span>
-          {this.state.rvs.map(r => (
-            <div>
-              {r.rvs_description} - {r.rvs_laterality} - {r.rvs_code}
-            </div>
-          ))}
+          <div
+            style={{
+              minHeight: "150px",
+              border: "1px solid #000",
+              marginTop: "1rem"
+            }}
+          >
+            {this.state.rvs.map(r => (
+              <div>
+                {r.rvs_description} - {r.rvs_laterality} - {r.rvs_code}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div>
           <ul>
             <li>
-              Patient is supine position under <span></span> Anesthesia.
+              Patient is supine position under{" "}
+              <input
+                type="text"
+                name="anes"
+                onChange={this.onChange}
+                value={this.state.ob_operative_technique.anes}
+              />
+              Anesthesia.
             </li>
             <li>Insertion of Foley Catheter.</li>
-            <li>Pelvic Examination under anesthesia done:</li>
+            <li>
+              Pelvic Examination under anesthesia done:
+              <div style={{ padding: "0rem 1rem" }}>
+                <Row>
+                  <Col span={2}>Cervix</Col>
+                  <Col span={4}>
+                    <input
+                      type="text"
+                      name="cervix"
+                      onChange={this.onChange}
+                      value={this.state.ob_operative_technique.cervix}
+                    />
+                  </Col>
+
+                  <Col span={2} offset={2}>
+                    Adnexae
+                  </Col>
+                  <Col span={4}>
+                    <input
+                      type="text"
+                      name="adnexae"
+                      onChange={this.onChange}
+                      value={this.state.ob_operative_technique.adnexae}
+                    />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={2}>Uterus</Col>
+                  <Col span={4}>
+                    <input
+                      type="text"
+                      name="uterus"
+                      onChange={this.onChange}
+                      value={this.state.ob_operative_technique.uterus}
+                    />
+                  </Col>
+
+                  <Col span={2} offset={2}>
+                    Discharges
+                  </Col>
+                  <Col span={4}>
+                    <input
+                      type="text"
+                      name="discharges"
+                      onChange={this.onChange}
+                      value={this.state.ob_operative_technique.discharges}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            </li>
             <li>Asepsis/Antisepsis.</li>
             <li>Drapings placed leaving the operative site exposed.</li>
             <li>
@@ -353,16 +431,71 @@ class SurgicalMemorandumReport extends Component {
             </li>
             <li>
               Round ligaments on both sides grasped with straight Kelly clamp,
-              cut, and suture ligated using <span></span>.
+              cut, and suture ligated using{" "}
+              <input
+                type="text"
+                name="ligation_equipment"
+                onChange={this.onChange}
+                value={this.state.ob_operative_technique.ligation_equipment}
+              />
+              .
             </li>
-            <li></li>
+            <li>
+              The anterior leaves of the broad ligaments opened to the point of
+              reflection of the bladder peritoneum on the uterus.
+            </li>
+            <li>
+              The peritoneal incision was extended superior and lateral to the
+              ovaries, parallel wit the infundibulopelvic ligaments.
+              Retroperitoneal exploration done to identify vessels and ureters
+              on both sides.
+            </li>
+            <li>
+              Triple clamping of the infundibulopelvic ligaments on both sides
+              followed by cutting beneath the most medical clamp, doubly tying
+              beneath the most lateral clamp using Silk 0, and suture ligation
+              beneath the middle clamp using Vicryl 0 sutures.{" "}
+            </li>
+            <li>
+              Bladder was dissected away from the lower uterine segment and
+              anterior aspect of the cervix by careful dissection using a peanut
+              or cherry sponge.
+            </li>
+            <li>
+              Posterior leaves of the broad ligaments incised to the point of
+              origin of the uterosacral ligaments.
+            </li>
+            <li>
+              Uterine vessels on both sides were triply clamped with Heaney
+              clamps, cut beneath the most medical clamp and doubly suture
+              ligated using Vicryl 0.
+            </li>
+            <li>
+              Sequence of straight Heaney clamps were placed across the right
+              cardinal ligament, cut and suture-ligated using Vicryl 0. The
+              procedure was repeated until the level of cervico-vaginal
+              junction. The same procedure was done on the left side.
+            </li>
+            <li>
+              Uterosacral ligaments on both sides were clamped, cut, and
+              suture-ligated using Vicryl 0.
+            </li>
+            <li>
+              The vagina was grasped with two (2) Allis forceps and entered by a
+              stab wound in between the Allis forceps using scalpel and the
+              uterus was removed by circumferential cutting closely beneath the
+              cervix.
+            </li>
+            <li>Betadinized OS was then placed in the vaginal vault.</li>
           </ul>
         </div>
 
         <div className="print-iso-footer">
-          Surgical Memorandum <br />
-          CLMMRH-MRS.F.043 <br />
-          Issued: 2/5/14 Issue No. 001
+          Operative Technique <br />
+          CLMMRH-MRS.F.044 <br />
+          Issued: 6/9/15
+          <br />
+          Issue No. 001
         </div>
       </Content>
     );
@@ -376,4 +509,4 @@ const mapToState = state => {
   };
 };
 
-export default connect(mapToState)(withRouter(SurgicalMemorandumReport));
+export default connect(mapToState)(withRouter(OperativeTechinqueReport));

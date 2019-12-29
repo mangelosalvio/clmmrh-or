@@ -793,6 +793,21 @@ router.post("/:id", (req, res) => {
   });
 });
 
+router.post("/:id/operative-technique/ob", (req, res) => {
+  Model.findById(req.params.id)
+    .then(record => {
+      if (record) {
+        record.set({
+          ob_operative_technique: {
+            ...req.body.ob_operative_technique
+          }
+        });
+        record.save().then(record => res.json(record));
+      }
+    })
+    .catch(err => res.status(401).json(err));
+});
+
 router.delete("/selection", async (req, res) => {
   const items = req.body.items;
   await asyncForeach(items, async item => {

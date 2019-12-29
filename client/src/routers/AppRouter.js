@@ -19,6 +19,7 @@ import RelativeValueScaleForm from "../components/clmmrh/RelativeValueScaleForm"
 import SurgicalMemorandumReport from "../components/clmmrh/SurgicalMemorandumReport";
 import ORElectiveOperations from "../components/clmmrh/ORElectiveOperations";
 import ORScheduleForm from "../components/clmmrh/ORScheduleForm";
+import OperativeTechniqueReport from "../components/clmmrh/OperativeTechniqueReport";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -72,6 +73,12 @@ const AppRouter = () => (
         <Route
           path="/or-elective-operations"
           component={ORElectiveOperations}
+          exact={true}
+        />
+
+        <Route
+          path="/or-slip/:id/operative-technique"
+          component={OperativeTechniqueReport}
           exact={true}
         />
       </Switch>

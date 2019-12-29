@@ -17,6 +17,7 @@ const OperatingRoomSlipSchema = new Schema({
   procedure: String,
   case: String,
   surgeon: Object,
+  other_surgeon: Object,
   other_surgeons: [Object],
   classification: String,
   date_time_ordered: Date,
@@ -110,7 +111,16 @@ const OperatingRoomSlipSchema = new Schema({
       datetime: Date,
       log: String
     }
-  ]
+  ],
+
+  ob_operative_technique: {
+    anes: String,
+    cervix: String,
+    uterus: String,
+    adnexae: String,
+    discharges: String,
+    ligation_equipment: String
+  }
 });
 
 module.exports = mongoose.model(

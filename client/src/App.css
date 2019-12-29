@@ -655,3 +655,13 @@ li.ant-select-dropdown-menu-item:hover {
 .p-r-1 {
   padding-right: 1rem;
 }
+
+.operative-technique-container input {
+  border: none;
+  border-bottom: 1px solid #000;
+  margin: 0px 1rem;
+}
+
+.operative-technique-container li {
+  line-height: 14px;
+}
