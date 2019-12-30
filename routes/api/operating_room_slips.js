@@ -573,8 +573,8 @@ router.post("/display-monitor", (req, res) => {
           },
           {
             $sort: {
-              date_time_of_surgery: -1,
-              case_order: 1
+              case_order: 1,
+              date_time_of_surgery: -1
             }
           },
           {
@@ -602,8 +602,8 @@ router.post("/display-monitor", (req, res) => {
           },
           {
             $sort: {
-              date_time_of_surgery: -1,
-              case_order: 1
+              case_order: 1,
+              date_time_of_surgery: -1
             }
           },
           {
