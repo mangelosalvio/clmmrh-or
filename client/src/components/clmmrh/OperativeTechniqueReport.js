@@ -338,7 +338,6 @@ class OperativeTechinqueReport extends Component {
           <div
             style={{
               minHeight: "150px",
-              border: "1px solid #000",
               marginTop: "1rem"
             }}
           >
