@@ -287,6 +287,17 @@ class OperativeTechinqueReport extends Component {
     return (
       <Content className="content report operative-technique-container">
         <div className="has-text-centered has-text-weight-bold surgical-memo-heading">
+          CORAZON LOCSIN MONTELIBANO MEMORIAL REGIONAL HOSPITAL
+        </div>
+        <div className="has-text-centered surgical-memo-heading">
+          Lacson - Burgos Streets, Bacolod City
+        </div>
+        <div
+          className="has-text-centered has-text-weight-bold surgical-memo-heading"
+          style={{
+            marginTop: "32px"
+          }}
+        >
           OPERATIVE TECHNIQUE
         </div>
         <Row style={{ marginTop: "3rem" }}>
