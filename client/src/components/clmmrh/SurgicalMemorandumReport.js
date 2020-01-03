@@ -404,26 +404,26 @@ class SurgicalMemorandumReport extends Component {
           TREATMENT IN THE OPERATING ROOM
         </div>
         <Row>
-          <Col span={3} offset={2}>
+          <Col span={5} offset={2}>
             Before Operation
           </Col>
-          <Col span={15} className="b-b-1">
+          <Col span={13} className="b-b-1">
             &nbsp;{this.state.before_operation}
           </Col>
         </Row>
         <Row>
-          <Col span={3} offset={2}>
+          <Col span={5} offset={2}>
             During Operation
           </Col>
-          <Col span={15} className="b-b-1">
+          <Col span={13} className="b-b-1">
             &nbsp;{this.state.during_operation}
           </Col>
         </Row>
         <Row>
-          <Col span={3} offset={2}>
+          <Col span={5} offset={2}>
             After operation
           </Col>
-          <Col span={15} className="b-b-1">
+          <Col span={13} className="b-b-1">
             &nbsp;{this.state.after_operation}
           </Col>
         </Row>
@@ -436,10 +436,10 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={5} offset={2}>
+          <Col span={6} offset={2}>
             Complications after operation
           </Col>
-          <Col span={13} className="b-b-1">
+          <Col span={12} className="b-b-1">
             &nbsp;{this.state.complications_after_operation}
           </Col>
         </Row>
@@ -457,34 +457,34 @@ class SurgicalMemorandumReport extends Component {
           IMMEDIATE POST OPERATIVE TREATMENT
         </div>
         <Row>
-          <Col span={3} offset={2}>
+          <Col span={4} offset={2}>
             Position in bed
           </Col>
-          <Col span={15} className="b-b-1">
+          <Col span={14} className="b-b-1">
             &nbsp;{this.state.position_in_bed}
           </Col>
         </Row>
         <Row>
-          <Col span={3} offset={2}>
+          <Col span={4} offset={2}>
             Proctoclysis
           </Col>
-          <Col span={15} className="b-b-1">
+          <Col span={14} className="b-b-1">
             &nbsp;{this.state.proctoclysis}
           </Col>
         </Row>
         <Row>
-          <Col span={3} offset={2}>
+          <Col span={4} offset={2}>
             Hypodermoclysis
           </Col>
-          <Col span={15} className="b-b-1">
+          <Col span={14} className="b-b-1">
             &nbsp;{this.state.hypodermoclysis}
           </Col>
         </Row>
         <Row>
-          <Col span={3} offset={2}>
+          <Col span={4} offset={2}>
             Nutrition
           </Col>
-          <Col span={15} className="b-b-1">
+          <Col span={14} className="b-b-1">
             &nbsp;{this.state.nutrition}
           </Col>
         </Row>
