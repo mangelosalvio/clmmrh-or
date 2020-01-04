@@ -48,7 +48,9 @@ import {
   bed_number_options,
   anes_unit_options,
   anes_route_options,
-  anes_method_options
+  anes_method_options,
+  classification_housecase,
+  classification_service
 } from "../../utils/Options";
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
@@ -67,7 +69,10 @@ import {
   PRE_OPERATION_MODULE,
   POST_OPERATION_MODULE,
   TIME_LOGS_MODULE,
-  CASE_EMERGENCY_PROCEDURE
+  CASE_EMERGENCY_PROCEDURE,
+  CLASSIFICATION_PRIVATE,
+  CLASSIFICATION_HOUSECASE,
+  CLASSIFICATION_SERVICE
 } from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
@@ -893,7 +898,20 @@ class OperatingRoomSlipForm extends Component {
 
       let days = now.diff(dob, "days");
       let age = `${years}Y${months}M${days}D`;
+
       //let age = patient.age.trim();
+
+      let classification = CLASSIFICATION_PRIVATE;
+
+      if (classification_housecase.includes(patient.hospplan.trim())) {
+        classification = CLASSIFICATION_HOUSECASE;
+      } else if (classification_service.includes(patient.hospplan.trim())) {
+        classification = CLASSIFICATION_SERVICE;
+      }
+
+      console.log(patient.hospplan);
+      console.log(classification_service);
+
       this.setState({
         hospital_number,
         diagnosis,
@@ -904,7 +922,8 @@ class OperatingRoomSlipForm extends Component {
         ward,
         /* weight_unit, */
         age,
-        date_of_birth: moment(patient.birthdate)
+        date_of_birth: moment(patient.birthdate),
+        classification
       });
     }
   };

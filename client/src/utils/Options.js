@@ -37,6 +37,10 @@ export const case_options = ["Elective Surgery", "Emergency Procedure"];
 
 export const classification_options = ["Private", "Housecase", "Service"];
 
+export const classification_service = ["SELF-PAY", "NBB-PHIC", "PHILHEALTH"];
+
+export const classification_housecase = ["NBB-PHIC", "PHILHEALTH", "PDAF"];
+
 export const gender_options = ["Male", "Female"];
 export const service_options = [
   "OB",
@@ -151,7 +155,7 @@ export const anes_route_options = [
 export const anes_method_options = [
   "General anesthesia",
   "Epidural anesthesia",
-  "Spiral anesthesia",
+  "Spinal anesthesia",
   "Peripheral nerve block",
   "Local anesthesia",
   "Others"

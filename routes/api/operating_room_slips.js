@@ -182,7 +182,7 @@ router.post("/patients", (req, res) => {
                             ad.weight,ad.weightunit,dc.birthdate,
                             CAST (ad.admindiagnosis AS varchar(255)) diagnosis,
                             CONVERT(varchar(12),ad.admdate,101) regisdate,
-                            addm.address
+                            addm.address, ad.hospplan
                 FROM datacenter dc INNER JOIN admission ad ON dc.dcno = ad.dcno
                 INNER JOIN patient pat ON dc.dcno = pat.dcno 
                 INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
@@ -195,7 +195,7 @@ router.post("/patients", (req, res) => {
                             opd.weight,opd.weightunit,dc.birthdate,
                             CAST (opd.initdiagnosis AS varchar(255)) diagnosis,
                             CONVERT(varchar(12),opd.regdate,101) regisdate,
-                            addm.address
+                            addm.address, '' as hospplan
                 FROM datacenter dc INNER JOIN outpatient opd ON dc.dcno = opd.dcno
                 INNER JOIN patient pat ON dc.dcno = pat.dcno
                 INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
@@ -204,6 +204,8 @@ router.post("/patients", (req, res) => {
                 ORDER BY opd.regdate DESC
                 ) united ORDER BY convert(date,united.regisdate) DESC) gani) gd
     WHERE gd.num = 1 `;
+
+  //console.log(query);
 
   /* const query = `select * from Persons where name like '${search_text}%'`; */
 

@@ -17,4 +17,15 @@ export const PRE_OPERATION_MODULE = "PRE OPERATION MODULE";
 export const POST_OPERATION_MODULE = "POST OPERATION MODULE";
 export const TIME_LOGS_MODULE = "TIME LOGS MODULE";
 export const CASE_ELECTIVE_SURGERY = "Elective Surgery";
+
 export const CASE_EMERGENCY_PROCEDURE = "Emergency Procedure";
+
+export const SELF_PAY = "SELF-PAY"; // service
+export const NBB_PHIC = "NBB-PHIC"; // housecase
+export const PHILHEALTH = "PHILHEALTH"; // housecase
+export const PHIC = "PHIC"; // housecase
+export const PDAF = "PDAF";
+
+export const CLASSIFICATION_PRIVATE = "Private";
+export const CLASSIFICATION_HOUSECASE = "Housecase";
+export const CLASSIFICATION_SERVICE = "Service";
