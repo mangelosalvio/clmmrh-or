@@ -37,7 +37,7 @@ export const case_options = ["Elective Surgery", "Emergency Procedure"];
 
 export const classification_options = ["Private", "Housecase", "Service"];
 
-export const classification_service = ["SELF-PAY", "NBB-PHIC", "PHILHEALTH"];
+export const classification_service = ["SELF-PAY"];
 
 export const classification_housecase = ["NBB-PHIC", "PHILHEALTH", "PDAF"];
 
