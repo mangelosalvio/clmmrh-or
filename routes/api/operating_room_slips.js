@@ -195,7 +195,7 @@ router.post("/patients", (req, res) => {
                             opd.weight,opd.weightunit,dc.birthdate,
                             CAST (opd.initdiagnosis AS varchar(255)) diagnosis,
                             CONVERT(varchar(12),opd.regdate,101) regisdate,
-                            addm.address, '' as hospplan
+                            addm.address, opd.hospplan
                 FROM datacenter dc INNER JOIN outpatient opd ON dc.dcno = opd.dcno
                 INNER JOIN patient pat ON dc.dcno = pat.dcno
                 INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
