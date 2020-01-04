@@ -901,7 +901,7 @@ class OperatingRoomSlipForm extends Component {
 
       //let age = patient.age.trim();
 
-      let classification = CLASSIFICATION_PRIVATE;
+      let classification = '';
 
       if (classification_housecase.includes(patient.hospplan.trim())) {
         classification = CLASSIFICATION_HOUSECASE;
