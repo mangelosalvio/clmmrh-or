@@ -174,8 +174,40 @@ router.post("/patients", (req, res) => {
     return res.json(records);
   });
  */
+
+  /* const query = `SELECT * FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY fullname
+  ORDER BY dcno) num FROM ( 
+      SELECT TOP 10 *
+      FROM    (SELECT TOP 10 dc.dcno,dc.fullname,dc.fname,dc.mname,dc.lname, 
+                          dc.abbrev,ad.age,pat.sex,dc.rmno,
+                          ad.weight,ad.weightunit,dc.birthdate,
+                          CAST (ad.admindiagnosis AS varchar(255)) diagnosis,
+                          CONVERT(varchar(12),ad.admdate,101) regisdate,
+                          addm.address, ad.hospplan
+              FROM datacenter dc INNER JOIN admission ad ON dc.dcno = ad.dcno
+              INNER JOIN patient pat ON dc.dcno = pat.dcno 
+              INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
+              WHERE (dc.fullname LIKE '${search_text}%' OR fname LIKE '${search_text}%')
+    AND (addm.address is not null and addm.address <> '(N/A)')
+              ORDER BY ad.regdate DESC
+              UNION
+              SELECT TOP 10 dc.dcno,dc.fullname,dc.fname,dc.mname,dc.lname,
+                          dc.abbrev,opd.age,pat.sex,dc.rmno,
+                          opd.weight,opd.weightunit,dc.birthdate,
+                          CAST (opd.initdiagnosis AS varchar(255)) diagnosis,
+                          CONVERT(varchar(12),opd.regdate,101) regisdate,
+                          addm.address, opd.hospplan
+              FROM datacenter dc INNER JOIN outpatient opd ON dc.dcno = opd.dcno
+              INNER JOIN patient pat ON dc.dcno = pat.dcno
+              INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
+              WHERE (dc.fullname LIKE '${search_text}%' OR fname LIKE '${search_text}%')
+    AND (addm.address is not null and addm.address <> '(N/A)')
+              ORDER BY opd.regdate DESC
+              ) united ORDER BY convert(date,united.regisdate) DESC) gani) gd
+  WHERE gd.num = 1 `;
+ */
   const query = `SELECT * FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY fullname
-    ORDER BY dcno) num FROM (
+    ORDER BY dcno) num FROM ( 
         SELECT TOP 10 *
         FROM    (SELECT TOP 10 dc.dcno,dc.fullname,dc.fname,dc.mname,dc.lname, 
                             dc.abbrev,ad.age,pat.sex,dc.rmno,
@@ -189,19 +221,6 @@ router.post("/patients", (req, res) => {
                 WHERE (dc.fullname LIKE '${search_text}%' OR fname LIKE '${search_text}%')
       AND (addm.address is not null and addm.address <> '(N/A)')
                 ORDER BY ad.regdate DESC
-                UNION
-                SELECT TOP 10 dc.dcno,dc.fullname,dc.fname,dc.mname,dc.lname,
-                            dc.abbrev,opd.age,pat.sex,dc.rmno,
-                            opd.weight,opd.weightunit,dc.birthdate,
-                            CAST (opd.initdiagnosis AS varchar(255)) diagnosis,
-                            CONVERT(varchar(12),opd.regdate,101) regisdate,
-                            addm.address, opd.hospplan
-                FROM datacenter dc INNER JOIN outpatient opd ON dc.dcno = opd.dcno
-                INNER JOIN patient pat ON dc.dcno = pat.dcno
-                INNER JOIN addrmstr addm ON dc.dcno = addm.dcno
-                WHERE (dc.fullname LIKE '${search_text}%' OR fname LIKE '${search_text}%')
-      AND (addm.address is not null and addm.address <> '(N/A)')
-                ORDER BY opd.regdate DESC
                 ) united ORDER BY convert(date,united.regisdate) DESC) gani) gd
     WHERE gd.num = 1 `;
 
