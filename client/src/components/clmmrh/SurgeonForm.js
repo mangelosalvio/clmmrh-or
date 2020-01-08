@@ -261,7 +261,7 @@ class SurgeonForm extends Component {
               />
 
               <TextFieldGroup
-                label="Licese No."
+                label="License No."
                 name="license_number"
                 value={this.state.license_number}
                 error={errors.license_number}

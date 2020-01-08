@@ -29,3 +29,4 @@ export const PDAF = "PDAF";
 export const CLASSIFICATION_PRIVATE = "Private";
 export const CLASSIFICATION_HOUSECASE = "Housecase";
 export const CLASSIFICATION_SERVICE = "Service";
+export const NOT_APPLICABLE = "Not Applicable";

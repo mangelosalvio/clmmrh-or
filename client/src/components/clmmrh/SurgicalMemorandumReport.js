@@ -6,6 +6,8 @@ import { Layout, message, Col, Row } from "antd";
 import classnames from "classnames";
 
 import moment from "moment";
+import isEmpty from "../../validation/is-empty";
+import { NOT_APPLICABLE } from "../../utils/constants";
 
 const { Content } = Layout;
 
@@ -423,8 +425,13 @@ class SurgicalMemorandumReport extends Component {
           <Col span={5} offset={2}>
             After operation
           </Col>
-          <Col span={13} className="b-b-1">
-            &nbsp;{this.state.after_operation}
+          <Col
+            span={13}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.after_operation)
+            })}
+          >
+            &nbsp;{this.state.after_operation || "See anesthesia record"}
           </Col>
         </Row>
         <Row>
@@ -449,7 +456,11 @@ class SurgicalMemorandumReport extends Component {
           </span>
           {this.state.rvs.map(r => (
             <div>
-              {r.rvs_description} - {r.rvs_laterality} - {r.rvs_code}
+              {r.rvs_description}{" "}
+              {!isEmpty(r.rvs_laterality) &&
+                r.rvs_laterality !== NOT_APPLICABLE &&
+                `- ${r.rvs_laterality}`}{" "}
+              - {r.rvs_code}
             </div>
           ))}
         </div>
@@ -476,8 +487,13 @@ class SurgicalMemorandumReport extends Component {
           <Col span={4} offset={2}>
             Hypodermoclysis
           </Col>
-          <Col span={14} className="b-b-1">
-            &nbsp;{this.state.hypodermoclysis}
+          <Col
+            span={14}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.hypodermoclysis)
+            })}
+          >
+            &nbsp;{this.state.hypodermoclysis || "See post-operative records"}
           </Col>
         </Row>
         <Row>
