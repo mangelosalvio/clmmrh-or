@@ -175,7 +175,7 @@ router.post("/patients", (req, res) => {
   });
  */
 
-  /* const query = `SELECT * FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY fullname
+  const query = `SELECT * FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY fullname
   ORDER BY dcno) num FROM ( 
       SELECT TOP 10 *
       FROM    (SELECT TOP 10 dc.dcno,dc.fullname,dc.fname,dc.mname,dc.lname, 
@@ -205,8 +205,8 @@ router.post("/patients", (req, res) => {
               ORDER BY opd.regdate DESC
               ) united ORDER BY convert(date,united.regisdate) DESC) gani) gd
   WHERE gd.num = 1 `;
- */
-  const query = `SELECT * FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY fullname
+
+  /* const query = `SELECT * FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY fullname
     ORDER BY dcno) num FROM ( 
         SELECT TOP 10 *
         FROM    (SELECT TOP 10 dc.dcno,dc.fullname,dc.fname,dc.mname,dc.lname, 
@@ -222,7 +222,7 @@ router.post("/patients", (req, res) => {
       AND (addm.address is not null and addm.address <> '(N/A)')
                 ORDER BY ad.regdate DESC
                 ) united ORDER BY convert(date,united.regisdate) DESC) gani) gd
-    WHERE gd.num = 1 `;
+    WHERE gd.num = 1 `; */
 
   //console.log(query);
 
