@@ -409,16 +409,26 @@ class SurgicalMemorandumReport extends Component {
           <Col span={5} offset={2}>
             Before Operation
           </Col>
-          <Col span={13} className="b-b-1">
-            &nbsp;{this.state.before_operation}
+          <Col
+            span={13}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.after_operation)
+            })}
+          >
+            &nbsp;{this.state.before_operation || "See anesthesia record"}
           </Col>
         </Row>
         <Row>
           <Col span={5} offset={2}>
             During Operation
           </Col>
-          <Col span={13} className="b-b-1">
-            &nbsp;{this.state.during_operation}
+          <Col
+            span={13}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.after_operation)
+            })}
+          >
+            &nbsp;{this.state.during_operation || "See anesthesia record"}
           </Col>
         </Row>
         <Row>
@@ -438,16 +448,30 @@ class SurgicalMemorandumReport extends Component {
           <Col span={6} offset={2}>
             Complications during operation
           </Col>
-          <Col span={12} className="b-b-1">
-            &nbsp;{this.state.complications_during_operation}
+          <Col
+            span={12}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.after_operation)
+            })}
+          >
+            &nbsp;
+            {this.state.complications_during_operation ||
+              "See anesthesia record"}
           </Col>
         </Row>
         <Row>
           <Col span={6} offset={2}>
             Complications after operation
           </Col>
-          <Col span={12} className="b-b-1">
-            &nbsp;{this.state.complications_after_operation}
+          <Col
+            span={12}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.after_operation)
+            })}
+          >
+            &nbsp;
+            {this.state.complications_after_operation ||
+              "See anesthesia record"}
           </Col>
         </Row>
         <div className="m-t-1">
@@ -471,16 +495,26 @@ class SurgicalMemorandumReport extends Component {
           <Col span={4} offset={2}>
             Position in bed
           </Col>
-          <Col span={14} className="b-b-1">
-            &nbsp;{this.state.position_in_bed}
+          <Col
+            span={14}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.hypodermoclysis)
+            })}
+          >
+            &nbsp;{this.state.position_in_bed || "See post-operative records"}
           </Col>
         </Row>
         <Row>
           <Col span={4} offset={2}>
             Proctoclysis
           </Col>
-          <Col span={14} className="b-b-1">
-            &nbsp;{this.state.proctoclysis}
+          <Col
+            span={14}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.hypodermoclysis)
+            })}
+          >
+            &nbsp;{this.state.proctoclysis || "See post-operative records"}
           </Col>
         </Row>
         <Row>
@@ -500,16 +534,26 @@ class SurgicalMemorandumReport extends Component {
           <Col span={4} offset={2}>
             Nutrition
           </Col>
-          <Col span={14} className="b-b-1">
-            &nbsp;{this.state.nutrition}
+          <Col
+            span={14}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.hypodermoclysis)
+            })}
+          >
+            &nbsp;{this.state.nutrition || "See post-operative records"}
           </Col>
         </Row>
         <Row>
           <Col span={7} offset={2}>
             Stimulant and other medications
           </Col>
-          <Col span={11} className="b-b-1">
-            &nbsp;{this.state.stimulant}
+          <Col
+            span={11}
+            className={classnames("b-b-1", {
+              "has-text-centered": isEmpty(this.state.hypodermoclysis)
+            })}
+          >
+            &nbsp;{this.state.stimulant || "See post-operative records"}
           </Col>
         </Row>
 
