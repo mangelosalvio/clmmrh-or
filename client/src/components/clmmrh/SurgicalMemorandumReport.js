@@ -42,11 +42,14 @@ const form_data = {
   operation_type: "",
   operation_status: "",
   main_anes: "",
+  other_anes: [],
   laterality: "",
   operating_room_number: "",
 
   assistant_surgeon: "",
+  other_surgeons: [],
   instrument_nurse: "",
+  other_inst_nurses: [],
   sponge_nurse: "",
   anes_method: "",
   anes_methods: [],
@@ -242,6 +245,39 @@ class SurgicalMemorandumReport extends Component {
   };
 
   render() {
+    let inst_nurses = [];
+
+    if (this.state.instrument_nurse && this.state.instrument_nurse.full_name) {
+      inst_nurses.push(this.state.instrument_nurse.full_name);
+    }
+
+    this.state.other_inst_nurses.forEach(item => {
+      inst_nurses.push(item.full_name);
+    });
+
+    let other_surgeons = [];
+
+    if (
+      this.state.assistant_surgeon &&
+      this.state.assistant_surgeon.full_name
+    ) {
+      other_surgeons.push(this.state.assistant_surgeon.full_name);
+    }
+
+    this.state.other_surgeons.forEach(item => {
+      other_surgeons.push(item.full_name);
+    });
+
+    let other_anes = [];
+
+    if (this.state.main_anes && this.state.main_anes.full_name) {
+      other_anes.push(this.state.main_anes.full_name);
+    }
+
+    this.state.other_anes.forEach(item => {
+      other_anes.push(item.full_name);
+    });
+
     return (
       <Content className="content report">
         <div className="has-text-centered has-text-weight-bold surgical-memo-heading">
@@ -309,8 +345,7 @@ class SurgicalMemorandumReport extends Component {
           <Col span={6} className="b-b-1">
             {" "}
             &nbsp;
-            {this.state.assistant_surgeon &&
-              this.state.assistant_surgeon.full_name}
+            {other_surgeons.join("/")}
           </Col>
         </Row>
         <Row>
@@ -318,8 +353,7 @@ class SurgicalMemorandumReport extends Component {
           <Col span={9} className="b-b-1">
             {" "}
             &nbsp;
-            {this.state.instrument_nurse &&
-              this.state.instrument_nurse.full_name}
+            {inst_nurses.join("/")}
           </Col>
           <Col span={3}>Sponge Nurse</Col>
           <Col span={9} className="b-b-1">
@@ -347,7 +381,7 @@ class SurgicalMemorandumReport extends Component {
         <Row className="m-t-16">
           <Col span={3}>Anesthesiologist</Col>
           <Col span={7} className="b-b-1">
-            {this.state.main_anes && this.state.main_anes.full_name}
+            &nbsp;{other_anes.join("/")}
           </Col>
           <Col span={5}>Anesthetic Method</Col>
           <Col span={9} className="b-b-1">

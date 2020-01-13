@@ -126,6 +126,8 @@ const form_data = {
 
   assistant_surgeon: "",
   instrument_nurse: "",
+  other_inst_nurse: "",
+  other_inst_nurses: [],
   sponge_nurse: "",
   anes_methods: [],
   anes_method: "",
@@ -611,6 +613,25 @@ class OperatingRoomSlipForm extends Component {
     }
   };
 
+  onOtherInstNurseChange = (index, name) => {
+    if (!isEmpty(index)) {
+      const other_inst_nurses = [
+        ...this.state.other_inst_nurses,
+        this.state.options.nurses[index]
+      ];
+      this.setState(prevState => {
+        return {
+          other_inst_nurses,
+          [name]: ""
+        };
+      });
+    } else {
+      this.setState({
+        [name]: null
+      });
+    }
+  };
+
   onOtherSurgeonChange = (index, name) => {
     if (!isEmpty(index)) {
       const other_surgeons = [
@@ -724,15 +745,15 @@ class OperatingRoomSlipForm extends Component {
           this.setState({
             rvs_description: response.data.description
           });
-          message.success("RVS Found");
+          message.success("RVU Found");
         } else {
-          message.error("RVS not Found");
+          message.error("RVU not Found");
         }
       });
   };
 
   /**
-   * RVS Desc
+   * RVU Desc
    */
 
   onRvsSearch = value => {
@@ -829,6 +850,14 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onDeleteOtherInstNurse = index => {
+    const other_inst_nurses = [...this.state.other_inst_nurses];
+    other_inst_nurses.splice(index, 1);
+    this.setState({
+      other_inst_nurses
+    });
+  };
+
   onDeleteAnesMethod = index => {
     const anes_methods = [...this.state.anes_methods];
     anes_methods.splice(index, 1);
@@ -901,16 +930,13 @@ class OperatingRoomSlipForm extends Component {
 
       //let age = patient.age.trim();
 
-      let classification = '';
+      let classification = "";
 
       if (classification_housecase.includes(patient.hospplan.trim())) {
         classification = CLASSIFICATION_HOUSECASE;
       } else if (classification_service.includes(patient.hospplan.trim())) {
         classification = CLASSIFICATION_SERVICE;
       }
-
-      console.log(patient.hospplan);
-      console.log(classification_service);
 
       this.setState({
         hospital_number,
@@ -1013,15 +1039,15 @@ class OperatingRoomSlipForm extends Component {
 
     const rvs_column = [
       {
-        title: "RVS Code",
+        title: "RVU Code",
         dataIndex: "rvs_code"
       },
       {
-        title: "RVS Description",
+        title: "RVU Description",
         dataIndex: "rvs_description"
       },
       {
-        title: "RVS Description",
+        title: "RVU Description",
         dataIndex: "rvs_description"
       },
       {
@@ -1095,6 +1121,28 @@ class OperatingRoomSlipForm extends Component {
               theme="filled"
               className="pointer"
               onClick={() => this.onDeleteAnesMethod(index)}
+            />
+          </span>
+        )
+      }
+    ];
+
+    const other_inst_nurses_column = [
+      {
+        title: "Other Inst Nurse",
+        dataIndex: "full_name"
+      },
+      {
+        title: "",
+        key: "action",
+        width: 10,
+        render: (text, record, index) => (
+          <span>
+            <Icon
+              type="delete"
+              theme="filled"
+              className="pointer"
+              onClick={() => this.onDeleteOtherInstNurse(index)}
             />
           </span>
         )
@@ -1622,6 +1670,18 @@ class OperatingRoomSlipForm extends Component {
                         data={this.state.options.surgeons}
                         column="full_name"
                       />
+
+                      <DateTimePickerFieldGroup
+                        label="Date/Time Ordered"
+                        name="date_time_ordered"
+                        value={this.state.date_time_ordered}
+                        onChange={value =>
+                          this.setState({ date_time_ordered: value })
+                        }
+                        error={errors.date_time_ordered}
+                        formItemLayout={smallFormItemLayout}
+                        showTime={true}
+                      />
                     </Col>
 
                     <Col span={12}>
@@ -1696,48 +1756,6 @@ class OperatingRoomSlipForm extends Component {
                         formItemLayout={smallFormItemLayout}
                         data={this.state.options.nurses}
                         column="full_name"
-                      />
-                    </Col>
-                  </Row>
-
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Other Surgeon"
-                        name="other_surgeon"
-                        value={
-                          this.state.other_surgeon &&
-                          this.state.other_surgeon.full_name
-                        }
-                        onChange={index =>
-                          this.onOtherSurgeonChange(index, "other_surgeon")
-                        }
-                        onSearch={this.onSurgeonSearch}
-                        error={errors.other_surgeon}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.surgeons}
-                        column="full_name"
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Date/Time Ordered"
-                        name="date_time_ordered"
-                        value={this.state.date_time_ordered}
-                        onChange={value =>
-                          this.setState({ date_time_ordered: value })
-                        }
-                        error={errors.date_time_ordered}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.other_surgeons}
-                        columns={other_surgeons_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
                       />
                     </Col>
                   </Row>
@@ -2040,34 +2058,6 @@ class OperatingRoomSlipForm extends Component {
                     </Col>
                   </Row>
 
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Other Anes"
-                        name="other_anes_input"
-                        value={
-                          this.state.other_anes_input &&
-                          this.state.other_anes_input.full_name
-                        }
-                        onChange={this.onOtherAnesChange}
-                        onSearch={this.onAnesSearch}
-                        error={errors.other_anes_input}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.anesthesiologists}
-                        column="full_name"
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.other_anes}
-                        columns={other_anes_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
-
                   <Form.Item className="m-t-1" {...tailFormItemLayout}>
                     <div className="field is-grouped">
                       <div className="control">
@@ -2277,7 +2267,26 @@ class OperatingRoomSlipForm extends Component {
                         data={this.state.options.surgeons}
                         column="full_name"
                       />
-
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <SelectFieldGroup
+                        label="Other Surgeon"
+                        name="other_surgeon"
+                        value={
+                          this.state.other_surgeon &&
+                          this.state.other_surgeon.full_name
+                        }
+                        onChange={index =>
+                          this.onOtherSurgeonChange(index, "other_surgeon")
+                        }
+                        onSearch={this.onSurgeonSearch}
+                        error={errors.other_surgeon}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.surgeons}
+                        column="full_name"
+                      />
                       <SelectFieldGroup
                         label="Inst. Nurse"
                         name="instrument_nurse"
@@ -2294,7 +2303,48 @@ class OperatingRoomSlipForm extends Component {
                         data={this.state.options.nurses}
                         column="full_name"
                       />
-
+                    </Col>
+                    <Col span={12}>
+                      <Table
+                        dataSource={this.state.other_surgeons}
+                        columns={other_surgeons_column}
+                        rowKey={record => record._id}
+                        locale={{ emptyText: "No Records Found" }}
+                        pagination={false}
+                      />
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <SelectFieldGroup
+                        label="Other Inst. Nurse"
+                        name="other_inst_nurse"
+                        value={
+                          this.state.other_inst_nurse &&
+                          this.state.other_inst_nurse.full_name
+                        }
+                        onChange={index =>
+                          this.onOtherInstNurseChange(index, "other_inst_nurse")
+                        }
+                        onSearch={this.onNurseSearch}
+                        error={errors.instrument_nurse}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.nurses}
+                        column="full_name"
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Table
+                        dataSource={this.state.other_inst_nurses}
+                        columns={other_inst_nurses_column}
+                        rowKey={record => record._id}
+                        locale={{ emptyText: "No Records Found" }}
+                        pagination={false}
+                      />
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col span={12}>
                       <SelectFieldGroup
                         label="Sponge Nurse"
                         name="sponge_nurse"
@@ -2325,7 +2375,37 @@ class OperatingRoomSlipForm extends Component {
                         data={this.state.options.anesthesiologists}
                         column="full_name"
                       />
-
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <SelectFieldGroup
+                        label="Other Anes"
+                        name="other_anes_input"
+                        value={
+                          this.state.other_anes_input &&
+                          this.state.other_anes_input.full_name
+                        }
+                        onChange={this.onOtherAnesChange}
+                        onSearch={this.onAnesSearch}
+                        error={errors.other_anes_input}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.anesthesiologists}
+                        column="full_name"
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Table
+                        dataSource={this.state.other_anes}
+                        columns={other_anes_column}
+                        rowKey={record => record._id}
+                        locale={{ emptyText: "No Records Found" }}
+                        pagination={false}
+                      />
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col span={12}>
                       <SimpleSelectFieldGroup
                         label="Method"
                         name="anes_method"
@@ -2516,11 +2596,11 @@ class OperatingRoomSlipForm extends Component {
                     </Col>
                   </Row>
 
-                  <Divider orientation="left">RVS</Divider>
+                  <Divider orientation="left">RVU</Divider>
                   <Row gutter={12}>
                     <Col span={12}>
                       <TextFieldGroup
-                        label="RVS Code"
+                        label="RVU Code"
                         name="rvs_code"
                         value={this.state.rvs_code}
                         error={errors.rvs_code}
@@ -2530,7 +2610,7 @@ class OperatingRoomSlipForm extends Component {
                       />
 
                       <TextAreaAutocompleteGroup
-                        label="RVS Desc"
+                        label="RVU Desc"
                         name="rvs_description"
                         value={this.state.rvs_description}
                         error={errors.rvs_description}
@@ -2561,7 +2641,7 @@ class OperatingRoomSlipForm extends Component {
                               className="button is-small"
                               onClick={this.onAddRvs}
                             >
-                              Add RVS
+                              Add RVU
                             </Button>
                           </div>
                         </div>
