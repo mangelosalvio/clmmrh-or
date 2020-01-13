@@ -2228,15 +2228,6 @@ class OperatingRoomSlipForm extends Component {
                       />
 
                       <TextFieldGroup
-                        label="ASA"
-                        name="asa"
-                        value={this.state.asa}
-                        error={errors.asa}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-
-                      <TextFieldGroup
                         label="Ward"
                         name="ward"
                         value={this.state.ward}

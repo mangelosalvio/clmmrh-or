@@ -451,11 +451,11 @@ class SurgicalMemorandumReport extends Component {
           TREATMENT IN THE OPERATING ROOM
         </div>
         <Row>
-          <Col span={5} offset={2}>
+          <Col span={6} offset={2}>
             Before Operation
           </Col>
           <Col
-            span={13}
+            span={12}
             className={classnames("b-b-1", {
               "has-text-centered": isEmpty(this.state.after_operation)
             })}
@@ -464,11 +464,11 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={5} offset={2}>
+          <Col span={6} offset={2}>
             During Operation
           </Col>
           <Col
-            span={13}
+            span={12}
             className={classnames("b-b-1", {
               "has-text-centered": isEmpty(this.state.after_operation)
             })}
@@ -477,11 +477,11 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={5} offset={2}>
+          <Col span={6} offset={2}>
             After operation
           </Col>
           <Col
-            span={13}
+            span={12}
             className={classnames("b-b-1", {
               "has-text-centered": isEmpty(this.state.after_operation)
             })}
@@ -537,11 +537,11 @@ class SurgicalMemorandumReport extends Component {
           IMMEDIATE POST OPERATIVE TREATMENT
         </div>
         <Row>
-          <Col span={4} offset={2}>
+          <Col span={7} offset={2}>
             Position in bed
           </Col>
           <Col
-            span={14}
+            span={11}
             className={classnames("b-b-1", {
               "has-text-centered": isEmpty(this.state.hypodermoclysis)
             })}
@@ -550,11 +550,11 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={4} offset={2}>
+          <Col span={7} offset={2}>
             Proctoclysis
           </Col>
           <Col
-            span={14}
+            span={11}
             className={classnames("b-b-1", {
               "has-text-centered": isEmpty(this.state.hypodermoclysis)
             })}
@@ -563,11 +563,11 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={4} offset={2}>
+          <Col span={7} offset={2}>
             Hypodermoclysis
           </Col>
           <Col
-            span={14}
+            span={11}
             className={classnames("b-b-1", {
               "has-text-centered": isEmpty(this.state.hypodermoclysis)
             })}
@@ -576,11 +576,11 @@ class SurgicalMemorandumReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col span={4} offset={2}>
+          <Col span={7} offset={2}>
             Nutrition
           </Col>
           <Col
-            span={14}
+            span={11}
             className={classnames("b-b-1", {
               "has-text-centered": isEmpty(this.state.hypodermoclysis)
             })}
