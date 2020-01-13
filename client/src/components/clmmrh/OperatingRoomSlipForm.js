@@ -128,6 +128,8 @@ const form_data = {
   instrument_nurse: "",
   other_inst_nurse: "",
   other_inst_nurses: [],
+  other_sponge_nurse: "",
+  other_sponge_nurses: [],
   sponge_nurse: "",
   anes_methods: [],
   anes_method: "",
@@ -632,6 +634,25 @@ class OperatingRoomSlipForm extends Component {
     }
   };
 
+  onOtherSpongeNurseChange = (index, name) => {
+    if (!isEmpty(index)) {
+      const other_sponge_nurses = [
+        ...this.state.other_sponge_nurses,
+        this.state.options.nurses[index]
+      ];
+      this.setState(prevState => {
+        return {
+          other_sponge_nurses,
+          [name]: ""
+        };
+      });
+    } else {
+      this.setState({
+        [name]: null
+      });
+    }
+  };
+
   onOtherSurgeonChange = (index, name) => {
     if (!isEmpty(index)) {
       const other_surgeons = [
@@ -855,6 +876,14 @@ class OperatingRoomSlipForm extends Component {
     other_inst_nurses.splice(index, 1);
     this.setState({
       other_inst_nurses
+    });
+  };
+
+  onDeleteOtherSpongeNurse = index => {
+    const other_sponge_nurse = [...this.state.other_sponge_nurse];
+    other_sponge_nurse.splice(index, 1);
+    this.setState({
+      other_sponge_nurse
     });
   };
 
@@ -1143,6 +1172,28 @@ class OperatingRoomSlipForm extends Component {
               theme="filled"
               className="pointer"
               onClick={() => this.onDeleteOtherInstNurse(index)}
+            />
+          </span>
+        )
+      }
+    ];
+
+    const other_sponge_nurses_column = [
+      {
+        title: "Other Sponge Nurse",
+        dataIndex: "full_name"
+      },
+      {
+        title: "",
+        key: "action",
+        width: 10,
+        render: (text, record, index) => (
+          <span>
+            <Icon
+              type="delete"
+              theme="filled"
+              className="pointer"
+              onClick={() => this.onDeleteOtherSpongeNurse(index)}
             />
           </span>
         )
@@ -1759,27 +1810,30 @@ class OperatingRoomSlipForm extends Component {
                       />
                     </Col>
                   </Row>
-
-                  <Form.Item className="m-t-1" {...tailFormItemLayout}>
-                    <div className="field is-grouped">
-                      <div className="control">
-                        <button className="button is-small is-primary">
-                          Save
-                        </button>
-                      </div>
-                      {!isEmpty(this.state._id) ? (
-                        <a
-                          className="button is-danger is-outlined is-small"
-                          onClick={this.onDelete}
-                        >
-                          <span>Delete</span>
-                          <span className="icon is-small">
-                            <i className="fas fa-times" />
-                          </span>
-                        </a>
-                      ) : null}
-                    </div>
-                  </Form.Item>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
+                        <div className="field is-grouped">
+                          <div className="control">
+                            <button className="button is-small is-primary">
+                              Save
+                            </button>
+                          </div>
+                          {!isEmpty(this.state._id) ? (
+                            <a
+                              className="button is-danger is-outlined is-small"
+                              onClick={this.onDelete}
+                            >
+                              <span>Delete</span>
+                              <span className="icon is-small">
+                                <i className="fas fa-times" />
+                              </span>
+                            </a>
+                          ) : null}
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  </Row>
                 </Form>
               </TabPane>
               <TabPane tab="Pre Operation" key="2">
@@ -2014,35 +2068,6 @@ class OperatingRoomSlipForm extends Component {
                   <Row gutter={12}>
                     <Col span={12}>
                       <SelectFieldGroup
-                        label="Other Surgeon"
-                        name="other_surgeon"
-                        value={
-                          this.state.other_surgeon &&
-                          this.state.other_surgeon.full_name
-                        }
-                        onChange={index =>
-                          this.onOtherSurgeonChange(index, "other_surgeon")
-                        }
-                        onSearch={this.onSurgeonSearch}
-                        error={errors.other_surgeon}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.surgeons}
-                        column="full_name"
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.other_surgeons}
-                        columns={other_surgeons_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
                         label="Main Anes"
                         name="main_anes"
                         value={
@@ -2057,27 +2082,30 @@ class OperatingRoomSlipForm extends Component {
                       />
                     </Col>
                   </Row>
-
-                  <Form.Item className="m-t-1" {...tailFormItemLayout}>
-                    <div className="field is-grouped">
-                      <div className="control">
-                        <button className="button is-small is-primary">
-                          Save
-                        </button>
-                      </div>
-                      {!isEmpty(this.state._id) ? (
-                        <a
-                          className="button is-danger is-outlined is-small"
-                          onClick={this.onDelete}
-                        >
-                          <span>Delete</span>
-                          <span className="icon is-small">
-                            <i className="fas fa-times" />
-                          </span>
-                        </a>
-                      ) : null}
-                    </div>
-                  </Form.Item>
+                  <Row>
+                    <Col span={12}>
+                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
+                        <div className="field is-grouped">
+                          <div className="control">
+                            <button className="button is-small is-primary">
+                              Save
+                            </button>
+                          </div>
+                          {!isEmpty(this.state._id) ? (
+                            <a
+                              className="button is-danger is-outlined is-small"
+                              onClick={this.onDelete}
+                            >
+                              <span>Delete</span>
+                              <span className="icon is-small">
+                                <i className="fas fa-times" />
+                              </span>
+                            </a>
+                          ) : null}
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  </Row>
                 </Form>
               </TabPane>
               <TabPane tab="Post Operation" key="3">
@@ -2361,7 +2389,42 @@ class OperatingRoomSlipForm extends Component {
                         data={this.state.options.nurses}
                         column="full_name"
                       />
-
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col span={12}>
+                      <SelectFieldGroup
+                        label="Other Sponge Nurse"
+                        name="other_inst_nurse"
+                        value={
+                          this.state.other_sponge_nurse &&
+                          this.state.other_sponge_nurse.full_name
+                        }
+                        onChange={index =>
+                          this.onOtherSpongeNurseChange(
+                            index,
+                            "other_inst_nurse"
+                          )
+                        }
+                        onSearch={this.onNurseSearch}
+                        error={errors.other_sponge_nurse}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.nurses}
+                        column="full_name"
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <Table
+                        dataSource={this.state.other_sponge_nurses}
+                        columns={other_sponge_nurses_column}
+                        rowKey={record => record._id}
+                        locale={{ emptyText: "No Records Found" }}
+                        pagination={false}
+                      />
+                    </Col>
+                  </Row>
+                  <Row gutter={12}>
+                    <Col span={12}>
                       <SelectFieldGroup
                         label="Main Anes"
                         name="main_anes"
@@ -2392,6 +2455,14 @@ class OperatingRoomSlipForm extends Component {
                         formItemLayout={smallFormItemLayout}
                         data={this.state.options.anesthesiologists}
                         column="full_name"
+                      />
+                      <TextFieldGroup
+                        label="ASA"
+                        name="asa"
+                        value={this.state.asa}
+                        error={errors.asa}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
                       />
                     </Col>
                     <Col span={12}>
@@ -2709,7 +2780,7 @@ class OperatingRoomSlipForm extends Component {
                         onChange={this.onChange}
                       />
 
-                      <Divider orientation="left">Operation Performed</Divider>
+                      {/* <Divider orientation="left">Operation Performed</Divider>
 
                       <TextAreaGroup
                         label="Operation Performed"
@@ -2718,7 +2789,7 @@ class OperatingRoomSlipForm extends Component {
                         error={errors.operation_performed}
                         formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
-                      />
+                      /> */}
                     </Col>
                     <Col span={12}>
                       <Divider orientation="left">
@@ -2771,54 +2842,59 @@ class OperatingRoomSlipForm extends Component {
                       />
                     </Col>
                   </Row>
+                  <Row>
+                    <Col span={12}>
+                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
+                        <div className="field is-grouped">
+                          <div className="control">
+                            <button className="button is-small is-primary">
+                              Save
+                            </button>
+                          </div>
 
-                  <Form.Item className="m-t-1" {...tailFormItemLayout}>
-                    <div className="field is-grouped">
-                      <div className="control">
-                        <button className="button is-small is-primary">
-                          Save
-                        </button>
-                      </div>
-
-                      {!isEmpty(this.state._id) && [
-                        <div className="control">
-                          <Link
-                            to={`/or-slip/${this.state._id}/surgical-memorandum`}
-                            target="_blank"
-                          >
-                            <Button className="button is-small is-outlined is-info">
+                          {!isEmpty(this.state._id) && [
+                            <div className="control">
+                              <Link
+                                to={`/or-slip/${this.state._id}/surgical-memorandum`}
+                                target="_blank"
+                              >
+                                <Button className="button is-small is-outlined is-info">
+                                  <span className="icon is-small">
+                                    <i className="fas fa-print" />
+                                  </span>
+                                  Print Surgical Memo
+                                </Button>
+                              </Link>
+                            </div>,
+                            false && (
+                              <div className="control">
+                                <Link
+                                  to={`/or-slip/${this.state._id}/operative-technique`}
+                                  target="_blank"
+                                >
+                                  <Button className="button is-small is-outlined is-info">
+                                    <span className="icon is-small">
+                                      <i className="fas fa-print" />
+                                    </span>
+                                    Print OB Operative Technique
+                                  </Button>
+                                </Link>
+                              </div>
+                            ),
+                            <a
+                              className="button is-danger is-outlined is-small control"
+                              onClick={this.onDelete}
+                            >
+                              <span>Delete</span>
                               <span className="icon is-small">
-                                <i className="fas fa-print" />
+                                <i className="fas fa-times" />
                               </span>
-                              Print Surgical Memo
-                            </Button>
-                          </Link>
-                        </div>,
-                        <div className="control">
-                          <Link
-                            to={`/or-slip/${this.state._id}/operative-technique`}
-                            target="_blank"
-                          >
-                            <Button className="button is-small is-outlined is-info">
-                              <span className="icon is-small">
-                                <i className="fas fa-print" />
-                              </span>
-                              Print OB Operative Technique
-                            </Button>
-                          </Link>
-                        </div>,
-                        <a
-                          className="button is-danger is-outlined is-small control"
-                          onClick={this.onDelete}
-                        >
-                          <span>Delete</span>
-                          <span className="icon is-small">
-                            <i className="fas fa-times" />
-                          </span>
-                        </a>
-                      ]}
-                    </div>
-                  </Form.Item>
+                            </a>
+                          ]}
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  </Row>
                 </Form>
               </TabPane>
               <TabPane tab="Time Logs" key="4">
@@ -2990,27 +3066,30 @@ class OperatingRoomSlipForm extends Component {
                       />
                     </Col>
                   </Row>
-
-                  <Form.Item className="m-t-1" {...tailFormItemLayout}>
-                    <div className="field is-grouped">
-                      <div className="control">
-                        <button className="button is-small is-primary">
-                          Save
-                        </button>
-                      </div>
-                      {!isEmpty(this.state._id) ? (
-                        <a
-                          className="button is-danger is-outlined is-small"
-                          onClick={this.onDelete}
-                        >
-                          <span>Delete</span>
-                          <span className="icon is-small">
-                            <i className="fas fa-times" />
-                          </span>
-                        </a>
-                      ) : null}
-                    </div>
-                  </Form.Item>
+                  <Row>
+                    <Col span={12}>
+                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
+                        <div className="field is-grouped">
+                          <div className="control">
+                            <button className="button is-small is-primary">
+                              Save
+                            </button>
+                          </div>
+                          {!isEmpty(this.state._id) ? (
+                            <a
+                              className="button is-danger is-outlined is-small"
+                              onClick={this.onDelete}
+                            >
+                              <span>Delete</span>
+                              <span className="icon is-small">
+                                <i className="fas fa-times" />
+                              </span>
+                            </a>
+                          ) : null}
+                        </div>
+                      </Form.Item>
+                    </Col>
+                  </Row>
                 </Form>
               </TabPane>
             </Tabs>

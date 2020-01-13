@@ -5,8 +5,8 @@ const constants = require("./../config/constants");
 module.exports = function validateInput(data) {
   let errors = {};
 
-  /* if (data.form === constants.RECEIVING_MODULE) {
-    if (isEmpty(data.name)) {
+  if (data.form === constants.RECEIVING_MODULE) {
+    /* if (isEmpty(data.name)) {
       errors.name = "Patient name is required";
     }
 
@@ -44,7 +44,7 @@ module.exports = function validateInput(data) {
 
     if (isEmpty(data.ward)) {
       errors.ward = "Ward is required";
-    }
+    } */
 
     if (isEmpty(data.service)) {
       errors.service = "Service is required";
@@ -62,7 +62,7 @@ module.exports = function validateInput(data) {
       errors.case = "Case is required";
     }
 
-    if (isEmpty(data.classification)) {
+    /* if (isEmpty(data.classification)) {
       errors.classification = "Classification is required";
     }
 
@@ -108,8 +108,8 @@ module.exports = function validateInput(data) {
 
     if (isEmpty(data.operating_room_number)) {
       errors.operating_room_number = "OR Number is required";
-    }
-  } */
+    } */
+  }
 
   return {
     errors,

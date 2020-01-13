@@ -50,6 +50,7 @@ const form_data = {
   other_surgeons: [],
   instrument_nurse: "",
   other_inst_nurses: [],
+  other_sponge_nurses: [],
   sponge_nurse: "",
   anes_method: "",
   anes_methods: [],
@@ -255,6 +256,16 @@ class SurgicalMemorandumReport extends Component {
       inst_nurses.push(item.full_name);
     });
 
+    let sponge_nurses = [];
+
+    if (this.state.sponge_nurse && this.state.sponge_nurse.full_name) {
+      sponge_nurses.push(this.state.sponge_nurse.full_name);
+    }
+
+    this.state.other_sponge_nurses.forEach(item => {
+      sponge_nurses.push(item.full_name);
+    });
+
     let other_surgeons = [];
 
     if (
@@ -359,7 +370,7 @@ class SurgicalMemorandumReport extends Component {
           <Col span={9} className="b-b-1">
             {" "}
             &nbsp;
-            {this.state.sponge_nurse && this.state.sponge_nurse.full_name}
+            {sponge_nurses.join("/")}
           </Col>
         </Row>
         <div className="m-t-1">
