@@ -1076,10 +1076,6 @@ class OperatingRoomSlipForm extends Component {
         dataIndex: "rvs_description"
       },
       {
-        title: "RVU Description",
-        dataIndex: "rvs_description"
-      },
-      {
         title: "Laterality",
         dataIndex: "rvs_laterality"
       },
@@ -2658,7 +2654,7 @@ class OperatingRoomSlipForm extends Component {
                     </Col>
                   </Row>
 
-                  <Divider orientation="left">RVU</Divider>
+                  <Divider orientation="left">Operation Performed</Divider>
                   <Row gutter={12}>
                     <Col span={12}>
                       <TextFieldGroup
