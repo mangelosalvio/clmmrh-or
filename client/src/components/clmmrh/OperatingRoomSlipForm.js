@@ -880,10 +880,10 @@ class OperatingRoomSlipForm extends Component {
   };
 
   onDeleteOtherSpongeNurse = index => {
-    const other_sponge_nurse = [...this.state.other_sponge_nurse];
-    other_sponge_nurse.splice(index, 1);
+    const other_sponge_nurses = [...this.state.other_sponge_nurses];
+    other_sponge_nurses.splice(index, 1);
     this.setState({
-      other_sponge_nurse
+      other_sponge_nurses
     });
   };
 
