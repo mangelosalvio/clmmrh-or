@@ -766,15 +766,15 @@ class OperatingRoomSlipForm extends Component {
           this.setState({
             rvs_description: response.data.description
           });
-          message.success("RVU Found");
+          message.success("Operation Performed Found");
         } else {
-          message.error("RVU not Found");
+          message.error("Operation Performed not Found");
         }
       });
   };
 
   /**
-   * RVU Desc
+   * Operation Performed Desc
    */
 
   onRvsSearch = value => {
@@ -1068,15 +1068,11 @@ class OperatingRoomSlipForm extends Component {
 
     const rvs_column = [
       {
-        title: "RVU Code",
+        title: "Operation Performed Code",
         dataIndex: "rvs_code"
       },
       {
-        title: "RVU Description",
-        dataIndex: "rvs_description"
-      },
-      {
-        title: "RVU Description",
+        title: "Operation Performed Description",
         dataIndex: "rvs_description"
       },
       {
@@ -2658,11 +2654,11 @@ class OperatingRoomSlipForm extends Component {
                     </Col>
                   </Row>
 
-                  <Divider orientation="left">RVU</Divider>
+                  <Divider orientation="left">Operation Performed</Divider>
                   <Row gutter={12}>
                     <Col span={12}>
                       <TextFieldGroup
-                        label="RVU Code"
+                        label="Operation Performed Code"
                         name="rvs_code"
                         value={this.state.rvs_code}
                         error={errors.rvs_code}
@@ -2672,7 +2668,7 @@ class OperatingRoomSlipForm extends Component {
                       />
 
                       <TextAreaAutocompleteGroup
-                        label="RVU Desc"
+                        label="Operation Performed Desc"
                         name="rvs_description"
                         value={this.state.rvs_description}
                         error={errors.rvs_description}
@@ -2703,7 +2699,7 @@ class OperatingRoomSlipForm extends Component {
                               className="button is-small"
                               onClick={this.onAddRvs}
                             >
-                              Add RVU
+                              Add Operation Performed
                             </Button>
                           </div>
                         </div>

@@ -308,8 +308,8 @@ class SurgicalMemorandumReport extends Component {
           <Col span={7} className="b-b-1">
             {this.state.name}
           </Col>
-          <Col span={3}>ASA</Col>
-          <Col span={3} className="b-b-1">
+          <Col span={1}>ASA</Col>
+          <Col span={5} className="b-b-1">
             {this.state.asa}
           </Col>
           <Col span={3}>Hospital No.</Col>
