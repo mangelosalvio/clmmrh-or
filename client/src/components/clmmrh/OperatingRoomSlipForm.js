@@ -2529,7 +2529,10 @@ class OperatingRoomSlipForm extends Component {
                         name="operation_started"
                         value={this.state.operation_started}
                         onChange={value =>
-                          this.setState({ operation_started: value })
+                          this.setState({
+                            operation_started: value,
+                            time_or_started: value
+                          })
                         }
                         error={errors.operation_started}
                         formItemLayout={smallFormItemLayout}
@@ -2541,7 +2544,10 @@ class OperatingRoomSlipForm extends Component {
                         name="operation_finished"
                         value={this.state.operation_finished}
                         onChange={value =>
-                          this.setState({ operation_finished: value })
+                          this.setState({
+                            operation_finished: value,
+                            or_ended: value
+                          })
                         }
                         error={errors.operation_finished}
                         formItemLayout={smallFormItemLayout}
