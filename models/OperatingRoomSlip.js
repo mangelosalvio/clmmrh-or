@@ -107,6 +107,59 @@ const OperatingRoomSlipSchema = new Schema({
     }
   ],
 
+  surgical_memos: [
+    {
+      assistant_surgeon: Object,
+      instrument_nurse: Object,
+      other_inst_nurses: [Object],
+      sponge_nurse: Object,
+      other_sponge_nurses: [Object],
+      anes_methods: [
+        {
+          method: String
+        }
+      ],
+      anes_used: String,
+      anes_quantity: String,
+      anes_quantity_unit: String,
+      anes_route: String,
+
+      anesthetics: [
+        {
+          anes_used: String,
+          anes_quantity: String,
+          anes_quantity_unit: String,
+          anes_route: String
+        }
+      ],
+
+      anes_start: Date,
+      operation_started: Date,
+      operation_finished: Date,
+      tentative_diagnosis: String,
+      final_diagnosis: String,
+      before_operation: String,
+      during_operation: String,
+      after_operation: String,
+      complications_during_operation: String,
+      complications_after_operation: String,
+      operation_performed: String,
+      position_in_bed: String,
+      proctoclysis: String,
+      hypodermoclysis: String,
+      nutrition: String,
+      stimulant: String,
+      asa: String,
+      rvs: [
+        {
+          rvs_code: String,
+          rvs_description: String,
+          rvs_laterality: String
+        }
+      ]
+    }
+  ],
+
   logs: [
     {
       user: Object,

@@ -179,6 +179,7 @@ const form_data = {
   rvs_laterality: "",
 
   rvs: [],
+  surgical_memos: [],
 
   errors: {}
 };
@@ -227,6 +228,25 @@ class OperatingRoomSlipForm extends Component {
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
 
     this.setState({ [e.target.name]: value });
+  };
+
+  onObjectChange = (object, e) => {
+    this.setState({
+      [object]: {
+        ...this.state[object],
+        [e.target.name]: e.target.value
+      }
+    });
+  };
+
+  onSurgMemoChange = (e, i) => {
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      [e.target.name]: e.target.value
+    };
+
+    this.setState({ surgical_memos });
   };
 
   onChangeCase = e => {
@@ -615,6 +635,44 @@ class OperatingRoomSlipForm extends Component {
     }
   };
 
+  onSurgeonChangeSurgMemo = (index, name, i) => {
+    if (!isEmpty(index)) {
+      const surgical_memos = [...this.state.surgical_memos];
+
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        [name]: this.state.options.surgeons[index]
+      };
+
+      this.setState({ surgical_memos });
+    } else {
+      const surgical_memos = [...this.state.surgical_memos];
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        [name]: null
+      };
+    }
+  };
+
+  onAnesChangeSurgMemo = (index, name, i) => {
+    if (!isEmpty(index)) {
+      const surgical_memos = [...this.state.surgical_memos];
+
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        [name]: this.state.options.anesthesiologists[index]
+      };
+
+      this.setState({ surgical_memos });
+    } else {
+      const surgical_memos = [...this.state.surgical_memos];
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        [name]: null
+      };
+    }
+  };
+
   onOtherInstNurseChange = (index, name) => {
     if (!isEmpty(index)) {
       const other_inst_nurses = [
@@ -627,6 +685,63 @@ class OperatingRoomSlipForm extends Component {
           [name]: ""
         };
       });
+    } else {
+      this.setState({
+        [name]: null
+      });
+    }
+  };
+
+  onOtherInstNurseChangeSurgMemo = (index, name, i) => {
+    if (!isEmpty(index)) {
+      const surgical_memos = [...this.state.surgical_memos];
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        other_inst_nurses: [
+          ...(surgical_memos[i].other_inst_nurses || []),
+          this.state.options.nurses[index]
+        ],
+        [name]: ""
+      };
+      this.setState({ surgical_memos });
+    } else {
+      this.setState({
+        [name]: null
+      });
+    }
+  };
+
+  onOtherAnesSurgMemo = (index, name, i) => {
+    if (!isEmpty(index)) {
+      const surgical_memos = [...this.state.surgical_memos];
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        other_anes: [
+          ...(surgical_memos[i].other_anes || []),
+          this.state.options.anesthesiologists[index]
+        ],
+        [name]: ""
+      };
+      this.setState({ surgical_memos });
+    } else {
+      this.setState({
+        [name]: null
+      });
+    }
+  };
+
+  onOtherSpongeNurseChangeSurgMemo = (index, name, i) => {
+    if (!isEmpty(index)) {
+      const surgical_memos = [...this.state.surgical_memos];
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        other_sponge_nurses: [
+          ...(surgical_memos[i].other_sponge_nurses || []),
+          this.state.options.nurses[index]
+        ],
+        [name]: ""
+      };
+      this.setState({ surgical_memos });
     } else {
       this.setState({
         [name]: null
@@ -665,6 +780,25 @@ class OperatingRoomSlipForm extends Component {
           [name]: ""
         };
       });
+    } else {
+      this.setState({
+        [name]: null
+      });
+    }
+  };
+
+  onOtherSurgeonChangeSurgMemo = (index, name, i) => {
+    if (!isEmpty(index)) {
+      const surgical_memos = [...this.state.surgical_memos];
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        other_surgeons: [
+          ...(surgical_memos[i].other_surgeons || []),
+          this.state.options.surgeons[index]
+        ],
+        [name]: ""
+      };
+      this.setState({ surgical_memos });
     } else {
       this.setState({
         [name]: null
@@ -720,6 +854,25 @@ class OperatingRoomSlipForm extends Component {
       this.setState({
         [name]: null
       });
+    }
+  };
+
+  onNurseChangeSurgMemo = (index, name, i) => {
+    if (!isEmpty(index)) {
+      const surgical_memos = [...this.state.surgical_memos];
+
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        [name]: this.state.options.nurses[index]
+      };
+
+      this.setState({ surgical_memos });
+    } else {
+      const surgical_memos = [...this.state.surgical_memos];
+      surgical_memos[i] = {
+        ...surgical_memos[i],
+        [name]: null
+      };
     }
   };
 
@@ -847,6 +1000,31 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onAddAnestheticSurgMemo = i => {
+    const surgical_memos = [...this.state.surgical_memos];
+
+    const surgical_memo = surgical_memos[i];
+
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      anesthetics: [
+        ...(surgical_memos[i].anesthetics || []),
+        {
+          anes_used: surgical_memo.anes_used,
+          anes_quantity: surgical_memo.anes_quantity,
+          anes_quantity_unit: surgical_memo.anes_quantity_unit,
+          anes_route: surgical_memo.anes_route
+        }
+      ],
+      anes_used: "",
+      anes_quantity: "",
+      anes_quantity_unit: "",
+      anes_route: ""
+    };
+
+    this.setState({ surgical_memos });
+  };
+
   onDeleteAnesthetics = index => {
     const anesthetics = [...this.state.anesthetics];
     anesthetics.splice(index, 1);
@@ -860,6 +1038,36 @@ class OperatingRoomSlipForm extends Component {
     other_surgeons.splice(index, 1);
     this.setState({
       other_surgeons
+    });
+  };
+
+  onDeleteOtherSurgeonSurgMemo = (index, i) => {
+    const other_surgeons = [...this.state.surgical_memos[i].other_surgeons];
+    other_surgeons.splice(index, 1);
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      other_surgeons
+    };
+
+    this.setState({
+      surgical_memos
+    });
+  };
+
+  onDeleteAnestheticsSurgMemo = (index, i) => {
+    const anesthetics = [...this.state.surgical_memos[i].anesthetics];
+    anesthetics.splice(index, 1);
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      anesthetics
+    };
+
+    this.setState({
+      surgical_memos
     });
   };
 
@@ -879,6 +1087,55 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onDeleteOtherInstNurseSurgMemo = (index, i) => {
+    const other_inst_nurses = [
+      ...this.state.surgical_memos[i].other_inst_nurses
+    ];
+    other_inst_nurses.splice(index, 1);
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      other_inst_nurses
+    };
+
+    this.setState({
+      surgical_memos
+    });
+  };
+
+  onDeleteOtherSpongeNurseSurgMemo = (index, i) => {
+    const other_sponge_nurses = [
+      ...this.state.surgical_memos[i].other_sponge_nurses
+    ];
+    other_sponge_nurses.splice(index, 1);
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      other_sponge_nurses
+    };
+
+    this.setState({
+      surgical_memos
+    });
+  };
+
+  onDeleteOtherAnesSurgMemo = (index, i) => {
+    const other_anes = [...this.state.surgical_memos[i].other_anes];
+    other_anes.splice(index, 1);
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      other_anes
+    };
+
+    this.setState({
+      surgical_memos
+    });
+  };
+
   onDeleteOtherSpongeNurse = index => {
     const other_sponge_nurses = [...this.state.other_sponge_nurses];
     other_sponge_nurses.splice(index, 1);
@@ -892,6 +1149,21 @@ class OperatingRoomSlipForm extends Component {
     anes_methods.splice(index, 1);
     this.setState({
       anes_methods
+    });
+  };
+
+  onDeleteAnesMethodSurgMemo = (index, i) => {
+    const anes_methods = [...this.state.surgical_memos[i].anes_methods];
+    anes_methods.splice(index, 1);
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      anes_methods
+    };
+
+    this.setState({
+      surgical_memos
     });
   };
 
@@ -1057,6 +1329,12 @@ class OperatingRoomSlipForm extends Component {
           message.info("No records were found");
         }
       });
+  };
+
+  onAddSurgicalMemo = () => {
+    message.success("Sugical Memo Added");
+    const surgical_memos = [...this.state.surgical_memos, {}];
+    this.setState({ surgical_memos });
   };
 
   render() {
@@ -1516,7 +1794,7 @@ class OperatingRoomSlipForm extends Component {
           <span className="is-size-6">{this.state.title}</span> <hr />
           <MessageBoxInfo message={this.state.message} onHide={this.onHide} />
           {isEmpty(this.state[collection_name]) ? (
-            <Tabs>
+            <Tabs type="card">
               <TabPane tab="Operating Complex Receiving" key="1">
                 <Form
                   onSubmit={e => this.onSubmit(e, { form: RECEIVING_MODULE })}
@@ -2847,6 +3125,17 @@ class OperatingRoomSlipForm extends Component {
 
                           {!isEmpty(this.state._id) && [
                             <div className="control">
+                              <Button
+                                className="button is-small is-outlined is-info"
+                                onClick={this.onAddSurgicalMemo}
+                              >
+                                <span className="icon is-small">
+                                  <i className="fas fa-plus" />
+                                </span>
+                                Add Surgical Memo
+                              </Button>
+                            </div>,
+                            <div className="control">
                               <Link
                                 to={`/or-slip/${this.state._id}/surgical-memorandum`}
                                 target="_blank"
@@ -2890,6 +3179,1081 @@ class OperatingRoomSlipForm extends Component {
                   </Row>
                 </Form>
               </TabPane>
+              {this.state.surgical_memos.map((o, surg_memo_index) => {
+                const other_surgeons_column = [
+                  {
+                    title: "Other Surgeon",
+                    dataIndex: "full_name"
+                  },
+                  {
+                    title: "",
+                    key: "action",
+                    width: 10,
+                    render: (text, record, index) => (
+                      <span>
+                        <Icon
+                          type="delete"
+                          theme="filled"
+                          className="pointer"
+                          onClick={() =>
+                            this.onDeleteOtherSurgeonSurgMemo(
+                              index,
+                              surg_memo_index
+                            )
+                          }
+                        />
+                      </span>
+                    )
+                  }
+                ];
+
+                const other_inst_nurses_column = [
+                  {
+                    title: "Other Inst Nurse",
+                    dataIndex: "full_name"
+                  },
+                  {
+                    title: "",
+                    key: "action",
+                    width: 10,
+                    render: (text, record, index) => (
+                      <span>
+                        <Icon
+                          type="delete"
+                          theme="filled"
+                          className="pointer"
+                          onClick={() =>
+                            this.onDeleteOtherInstNurseSurgMemo(
+                              index,
+                              surg_memo_index
+                            )
+                          }
+                        />
+                      </span>
+                    )
+                  }
+                ];
+
+                const other_sponge_nurses_column = [
+                  {
+                    title: "Other Sponge Nurse",
+                    dataIndex: "full_name"
+                  },
+                  {
+                    title: "",
+                    key: "action",
+                    width: 10,
+                    render: (text, record, index) => (
+                      <span>
+                        <Icon
+                          type="delete"
+                          theme="filled"
+                          className="pointer"
+                          onClick={() =>
+                            this.onDeleteOtherSpongeNurseSurgMemo(
+                              index,
+                              surg_memo_index
+                            )
+                          }
+                        />
+                      </span>
+                    )
+                  }
+                ];
+
+                const other_anes_column = [
+                  {
+                    title: "Other Anesthesiologist",
+                    dataIndex: "full_name"
+                  },
+                  {
+                    title: "",
+                    key: "action",
+                    width: 10,
+                    render: (text, record, index) => (
+                      <span>
+                        <Icon
+                          type="delete"
+                          theme="filled"
+                          className="pointer"
+                          onClick={() =>
+                            this.onDeleteOtherAnesSurgMemo(
+                              index,
+                              surg_memo_index
+                            )
+                          }
+                        />
+                      </span>
+                    )
+                  }
+                ];
+
+                const anes_methods_column = [
+                  {
+                    title: "Method",
+                    dataIndex: "method"
+                  },
+                  {
+                    title: "",
+                    key: "action",
+                    width: 10,
+                    render: (text, record, index) => (
+                      <span>
+                        <Icon
+                          type="delete"
+                          theme="filled"
+                          className="pointer"
+                          onClick={() =>
+                            this.onDeleteAnesMethodSurgMemo(
+                              index,
+                              surg_memo_index
+                            )
+                          }
+                        />
+                      </span>
+                    )
+                  }
+                ];
+
+                const anesthetics_column = [
+                  {
+                    title: "Used",
+                    dataIndex: "anes_used"
+                  },
+                  {
+                    title: "Qty",
+                    dataIndex: "anes_quantity"
+                  },
+                  {
+                    title: "Unit",
+                    dataIndex: "anes_quantity_unit"
+                  },
+                  {
+                    title: "Route",
+                    dataIndex: "anes_route"
+                  },
+                  {
+                    title: "",
+                    key: "action",
+                    width: 10,
+                    render: (text, record, index) => (
+                      <span>
+                        <Icon
+                          type="delete"
+                          theme="filled"
+                          className="pointer"
+                          onClick={() =>
+                            this.onDeleteAnestheticsSurgMemo(
+                              index,
+                              surg_memo_index
+                            )
+                          }
+                        />
+                      </span>
+                    )
+                  }
+                ];
+
+                return (
+                  <TabPane tab="Post Operation" key={`p${surg_memo_index}`}>
+                    <Form
+                      onSubmit={e =>
+                        this.onSubmit(e, { form: POST_OPERATION_MODULE })
+                      }
+                      className="tab-content or-slip-form"
+                    >
+                      <Divider orientation="left">Patient Information</Divider>
+                      <Row>
+                        <Col span={12}>
+                          <TextFieldGroup
+                            label="Name"
+                            name="name"
+                            value={this.state.name}
+                            error={errors.name}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                            disabled
+                          />
+
+                          <DatePickerFieldGroup
+                            label="Date of Birth"
+                            name="date_of_birth"
+                            value={this.state.date_of_birth}
+                            onChange={value =>
+                              this.setState({ date_of_birth: value })
+                            }
+                            error={errors.date_of_birth}
+                            formItemLayout={smallFormItemLayout}
+                            disabled
+                          />
+
+                          <TextFieldGroup
+                            label="Age"
+                            name="age"
+                            value={this.state.age}
+                            error={errors.age}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                            disabled
+                          />
+
+                          <RadioGroupFieldGroup
+                            label="Sex"
+                            name="sex"
+                            value={this.state.sex}
+                            onChange={this.onChange}
+                            error={errors.sex}
+                            formItemLayout={smallFormItemLayout}
+                            options={gender_options}
+                            disabled
+                          />
+
+                          <Row className="ant-form-item" gutter={4}>
+                            <Col span={8} className="ant-form-item-label">
+                              <label>Weight</label>
+                            </Col>
+                            <Col
+                              span={12}
+                              className="ant-form-item-control-wrapper"
+                            >
+                              <Input
+                                name="weight"
+                                value={this.state.weight}
+                                onChange={this.onChange}
+                                disabled
+                              />
+                            </Col>
+                            <Col span={4}>
+                              <Select
+                                value={this.state.weight_unit}
+                                name="weight_unit"
+                                onChange={value =>
+                                  this.setState({ weight_unit: value })
+                                }
+                                disabled
+                              >
+                                {weight_unit_options.map((d, index) => (
+                                  <Option key={d} value={d}>
+                                    {d}
+                                  </Option>
+                                ))}
+                              </Select>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col span={12}>
+                          <TextAreaGroup
+                            label="Address"
+                            name="address"
+                            value={this.state.address}
+                            error={errors.address}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                            disabled
+                          />
+
+                          <DatePickerFieldGroup
+                            label="Registration Date"
+                            name="registration_date"
+                            value={this.state.registration_date}
+                            onChange={value =>
+                              this.setState({ registration_date: value })
+                            }
+                            error={errors.registration_date}
+                            formItemLayout={smallFormItemLayout}
+                            disabled
+                          />
+
+                          <TextFieldGroup
+                            label="Hospital #"
+                            name="hospital_number"
+                            value={this.state.hospital_number}
+                            error={errors.hospital_number}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                            disabled
+                          />
+
+                          <TextFieldGroup
+                            label="Ward"
+                            name="ward"
+                            value={this.state.ward}
+                            error={errors.ward}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                            disabled
+                          />
+
+                          <SimpleSelectFieldGroup
+                            label="Service"
+                            name="service"
+                            value={o.service}
+                            onChange={value => {
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
+                              surgical_memos[surg_memo_index] = {
+                                ...this.state.surgical_memos[surg_memo_index],
+                                service: value
+                              };
+                              this.setState({ surgical_memos });
+                            }}
+                            formItemLayout={smallFormItemLayout}
+                            options={service_options}
+                          />
+                        </Col>
+                      </Row>
+
+                      <Divider orientation="left">Surgical Procedures</Divider>
+
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <SelectFieldGroup
+                            label="Main Surgeon"
+                            name="surgeon"
+                            value={o.surgeon && o.surgeon.full_name}
+                            onChange={index =>
+                              this.onSurgeonChangeSurgMemo(
+                                index,
+                                "surgeon",
+                                surg_memo_index
+                              )
+                            }
+                            onSearch={this.onSurgeonSearch}
+                            error={errors.surgeon}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.surgeons}
+                            column="full_name"
+                          />
+
+                          <SelectFieldGroup
+                            label="Asst. Surgeon"
+                            name="assistant_surgeon"
+                            value={
+                              o.assistant_surgeon &&
+                              o.assistant_surgeon.full_name
+                            }
+                            onChange={index =>
+                              this.onSurgeonChangeSurgMemo(
+                                index,
+                                "assistant_surgeon",
+                                surg_memo_index
+                              )
+                            }
+                            onSearch={this.onSurgeonSearch}
+                            error={errors.assistant_surgeon}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.surgeons}
+                            column="full_name"
+                          />
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <SelectFieldGroup
+                            label="Other Surgeon"
+                            name="other_surgeon"
+                            value={o.other_surgeon && o.other_surgeon.full_name}
+                            onChange={index =>
+                              this.onOtherSurgeonChangeSurgMemo(
+                                index,
+                                "other_surgeon",
+                                surg_memo_index
+                              )
+                            }
+                            onSearch={this.onSurgeonSearch}
+                            error={errors.other_surgeon}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.surgeons}
+                            column="full_name"
+                          />
+                          <SelectFieldGroup
+                            label="Inst. Nurse"
+                            name="instrument_nurse"
+                            value={
+                              o.instrument_nurse && o.instrument_nurse.full_name
+                            }
+                            onChange={index =>
+                              this.onNurseChangeSurgMemo(
+                                index,
+                                "instrument_nurse",
+                                surg_memo_index
+                              )
+                            }
+                            onSearch={this.onNurseSearch}
+                            error={errors.instrument_nurse}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.nurses}
+                            column="full_name"
+                          />
+                        </Col>
+                        <Col span={12}>
+                          <Table
+                            dataSource={o.other_surgeons}
+                            columns={other_surgeons_column}
+                            rowKey={record => record._id}
+                            locale={{ emptyText: "No Records Found" }}
+                            pagination={false}
+                          />
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <SelectFieldGroup
+                            label="Other Inst. Nurse"
+                            name="other_inst_nurse"
+                            value={
+                              o.other_inst_nurse && o.other_inst_nurse.full_name
+                            }
+                            onChange={index =>
+                              this.onOtherInstNurseChangeSurgMemo(
+                                index,
+                                "other_inst_nurse",
+                                surg_memo_index
+                              )
+                            }
+                            onSearch={this.onNurseSearch}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.nurses}
+                            column="full_name"
+                          />
+                        </Col>
+                        <Col span={12}>
+                          <Table
+                            dataSource={o.other_inst_nurses}
+                            columns={other_inst_nurses_column}
+                            rowKey={record => record._id}
+                            locale={{ emptyText: "No Records Found" }}
+                            pagination={false}
+                          />
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <SelectFieldGroup
+                            label="Sponge Nurse"
+                            name="sponge_nurse"
+                            value={o.sponge_nurse && o.sponge_nurse.full_name}
+                            onChange={index =>
+                              this.onNurseChangeSurgMemo(
+                                index,
+                                "sponge_nurse",
+                                surg_memo_index
+                              )
+                            }
+                            onSearch={this.onNurseSearch}
+                            error={errors.sponge_nurse}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.nurses}
+                            column="full_name"
+                          />
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <SelectFieldGroup
+                            label="Other Sponge Nurse"
+                            name="other_spong"
+                            value={
+                              o.other_sponge_nurse &&
+                              o.other_sponge_nurse.full_name
+                            }
+                            onChange={index =>
+                              this.onOtherSpongeNurseChangeSurgMemo(
+                                index,
+                                "other_sponge_nurse",
+                                surg_memo_index
+                              )
+                            }
+                            onSearch={this.onNurseSearch}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.nurses}
+                            column="full_name"
+                          />
+                        </Col>
+                        <Col span={12}>
+                          <Table
+                            dataSource={o.other_sponge_nurses}
+                            columns={other_sponge_nurses_column}
+                            rowKey={record => record._id}
+                            locale={{ emptyText: "No Records Found" }}
+                            pagination={false}
+                          />
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <SelectFieldGroup
+                            label="Main Anes"
+                            name="main_anes"
+                            value={o.main_anes && o.main_anes.full_name}
+                            onChange={index => {
+                              this.onAnesChangeSurgMemo(
+                                index,
+                                "main_anes",
+                                surg_memo_index
+                              );
+                            }}
+                            onSearch={this.onAnesSearch}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.anesthesiologists}
+                            column="full_name"
+                          />
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <SelectFieldGroup
+                            label="Other Anes"
+                            name="other_anes_input"
+                            value={
+                              o.other_anes_input && o.other_anes_input.full_name
+                            }
+                            onChange={index =>
+                              this.onOtherAnesSurgMemo(
+                                index,
+                                "other_anes_input",
+                                surg_memo_index
+                              )
+                            }
+                            onSearch={this.onAnesSearch}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.anesthesiologists}
+                            column="full_name"
+                          />
+                          <TextFieldGroup
+                            label="ASA"
+                            name="asa"
+                            value={o.asa}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
+                          />
+                        </Col>
+                        <Col span={12}>
+                          <Table
+                            dataSource={o.other_anes}
+                            columns={other_anes_column}
+                            rowKey={record => record._id}
+                            locale={{ emptyText: "No Records Found" }}
+                            pagination={false}
+                          />
+                        </Col>
+                      </Row>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <SimpleSelectFieldGroup
+                            label="Method"
+                            name="anes_method"
+                            value={o.anes_method}
+                            onChange={value => {
+                              if (value !== "Others") {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  anes_methods: [
+                                    ...(o.anes_methods || []),
+                                    {
+                                      method: value
+                                    }
+                                  ]
+                                };
+
+                                this.setState({
+                                  surgical_memos
+                                });
+                              } else {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  anes_method: value
+                                };
+                                this.setState({ surgical_memos });
+                              }
+                            }}
+                            formItemLayout={smallFormItemLayout}
+                            error={errors.anes_method}
+                            options={anes_method_options}
+                          />
+
+                          {o.anes_method === "Others" && (
+                            <TextFieldGroup
+                              label="Specify"
+                              name="anes_method_others"
+                              value={o.anes_method_others}
+                              error={errors.anes_method_others}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={this.onChange}
+                              extra="Press Enter to Add"
+                              onPressEnter={e => {
+                                e.preventDefault();
+
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  anes_methods: [
+                                    ...(o.anes_methods || []),
+                                    {
+                                      method: o.anes_method_others
+                                    }
+                                  ]
+                                };
+
+                                this.setState({
+                                  surgical_memos
+                                });
+                              }}
+                            />
+                          )}
+
+                          <DateTimePickerFieldGroup
+                            label="Anesthesia Started"
+                            name="anes_start"
+                            value={o.anes_start || null}
+                            onChange={value => {
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
+
+                              surgical_memos[surg_memo_index] = {
+                                ...surgical_memos[surg_memo_index],
+                                anes_start: value
+                              };
+
+                              this.setState({ surgical_memos });
+                            }}
+                            error={errors.anes_start}
+                            formItemLayout={smallFormItemLayout}
+                            showTime={true}
+                          />
+
+                          <DateTimePickerFieldGroup
+                            label="Operation Started"
+                            name="operation_started"
+                            value={o.operation_started || null}
+                            onChange={value => {
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
+
+                              surgical_memos[surg_memo_index] = {
+                                ...surgical_memos[surg_memo_index],
+                                operation_started: value
+                              };
+
+                              this.setState({ surgical_memos });
+                            }}
+                            formItemLayout={smallFormItemLayout}
+                            showTime={true}
+                          />
+
+                          <DateTimePickerFieldGroup
+                            label="Operation Finished"
+                            name="operation_finished"
+                            value={o.operation_finished || null}
+                            onChange={value => {
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
+
+                              surgical_memos[surg_memo_index] = {
+                                ...surgical_memos[surg_memo_index],
+                                operation_finished: value
+                              };
+
+                              this.setState({ surgical_memos });
+                            }}
+                            formItemLayout={smallFormItemLayout}
+                            showTime={true}
+                          />
+
+                          <TextAreaGroup
+                            label="Tentative Diagnosis"
+                            name="tentative_diagnosis"
+                            value={o.tentative_diagnosis}
+                            error={errors.tentative_diagnosis}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
+                          />
+
+                          <TextAreaGroup
+                            label="Final Diagnosis"
+                            name="final_diagnosis"
+                            value={o.final_diagnosis}
+                            error={errors.final_diagnosis}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
+                          />
+                        </Col>
+                        <Col span={12}>
+                          <Table
+                            dataSource={o.anes_methods}
+                            columns={anes_methods_column}
+                            rowKey={record => record._id}
+                            locale={{ emptyText: "No Records Found" }}
+                            pagination={false}
+                          />
+                        </Col>
+                      </Row>
+
+                      <Divider orientation="left">Anesthetics</Divider>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <TextFieldGroup
+                            label="Anesthetic Used"
+                            name="anes_used"
+                            value={o.anes_used}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
+                            onPressEnter={e => {
+                              e.preventDefault();
+                            }}
+                          />
+                          <TextFieldGroup
+                            label="Quantity"
+                            name="anes_quantity"
+                            value={o.anes_quantity}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
+                            onPressEnter={e => {
+                              e.preventDefault();
+                            }}
+                          />
+
+                          <SimpleSelectFieldGroup
+                            label="Unit"
+                            name="anes_quantity_unit"
+                            value={o.anes_quantity_unit}
+                            onChange={value => {
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
+
+                              surgical_memos[surg_memo_index] = {
+                                ...surgical_memos[surg_memo_index],
+                                anes_quantity_unit: value
+                              };
+                              this.setState({ surgical_memos });
+                            }}
+                            formItemLayout={smallFormItemLayout}
+                            options={anes_unit_options}
+                          />
+
+                          <SimpleSelectFieldGroup
+                            label="Route"
+                            name="anes_route"
+                            value={o.anes_route}
+                            onChange={value => {
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
+
+                              surgical_memos[surg_memo_index] = {
+                                ...surgical_memos[surg_memo_index],
+                                anes_route: value
+                              };
+                              this.setState({ surgical_memos });
+                            }}
+                            formItemLayout={smallFormItemLayout}
+                            error={errors.anes_route}
+                            options={anes_route_options}
+                          />
+
+                          <Form.Item
+                            className="m-t-1"
+                            {...smallTailFormItemLayout}
+                          >
+                            <div className="field is-grouped">
+                              <div className="control">
+                                <Button
+                                  className="button is-small"
+                                  onClick={() =>
+                                    this.onAddAnestheticSurgMemo(
+                                      surg_memo_index
+                                    )
+                                  }
+                                >
+                                  Add Anesthetic
+                                </Button>
+                              </div>
+                            </div>
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Table
+                            dataSource={o.anesthetics}
+                            columns={anesthetics_column}
+                            rowKey={record => record._id}
+                            locale={{ emptyText: "No Records Found" }}
+                            pagination={false}
+                          />
+                        </Col>
+                      </Row>
+
+                      <Divider orientation="left">Operation Performed</Divider>
+                      <Row gutter={12}>
+                        <Col span={12}>
+                          <TextFieldGroup
+                            label="Operation Performed Code"
+                            name="rvs_code"
+                            value={this.state.rvs_code}
+                            error={errors.rvs_code}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                            onPressEnter={this.onRvsCodeLookup}
+                          />
+
+                          <TextAreaAutocompleteGroup
+                            label="Operation Performed Desc"
+                            name="rvs_description"
+                            value={this.state.rvs_description}
+                            error={errors.rvs_description}
+                            formItemLayout={smallFormItemLayout}
+                            rows="4"
+                            onChange={value =>
+                              this.setState({ rvs_description: value })
+                            }
+                            dataSource={rvs_desc_data_source}
+                            onSelect={this.onRvsSelect}
+                            onSearch={this.onRvsSearch}
+                          />
+
+                          <RadioGroupFieldGroup
+                            label="Laterality"
+                            name="rvs_laterality"
+                            value={this.state.rvs_laterality}
+                            onChange={this.onChange}
+                            error={errors.rvs_laterality}
+                            formItemLayout={smallFormItemLayout}
+                            options={laterality_options}
+                          />
+
+                          <Form.Item
+                            className="m-t-1"
+                            {...smallTailFormItemLayout}
+                          >
+                            <div className="field is-grouped">
+                              <div className="control">
+                                <Button
+                                  className="button is-small"
+                                  onClick={this.onAddRvs}
+                                >
+                                  Add Operation Performed
+                                </Button>
+                              </div>
+                            </div>
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          <Table
+                            dataSource={this.state.rvs}
+                            columns={rvs_column}
+                            rowKey={record => record._id}
+                            locale={{ emptyText: "No Records Found" }}
+                            pagination={false}
+                          />
+                        </Col>
+                      </Row>
+
+                      <Row>
+                        <Col span={12}>
+                          <Divider orientation="left">
+                            Treatment in the Operating Room
+                          </Divider>
+
+                          <TextAreaGroup
+                            label="Before Operation"
+                            name="before_operation"
+                            value={this.state.before_operation}
+                            error={errors.before_operation}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          <TextAreaGroup
+                            label="During Operation"
+                            name="during_operation"
+                            value={this.state.during_operation}
+                            error={errors.during_operation}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          <TextAreaGroup
+                            label="After Operation"
+                            name="after_operation"
+                            value={this.state.after_operation}
+                            error={errors.after_operation}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          <TextAreaGroup
+                            label="Comp. during oper"
+                            name="complications_during_operation"
+                            value={this.state.complications_during_operation}
+                            error={errors.complications_during_operation}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          <TextAreaGroup
+                            label="Comp. after oper"
+                            name="complications_after_operation"
+                            value={this.state.complications_after_operation}
+                            error={errors.complications_after_operation}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          {/* <Divider orientation="left">Operation Performed</Divider>
+
+                      <TextAreaGroup
+                        label="Operation Performed"
+                        name="operation_performed"
+                        value={this.state.operation_performed}
+                        error={errors.operation_performed}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      /> */}
+                        </Col>
+                        <Col span={12}>
+                          <Divider orientation="left">
+                            Immediate Post Operative Treatment
+                          </Divider>
+
+                          <TextAreaGroup
+                            label="Position in Bed"
+                            name="position_in_bed"
+                            value={this.state.position_in_bed}
+                            error={errors.position_in_bed}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          <TextAreaGroup
+                            label="Proctoclysis"
+                            name="proctoclysis"
+                            value={this.state.proctoclysis}
+                            error={errors.proctoclysis}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          <TextAreaGroup
+                            label="Hypodermoclysis"
+                            name="hypodermoclysis"
+                            value={this.state.hypodermoclysis}
+                            error={errors.hypodermoclysis}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          <TextAreaGroup
+                            label="Nutrition"
+                            name="nutrition"
+                            value={this.state.nutrition}
+                            error={errors.nutrition}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+
+                          <TextAreaGroup
+                            label="Stimulant and other med."
+                            name="stimulant"
+                            value={this.state.stimulant}
+                            error={errors.stimulant}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={12}>
+                          <Form.Item
+                            className="m-t-1"
+                            {...smallTailFormItemLayout}
+                          >
+                            <div className="field is-grouped">
+                              <div className="control">
+                                <button className="button is-small is-primary">
+                                  Save
+                                </button>
+                              </div>
+
+                              {!isEmpty(this.state._id) && [
+                                <div className="control">
+                                  <Button className="button is-small is-outlined is-info">
+                                    <span className="icon is-small">
+                                      <i className="fas fa-plus" />
+                                    </span>
+                                    Add Surgical Memo
+                                  </Button>
+                                </div>,
+                                <div className="control">
+                                  <Link
+                                    to={`/or-slip/${this.state._id}/surgical-memorandum`}
+                                    target="_blank"
+                                  >
+                                    <Button className="button is-small is-outlined is-info">
+                                      <span className="icon is-small">
+                                        <i className="fas fa-print" />
+                                      </span>
+                                      Print Surgical Memo
+                                    </Button>
+                                  </Link>
+                                </div>,
+                                false && (
+                                  <div className="control">
+                                    <Link
+                                      to={`/or-slip/${this.state._id}/operative-technique`}
+                                      target="_blank"
+                                    >
+                                      <Button className="button is-small is-outlined is-info">
+                                        <span className="icon is-small">
+                                          <i className="fas fa-print" />
+                                        </span>
+                                        Print OB Operative Technique
+                                      </Button>
+                                    </Link>
+                                  </div>
+                                ),
+                                <a
+                                  className="button is-danger is-outlined is-small control"
+                                  onClick={this.onDelete}
+                                >
+                                  <span>Delete</span>
+                                  <span className="icon is-small">
+                                    <i className="fas fa-times" />
+                                  </span>
+                                </a>
+                              ]}
+                            </div>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </TabPane>
+                );
+              })}
               <TabPane tab="Time Logs" key="4">
                 <Form
                   onSubmit={e => this.onSubmit(e, { form: TIME_LOGS_MODULE })}
