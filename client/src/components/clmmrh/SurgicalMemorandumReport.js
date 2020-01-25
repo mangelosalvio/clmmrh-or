@@ -120,10 +120,20 @@ class SurgicalMemorandumReport extends Component {
   }
 
   getRecord = () => {
+    let promise = null;
     const id = this.props.match.params.id;
+    const surg_memo_id = this.props.match.params.surg_memo_id;
+    console.log(surg_memo_id);
+    if (surg_memo_id) {
+      promise = axios.get(
+        `${this.state.url}${id}/surgical-memorandum/${surg_memo_id}`
+      );
+    } else {
+      console.log("Surg ");
+      promise = axios.get(this.state.url + id);
+    }
 
-    axios
-      .get(this.state.url + id)
+    promise
       .then(response => {
         const record = response.data;
         const {

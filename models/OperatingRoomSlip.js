@@ -109,11 +109,16 @@ const OperatingRoomSlipSchema = new Schema({
 
   surgical_memos: [
     {
+      service: String,
+      surgeon: Object,
       assistant_surgeon: Object,
+      other_surgeons: [Object],
       instrument_nurse: Object,
       other_inst_nurses: [Object],
       sponge_nurse: Object,
       other_sponge_nurses: [Object],
+      main_anes: Object,
+      other_anes: [Object],
       anes_methods: [
         {
           method: String

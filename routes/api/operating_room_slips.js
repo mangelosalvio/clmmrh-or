@@ -33,6 +33,33 @@ const Op = Sequelize.Op;
 
 const Model = OperatingRoomSlip;
 
+router.get("/:id/surgical-memorandum/:surg_memo_id", (req, res) => {
+  Model.aggregate([
+    {
+      $match: {
+        _id: mongoose.Types.ObjectId(req.params.id)
+      }
+    },
+    {
+      $unwind: {
+        path: "$surgical_memos"
+      }
+    },
+    {
+      $match: {
+        "surgical_memos._id": mongoose.Types.ObjectId(req.params.surg_memo_id)
+      }
+    }
+  ])
+    .then(records => {
+      return res.json({
+        ...records[0],
+        ...records[0].surgical_memos
+      });
+    })
+    .catch(err => res.status(401).json(err));
+});
+
 router.get("/:id", (req, res) => {
   Model.findById(req.params.id)
     .then(record => res.json(record))

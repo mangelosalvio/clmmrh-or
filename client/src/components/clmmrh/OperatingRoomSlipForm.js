@@ -954,6 +954,45 @@ class OperatingRoomSlipForm extends Component {
     });
   };
 
+  onRvsSelectSurgMemo = (value, i) => {
+    const index = this.state.options.rvs.map(o => o.description).indexOf(value);
+    const rvs_code = this.state.options.rvs[index].code;
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      rvs_code,
+      rvs_description: value
+    };
+
+    this.setState({
+      surgical_memos
+    });
+  };
+
+  onAddRvsSurgMemo = i => {
+    const surgical_memos = [...this.state.surgical_memos];
+
+    const surgical_memo = surgical_memos[i];
+
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      rvs: [
+        ...(surgical_memos[i].rvs || []),
+        {
+          rvs_code: surgical_memo.rvs_code,
+          rvs_description: surgical_memo.rvs_description,
+          rvs_laterality: surgical_memo.rvs_laterality
+        }
+      ],
+      rvs_code: "",
+      rvs_description: "",
+      rvs_laterality: ""
+    };
+
+    this.setState({ surgical_memos });
+  };
+
   onAddRvs = () => {
     const rvs = [
       ...this.state.rvs,
@@ -977,6 +1016,21 @@ class OperatingRoomSlipForm extends Component {
     rvs.splice(index, 1);
     this.setState({
       rvs
+    });
+  };
+
+  onDeleteRvsSurgMemo = (index, i) => {
+    const rvs = [...this.state.surgical_memos[i].rvs];
+    rvs.splice(index, 1);
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      rvs
+    };
+
+    this.setState({
+      surgical_memos
     });
   };
 
@@ -1049,6 +1103,21 @@ class OperatingRoomSlipForm extends Component {
     surgical_memos[i] = {
       ...surgical_memos[i],
       other_surgeons
+    };
+
+    this.setState({
+      surgical_memos
+    });
+  };
+
+  onDeleteAnestheticsSurgMemo = (index, i) => {
+    const anesthetics = [...this.state.surgical_memos[i].anesthetics];
+    anesthetics.splice(index, 1);
+
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos[i] = {
+      ...surgical_memos[i],
+      anesthetics
     };
 
     this.setState({
@@ -3354,8 +3423,43 @@ class OperatingRoomSlipForm extends Component {
                   }
                 ];
 
+                const rvs_column = [
+                  {
+                    title: "Operation Performed Code",
+                    dataIndex: "rvs_code"
+                  },
+                  {
+                    title: "Operation Performed Description",
+                    dataIndex: "rvs_description"
+                  },
+                  {
+                    title: "Laterality",
+                    dataIndex: "rvs_laterality"
+                  },
+                  {
+                    title: "",
+                    key: "action",
+                    width: 10,
+                    render: (text, record, index) => (
+                      <span>
+                        <Icon
+                          type="delete"
+                          theme="filled"
+                          className="pointer"
+                          onClick={() =>
+                            this.onDeleteRvsSurgMemo(index, surg_memo_index)
+                          }
+                        />
+                      </span>
+                    )
+                  }
+                ];
+
                 return (
-                  <TabPane tab="Post Operation" key={`p${surg_memo_index}`}>
+                  <TabPane
+                    tab={`Post Operation - ${o.service}`}
+                    key={`p${surg_memo_index}`}
+                  >
                     <Form
                       onSubmit={e =>
                         this.onSubmit(e, { form: POST_OPERATION_MODULE })
@@ -4014,34 +4118,44 @@ class OperatingRoomSlipForm extends Component {
                           <TextFieldGroup
                             label="Operation Performed Code"
                             name="rvs_code"
-                            value={this.state.rvs_code}
-                            error={errors.rvs_code}
+                            value={o.rvs_code}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
-                            onPressEnter={this.onRvsCodeLookup}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaAutocompleteGroup
                             label="Operation Performed Desc"
                             name="rvs_description"
-                            value={this.state.rvs_description}
-                            error={errors.rvs_description}
+                            value={o.rvs_description}
                             formItemLayout={smallFormItemLayout}
                             rows="4"
-                            onChange={value =>
-                              this.setState({ rvs_description: value })
-                            }
+                            onChange={value => {
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
+
+                              surgical_memos[surg_memo_index] = {
+                                ...surgical_memos[surg_memo_index],
+                                rvs_description: value
+                              };
+                              this.setState({ surgical_memos });
+                            }}
                             dataSource={rvs_desc_data_source}
-                            onSelect={this.onRvsSelect}
+                            onSelect={value =>
+                              this.onRvsSelectSurgMemo(value, surg_memo_index)
+                            }
                             onSearch={this.onRvsSearch}
                           />
 
                           <RadioGroupFieldGroup
                             label="Laterality"
                             name="rvs_laterality"
-                            value={this.state.rvs_laterality}
-                            onChange={this.onChange}
-                            error={errors.rvs_laterality}
+                            value={o.rvs_laterality}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                             formItemLayout={smallFormItemLayout}
                             options={laterality_options}
                           />
@@ -4054,7 +4168,9 @@ class OperatingRoomSlipForm extends Component {
                               <div className="control">
                                 <Button
                                   className="button is-small"
-                                  onClick={this.onAddRvs}
+                                  onClick={() =>
+                                    this.onAddRvsSurgMemo(surg_memo_index)
+                                  }
                                 >
                                   Add Operation Performed
                                 </Button>
@@ -4064,7 +4180,7 @@ class OperatingRoomSlipForm extends Component {
                         </Col>
                         <Col span={12}>
                           <Table
-                            dataSource={this.state.rvs}
+                            dataSource={o.rvs}
                             columns={rvs_column}
                             rowKey={record => record._id}
                             locale={{ emptyText: "No Records Found" }}
@@ -4082,46 +4198,52 @@ class OperatingRoomSlipForm extends Component {
                           <TextAreaGroup
                             label="Before Operation"
                             name="before_operation"
-                            value={this.state.before_operation}
-                            error={errors.before_operation}
+                            value={o.before_operation}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaGroup
                             label="During Operation"
                             name="during_operation"
-                            value={this.state.during_operation}
-                            error={errors.during_operation}
+                            value={o.during_operation}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaGroup
                             label="After Operation"
                             name="after_operation"
-                            value={this.state.after_operation}
-                            error={errors.after_operation}
+                            value={o.after_operation}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaGroup
                             label="Comp. during oper"
                             name="complications_during_operation"
-                            value={this.state.complications_during_operation}
+                            value={o.complications_during_operation}
                             error={errors.complications_during_operation}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaGroup
                             label="Comp. after oper"
                             name="complications_after_operation"
-                            value={this.state.complications_after_operation}
-                            error={errors.complications_after_operation}
+                            value={o.complications_after_operation}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           {/* <Divider orientation="left">Operation Performed</Divider>
@@ -4129,7 +4251,7 @@ class OperatingRoomSlipForm extends Component {
                       <TextAreaGroup
                         label="Operation Performed"
                         name="operation_performed"
-                        value={this.state.operation_performed}
+                        value={o.operation_performed}
                         error={errors.operation_performed}
                         formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
@@ -4143,46 +4265,51 @@ class OperatingRoomSlipForm extends Component {
                           <TextAreaGroup
                             label="Position in Bed"
                             name="position_in_bed"
-                            value={this.state.position_in_bed}
-                            error={errors.position_in_bed}
+                            value={o.position_in_bed}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaGroup
                             label="Proctoclysis"
                             name="proctoclysis"
-                            value={this.state.proctoclysis}
-                            error={errors.proctoclysis}
+                            value={o.proctoclysis}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaGroup
                             label="Hypodermoclysis"
                             name="hypodermoclysis"
-                            value={this.state.hypodermoclysis}
-                            error={errors.hypodermoclysis}
+                            value={o.hypodermoclysis}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaGroup
                             label="Nutrition"
                             name="nutrition"
-                            value={this.state.nutrition}
-                            error={errors.nutrition}
+                            value={o.nutrition}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
 
                           <TextAreaGroup
                             label="Stimulant and other med."
                             name="stimulant"
-                            value={this.state.stimulant}
-                            error={errors.stimulant}
+                            value={o.stimulant}
                             formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
+                            onChange={e =>
+                              this.onSurgMemoChange(e, surg_memo_index)
+                            }
                           />
                         </Col>
                       </Row>
@@ -4201,7 +4328,10 @@ class OperatingRoomSlipForm extends Component {
 
                               {!isEmpty(this.state._id) && [
                                 <div className="control">
-                                  <Button className="button is-small is-outlined is-info">
+                                  <Button
+                                    className="button is-small is-outlined is-info"
+                                    onClick={this.onAddSurgicalMemo}
+                                  >
                                     <span className="icon is-small">
                                       <i className="fas fa-plus" />
                                     </span>
@@ -4210,7 +4340,7 @@ class OperatingRoomSlipForm extends Component {
                                 </div>,
                                 <div className="control">
                                   <Link
-                                    to={`/or-slip/${this.state._id}/surgical-memorandum`}
+                                    to={`/or-slip/${this.state._id}/surgical-memorandum/${o._id}`}
                                     target="_blank"
                                   >
                                     <Button className="button is-small is-outlined is-info">
