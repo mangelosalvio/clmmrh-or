@@ -129,7 +129,6 @@ class SurgicalMemorandumReport extends Component {
         `${this.state.url}${id}/surgical-memorandum/${surg_memo_id}`
       );
     } else {
-      console.log("Surg ");
       promise = axios.get(this.state.url + id);
     }
 
