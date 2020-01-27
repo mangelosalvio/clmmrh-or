@@ -1406,6 +1406,12 @@ class OperatingRoomSlipForm extends Component {
     this.setState({ surgical_memos });
   };
 
+  onDeleteSurgicalMemo = i => {
+    const surgical_memos = [...this.state.surgical_memos];
+    surgical_memos.splice(i, 1);
+    this.setState({ surgical_memos });
+  };
+
   render() {
     const rowSelection = {
       onChange: (selected_row_keys, selected_rows) => {
@@ -4351,6 +4357,19 @@ class OperatingRoomSlipForm extends Component {
                                     </Button>
                                   </Link>
                                 </div>,
+                                <div className="control">
+                                  <Button
+                                    className="button is-small is-outlined is-danger"
+                                    onClick={() =>
+                                      this.onDeleteSurgicalMemo(surg_memo_index)
+                                    }
+                                  >
+                                    <span className="icon is-small">
+                                      <i className="fas fa-times" />
+                                    </span>
+                                    Delete Surgical Memo
+                                  </Button>
+                                </div>,
                                 false && (
                                   <div className="control">
                                     <Link
@@ -4365,16 +4384,7 @@ class OperatingRoomSlipForm extends Component {
                                       </Button>
                                     </Link>
                                   </div>
-                                ),
-                                <a
-                                  className="button is-danger is-outlined is-small control"
-                                  onClick={this.onDelete}
-                                >
-                                  <span>Delete</span>
-                                  <span className="icon is-small">
-                                    <i className="fas fa-times" />
-                                  </span>
-                                </a>
+                                )
                               ]}
                             </div>
                           </Form.Item>
