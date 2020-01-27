@@ -6,6 +6,7 @@ const sortBy = require("lodash").sortBy;
 const sqldatabase = require("./../../config/sqldatabase");
 
 const OperatingRoomSlip = require("./../../models/OperatingRoomSlip");
+const Optech = require("./../../models/Optech");
 const ORSchedule = require("./../../models/ORSchedule");
 const Anesthesiologist = require("./../../models/Anesthesiologist");
 const Nurse = require("./../../models/Nurse");
@@ -32,6 +33,13 @@ const net = require("net");
 const Op = Sequelize.Op;
 
 const Model = OperatingRoomSlip;
+
+router.get("/:id/operative-technique/:index", (req, res) => {
+  Optech.findOne({
+    or_slip_id: mongoose.Types.ObjectId(req.params.id),
+    index: req.params.index
+  }).then(record => res.json(record));
+});
 
 router.get("/:id/surgical-memorandum/:surg_memo_id", (req, res) => {
   Model.aggregate([
@@ -841,19 +849,23 @@ router.post("/:id", (req, res) => {
   });
 });
 
-router.post("/:id/operative-technique/ob", (req, res) => {
-  Model.findById(req.params.id)
-    .then(record => {
-      if (record) {
-        record.set({
-          ob_operative_technique: {
-            ...req.body.ob_operative_technique
-          }
-        });
-        record.save().then(record => res.json(record));
+router.post("/:id/operative-technique", (req, res) => {
+  Optech.updateOne(
+    {
+      or_slip_id: mongoose.Types.ObjectId(req.body.id),
+      index: req.body.index
+    },
+    {
+      $set: {
+        values: req.body.values
       }
-    })
-    .catch(err => res.status(401).json(err));
+    },
+    {
+      upsert: true
+    }
+  ).exec();
+
+  return res.json({ success: 1 });
 });
 
 router.delete("/selection", async (req, res) => {

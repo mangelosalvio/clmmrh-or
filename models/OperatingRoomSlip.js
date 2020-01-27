@@ -180,7 +180,8 @@ const OperatingRoomSlipSchema = new Schema({
     adnexae: String,
     discharges: String,
     ligation_equipment: String
-  }
+  },
+  optech: Object
 });
 
 module.exports = mongoose.model(

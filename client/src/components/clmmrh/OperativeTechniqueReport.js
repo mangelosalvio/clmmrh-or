@@ -6,112 +6,19 @@ import { Layout, message, Col, Row, Input } from "antd";
 import { debounce } from "lodash";
 
 import moment from "moment";
+import OptechHeader from "./OptechHeader";
 
 const { Content } = Layout;
 
 const collection_name = "slips";
-
-const form_data = {
-  [collection_name]: [],
-  _id: "",
-
-  name: "",
-  age: "",
-  address: "",
-  sex: "",
-  weight: "",
-  hospital_number: "",
-  ward: "",
-  date_of_birth: null,
-  registration_date: null,
-  service: "",
-  diagnosis: "",
-  procedure: "",
-  case: "",
-  surgeon: "",
-  classification: "",
-  date_time_ordered: null,
-  date_time_received: null,
-  surgery_is_date: false,
-  date_time_of_surgery: null,
-  case_order: "",
-  received_by: "",
-
-  operation_type: "",
-  operation_status: "",
-  main_anes: "",
-  laterality: "",
-  operating_room_number: "",
-
-  assistant_surgeon: "",
-  instrument_nurse: "",
-  sponge_nurse: "",
-  anes_method: "",
-  anes_used: "",
-  anes_quantity: "",
-  anes_route: "",
-  anes_start: null,
-  operation_started: null,
-  operation_finished: null,
-  tentative_diagnosis: "",
-  final_diagnosis: "",
-  before_operation: "",
-  during_operation: "",
-  after_operation: "",
-  complications_during_operation: "",
-  complications_after_operation: "",
-  operation_performed: "",
-  position_in_bed: "",
-  proctoclysis: "",
-  hypodermoclysis: "",
-  nutrition: "",
-  stimulant: "",
-  asa: "",
-
-  time_ward_informed: null,
-  arrival_time: null,
-  room_is_ready: null,
-  equip_ready: null,
-  patient_placed_in_or_table: null,
-  time_anes_arrived: null,
-  time_surgeon_arrived: null,
-  induction_time: null,
-  induction_completed: null,
-  time_or_started: null,
-  or_ended: null,
-  trans_out_from_or: null,
-  surgical_safety_checklist: null,
-  remarks: "",
-
-  rvs_code: "",
-  rvs_description: "",
-
-  rvs: [],
-
-  errors: {},
-
-  ob_operative_technique: {
-    anes: "",
-    cervix: "",
-    uterus: "",
-    adnexae: "",
-    discharges: "",
-    ligation_equipment: ""
-  }
-};
 
 class OperativeTechinqueReport extends Component {
   state = {
     title: "Operating Room Form",
     url: "/api/operating-room-slips/",
     search_keyword: "",
-    ...form_data,
-    options: {
-      surgeons: [],
-      anesthesiologists: [],
-      nurses: [],
-      rvs: []
-    }
+    values: [],
+    rvs: []
   };
 
   constructor(props) {
@@ -127,129 +34,43 @@ class OperativeTechinqueReport extends Component {
     const id = this.props.match.params.id;
 
     axios
-      .get(this.state.url + id)
+      .get(
+        `${this.state.url}${this.props.match.params.id}/operative-technique/${this.props.match.params.index}`
+      )
       .then(response => {
-        const record = response.data;
-        const {
-          date_of_birth,
-          registration_date,
-          date_time_ordered,
-          date_time_of_surgery,
-          date_time_received,
-          anes_start,
-          operation_started,
-          operation_finished,
-          time_ward_informed,
-          arrival_time,
-          room_is_ready,
-          equip_ready,
-          patient_placed_in_or_table,
-          time_anes_arrived,
-          time_surgeon_arrived,
-          induction_time,
-          induction_completed,
-          time_or_started,
-          or_ended,
-          trans_out_from_or,
-          surgical_safety_checklist
-        } = response.data;
-        this.setState(
-          prevState => {
-            return {
-              ...form_data,
-              [collection_name]: [],
-              ...record,
-              date_of_birth: date_of_birth ? moment(date_of_birth) : null,
-              registration_date: registration_date
-                ? moment(registration_date)
-                : null,
-              date_time_ordered: date_time_ordered
-                ? moment(date_time_ordered)
-                : null,
-              date_time_received: date_time_received
-                ? moment(date_time_received)
-                : null,
-              date_time_of_surgery: date_time_of_surgery
-                ? moment(date_time_of_surgery)
-                : null,
-              anes_start: anes_start ? moment(anes_start) : null,
-              operation_started: operation_started
-                ? moment(operation_started)
-                : null,
-              operation_finished: operation_finished
-                ? moment(operation_finished)
-                : null,
-
-              time_ward_informed: time_ward_informed
-                ? moment(time_ward_informed)
-                : null,
-              arrival_time: arrival_time ? moment(arrival_time) : null,
-              room_is_ready: room_is_ready ? moment(room_is_ready) : null,
-              equip_ready: equip_ready ? moment(equip_ready) : null,
-              patient_placed_in_or_table: patient_placed_in_or_table
-                ? moment(patient_placed_in_or_table)
-                : null,
-              time_anes_arrived: time_anes_arrived
-                ? moment(time_anes_arrived)
-                : null,
-              time_surgeon_arrived: time_surgeon_arrived
-                ? moment(time_surgeon_arrived)
-                : null,
-              induction_time: induction_time ? moment(induction_time) : null,
-              induction_completed: induction_completed
-                ? moment(induction_completed)
-                : null,
-              time_or_started: time_or_started ? moment(time_or_started) : null,
-              or_ended: or_ended ? moment(or_ended) : null,
-              trans_out_from_or: trans_out_from_or
-                ? moment(trans_out_from_or)
-                : null,
-              surgical_safety_checklist: surgical_safety_checklist
-                ? moment(surgical_safety_checklist)
-                : null,
-              errors: {}
-            };
-          },
-          () => {
-            //window.print();
-          }
-        );
-      })
-      .catch(err => {
-        message.error("An error has occurred");
-        console.log(err);
+        if (response.data && response.data.values) {
+          this.setState({
+            values: response.data.values
+          });
+        }
       });
   };
 
-  onChange = e => {
+  onChange = (e, i) => {
     const value =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
 
-    this.setState(
-      {
-        ob_operative_technique: {
-          ...this.state.ob_operative_technique,
-          [e.target.name]: value
-        }
-      },
-      this.updateRecord
-    );
+    const values = [...this.state.values];
+    values[i] = value;
+
+    this.setState({ values }, () => {
+      this.updateRecord();
+    });
   };
 
   updateRecord = () => {
-    const { ob_operative_technique } = this.state;
+    const index = this.props.match.params.index;
+    const id = this.props.match.params.id;
+
     const form_data = {
-      ob_operative_technique
+      id,
+      index,
+      values: this.state.values
     };
 
     axios
-      .post(
-        `${this.state.url}${this.state._id}/operative-technique/ob`,
-        form_data
-      )
-      .then(response => {
-        console.log("Updated");
-      })
+      .post(`${this.state.url}${this.state._id}/operative-technique`, form_data)
+      .then(response => {})
       .catch(err => {
         message.error("There was an error updating your transaction");
       });
@@ -286,79 +107,7 @@ class OperativeTechinqueReport extends Component {
   render() {
     return (
       <Content className="content report operative-technique-container">
-        <div className="has-text-centered has-text-weight-bold surgical-memo-heading">
-          CORAZON LOCSIN MONTELIBANO MEMORIAL REGIONAL HOSPITAL
-        </div>
-        <div className="has-text-centered surgical-memo-heading">
-          Lacson - Burgos Streets, Bacolod City
-        </div>
-        <div
-          className="has-text-centered has-text-weight-bold surgical-memo-heading"
-          style={{
-            marginTop: "32px"
-          }}
-        >
-          OPERATIVE TECHNIQUE
-        </div>
-        <Row style={{ marginTop: "3rem" }}>
-          <Col span={3}>Name of Patient</Col>
-          <Col span={13} className="b-b-1">
-            {this.state.name || ""} &nbsp;
-          </Col>
-          <Col span={3}>Hospital No.</Col>
-          <Col span={5} className="b-b-1">
-            {this.state.hospital_number || ""} &nbsp;
-          </Col>
-        </Row>
-        <Row>
-          <Col span={3}>Address</Col>
-          <Col span={13} className="b-b-1">
-            {this.state.address} &nbsp;
-          </Col>
-          <Col span={3}>Ward/Room</Col>
-          <Col span={5} className="b-b-1">
-            {this.state.ward} &nbsp;
-          </Col>
-        </Row>
-        <Row>
-          <Col span={3}>Age</Col>
-          <Col span={3} className="b-b-1">
-            {this.state.age} &nbsp;
-          </Col>
-          <Col span={2}>Sex</Col>
-          <Col span={2} className="b-b-1">
-            {this.state.sex} &nbsp;
-          </Col>
-          <Col span={3}>Admission Date</Col>
-          <Col span={3} className="b-b-1">
-            {this.state.registration_date &&
-              this.state.registration_date.format("MM-DD-YY")}{" "}
-            &nbsp;
-          </Col>
-          <Col span={3}>Date of OR</Col>
-          <Col span={5} className="b-b-1">
-            {this.state.date_time_of_surgery &&
-              this.state.date_time_of_surgery.format("MM-DD-YY")}{" "}
-            &nbsp;
-          </Col>
-        </Row>
-        <div style={{ marginTop: "3rem" }}>
-          <span className="has-text-weight-bold surgical-memo-heading">
-            OPERATION DONE
-          </span>
-          <div
-            style={{
-              minHeight: "150px",
-              marginTop: "1rem"
-            }}
-          >
-            {this.state.rvs.map(r => (
-              <div>
-                {r.rvs_description} - {r.rvs_laterality} - {r.rvs_code}
-              </div>
-            ))}
-          </div>
-        </div>
+        <OptechHeader id={this.props.match.params.id} />
 
         <div>
           <ul>
@@ -366,9 +115,8 @@ class OperativeTechinqueReport extends Component {
               Patient is supine position under{" "}
               <input
                 type="text"
-                name="anes"
-                onChange={this.onChange}
-                value={this.state.ob_operative_technique.anes}
+                onChange={e => this.onChange(e, 1)}
+                value={this.state.values[1]}
               />
               Anesthesia.
             </li>
@@ -381,9 +129,8 @@ class OperativeTechinqueReport extends Component {
                   <Col span={4}>
                     <input
                       type="text"
-                      name="cervix"
-                      onChange={this.onChange}
-                      value={this.state.ob_operative_technique.cervix}
+                      onChange={e => this.onChange(e, 2)}
+                      value={this.state.values[2]}
                     />
                   </Col>
 
@@ -393,9 +140,8 @@ class OperativeTechinqueReport extends Component {
                   <Col span={4}>
                     <input
                       type="text"
-                      name="adnexae"
-                      onChange={this.onChange}
-                      value={this.state.ob_operative_technique.adnexae}
+                      onChange={e => this.onChange(e, 3)}
+                      value={this.state.values[3]}
                     />
                   </Col>
                 </Row>
@@ -404,9 +150,8 @@ class OperativeTechinqueReport extends Component {
                   <Col span={4}>
                     <input
                       type="text"
-                      name="uterus"
-                      onChange={this.onChange}
-                      value={this.state.ob_operative_technique.uterus}
+                      onChange={e => this.onChange(e, 4)}
+                      value={this.state.values[4]}
                     />
                   </Col>
 
@@ -416,9 +161,8 @@ class OperativeTechinqueReport extends Component {
                   <Col span={4}>
                     <input
                       type="text"
-                      name="discharges"
-                      onChange={this.onChange}
-                      value={this.state.ob_operative_technique.discharges}
+                      onChange={e => this.onChange(e, 5)}
+                      value={this.state.values[5]}
                     />
                   </Col>
                 </Row>
@@ -444,9 +188,8 @@ class OperativeTechinqueReport extends Component {
               cut, and suture ligated using{" "}
               <input
                 type="text"
-                name="ligation_equipment"
-                onChange={this.onChange}
-                value={this.state.ob_operative_technique.ligation_equipment}
+                onChange={e => this.onChange(e, 6)}
+                value={this.state.values[6]}
               />
               .
             </li>

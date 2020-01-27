@@ -19,7 +19,8 @@ import RelativeValueScaleForm from "../components/clmmrh/RelativeValueScaleForm"
 import SurgicalMemorandumReport from "../components/clmmrh/SurgicalMemorandumReport";
 import ORElectiveOperations from "../components/clmmrh/ORElectiveOperations";
 import ORScheduleForm from "../components/clmmrh/ORScheduleForm";
-import OperativeTechniqueReport from "../components/clmmrh/OperativeTechniqueReport";
+import Optech from "../components/clmmrh/Optech";
+import OptechSelectionForm from "../components/clmmrh/OptechSelectionForm";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -43,6 +44,12 @@ const AppRouter = () => (
         <PrivateRoute
           path="/relative-value-scales"
           component={RelativeValueScaleForm}
+          exact={true}
+        />
+
+        <PrivateRoute
+          path="/optech-selections"
+          component={OptechSelectionForm}
           exact={true}
         />
 
@@ -83,8 +90,8 @@ const AppRouter = () => (
         />
 
         <Route
-          path="/or-slip/:id/operative-technique"
-          component={OperativeTechniqueReport}
+          path="/or-slip/:id/operative-technique/:index/:optech_type"
+          component={Optech}
           exact={true}
         />
       </Switch>

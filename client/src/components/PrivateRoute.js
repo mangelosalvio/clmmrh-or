@@ -89,6 +89,14 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
               </span>
             </Link>
           </Menu.Item>
+          <Menu.Item key="/optech-selections">
+            <Link to="/optech-selections">
+              <span>
+                <Icon type="folder" />
+                Optech Selections
+              </span>
+            </Link>
+          </Menu.Item>
         </SubMenu>
 
         <SubMenu
@@ -184,7 +192,4 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { logoutUser }
-)(PrivateRoute);
+export default connect(mapStateToProps, { logoutUser })(PrivateRoute);

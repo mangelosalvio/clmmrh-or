@@ -665,3 +665,8 @@ li.ant-select-dropdown-menu-item:hover {
 .operative-technique-container li {
   line-height: 14px;
 }
+
+.optech-heading-margin {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}

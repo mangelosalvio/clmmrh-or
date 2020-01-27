@@ -195,7 +195,8 @@ class OperatingRoomSlipForm extends Component {
       anesthesiologists: [],
       nurses: [],
       rvs: [],
-      patients: []
+      patients: [],
+      optech: []
     },
     current_page: 1,
     selected_row_keys: [],
@@ -1410,6 +1411,27 @@ class OperatingRoomSlipForm extends Component {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos.splice(i, 1);
     this.setState({ surgical_memos });
+  };
+
+  onOptechSelectionSearch = value => {
+    const form_data = {
+      service: this.state.service,
+      keyword: value
+    };
+
+    axios
+      .post(`/api/optech-selections/selections`, form_data)
+      .then(response => {
+        if (response.data) {
+          this.setState({
+            options: {
+              ...this.state.options,
+              optech: [...response.data]
+            }
+          });
+        }
+      })
+      .catch(err => console.log(err));
   };
 
   render() {
@@ -3188,6 +3210,30 @@ class OperatingRoomSlipForm extends Component {
                       />
                     </Col>
                   </Row>
+
+                  <Divider orientation="left">Operative Technique</Divider>
+                  <Row>
+                    <Col span={12}>
+                      <SelectFieldGroup
+                        label="Operative Technique"
+                        name="optech"
+                        value={
+                          this.state.optech && this.state.optech.description
+                        }
+                        onChange={index =>
+                          this.setState({
+                            optech: this.state.options.optech[index]
+                          })
+                        }
+                        onSearch={this.onOptechSelectionSearch}
+                        error={errors.optech}
+                        formItemLayout={smallFormItemLayout}
+                        data={this.state.options.optech}
+                        column="description"
+                      />
+                    </Col>
+                  </Row>
+
                   <Row>
                     <Col span={12}>
                       <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
@@ -3220,6 +3266,20 @@ class OperatingRoomSlipForm extends Component {
                                     <i className="fas fa-print" />
                                   </span>
                                   Print Surgical Memo
+                                </Button>
+                              </Link>
+                            </div>,
+                            this.state.optech && this.state.optech.tag && 
+                            <div className="control">
+                              <Link
+                                to={`/or-slip/${this.state._id}/operative-technique/0/${this.state.optech.tag}`}
+                                target="_blank"
+                              >
+                                <Button className="button is-small is-outlined is-info">
+                                  <span className="icon is-small">
+                                    <i className="fas fa-print" />
+                                  </span>
+                                  Operative Technique
                                 </Button>
                               </Link>
                             </div>,

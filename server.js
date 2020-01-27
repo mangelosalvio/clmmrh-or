@@ -39,6 +39,7 @@ const anesthesiologists = require("./routes/api/anesthesiologists");
 const nurses = require("./routes/api/nurses");
 const relative_value_scales = require("./routes/api/relative_value_scales");
 const or_schedules = require("./routes/api/or_schedules");
+const optech_selections = require("./routes/api/optech_selections");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -61,6 +62,7 @@ app.use("/api/nurses", nurses);
 app.use("/api/relative-value-scales", relative_value_scales);
 
 app.use("/api/or-schedules", or_schedules);
+app.use("/api/optech-selections", optech_selections);
 
 app.use(
   "/public/attachments",

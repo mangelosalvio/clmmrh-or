@@ -9,6 +9,8 @@ import "../../styles/Autosuggest.css";
 import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import TextAreaGroup from "../../commons/TextAreaGroup";
+import { service_options } from "../../utils/Options";
+import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 
 const { Content } = Layout;
 
@@ -24,12 +26,13 @@ const form_data = {
   errors: {}
 };
 
-class RVSForm extends Component {
+class OptechSelectionForm extends Component {
   state = {
-    title: "RVS Form",
-    url: "/api/relative-value-scales/",
+    title: "Optech Selections",
+    url: "/api/optech-selections/",
     search_keyword: "",
-    ...form_data
+    ...form_data,
+    service_options: []
   };
 
   componentDidMount() {
@@ -182,12 +185,16 @@ class RVSForm extends Component {
   render() {
     const records_column = [
       {
-        title: "Code",
-        dataIndex: "code"
+        title: "Service",
+        dataIndex: "service"
       },
       {
         title: "Description",
         dataIndex: "description"
+      },
+      {
+        title: "Tag",
+        dataIndex: "tag"
       },
       {
         title: "",
@@ -214,7 +221,7 @@ class RVSForm extends Component {
           <div className="column">
             <Breadcrumb style={{ margin: "16px 0" }}>
               <Breadcrumb.Item>Home</Breadcrumb.Item>
-              <Breadcrumb.Item>RVS</Breadcrumb.Item>
+              <Breadcrumb.Item>Optech Selections</Breadcrumb.Item>
             </Breadcrumb>
           </div>
           <div className="column">
@@ -233,20 +240,30 @@ class RVSForm extends Component {
           <MessageBoxInfo message={this.state.message} onHide={this.onHide} />
           {isEmpty(this.state[collection_name]) ? (
             <Form onSubmit={this.onSubmit}>
-              <TextFieldGroup
-                label="Code"
-                name="code"
-                value={this.state.code}
-                error={errors.code}
+              <SimpleSelectFieldGroup
+                label="Service"
+                name="service"
+                value={this.state.service}
+                onChange={value => this.setState({ service: value })}
                 formItemLayout={formItemLayout}
-                onChange={this.onChange}
+                error={errors.service}
+                options={service_options}
               />
 
-              <TextAreaGroup
+              <TextFieldGroup
                 label="Description"
                 name="description"
                 value={this.state.description}
                 error={errors.description}
+                formItemLayout={formItemLayout}
+                onChange={this.onChange}
+              />
+
+              <TextFieldGroup
+                label="Tag"
+                name="tag"
+                value={this.state.tag}
+                error={errors.tag}
                 formItemLayout={formItemLayout}
                 onChange={this.onChange}
               />
@@ -289,4 +306,4 @@ const mapToState = state => {
   };
 };
 
-export default connect(mapToState)(RVSForm);
+export default connect(mapToState)(OptechSelectionForm);
