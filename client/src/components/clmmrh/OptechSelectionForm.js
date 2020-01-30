@@ -11,6 +11,7 @@ import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import TextAreaGroup from "../../commons/TextAreaGroup";
 import { service_options } from "../../utils/Options";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
+import { Editor } from "@tinymce/tinymce-react";
 
 const { Content } = Layout;
 
@@ -20,8 +21,9 @@ const form_data = {
   [collection_name]: [],
   _id: "",
 
-  code: "",
+  service: "",
   description: "",
+  content: "",
 
   errors: {}
 };
@@ -193,10 +195,6 @@ class OptechSelectionForm extends Component {
         dataIndex: "description"
       },
       {
-        title: "Tag",
-        dataIndex: "tag"
-      },
-      {
         title: "",
         key: "action",
         width: 10,
@@ -259,16 +257,26 @@ class OptechSelectionForm extends Component {
                 onChange={this.onChange}
               />
 
-              <TextFieldGroup
-                label="Tag"
-                name="tag"
-                value={this.state.tag}
-                error={errors.tag}
-                formItemLayout={formItemLayout}
-                onChange={this.onChange}
+              <Editor
+                apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
+                initialValue={this.state.content}
+                init={{
+                  height: 500,
+                  menubar: false,
+                  plugins: [
+                    "advlist autolink lists link image charmap print preview anchor",
+                    "searchreplace visualblocks code fullscreen",
+                    "insertdatetime media table paste code help wordcount"
+                  ],
+                  toolbar:
+                    "undo redo | formatselect | bold italic backcolor | \
+             alignleft aligncenter alignright alignjustify | \
+             bullist numlist outdent indent | removeformat | help"
+                }}
+                onChange={this.handleEditorChange}
               />
 
-              <Form.Item className="m-t-1" {...tailFormItemLayout}>
+              <Form.Item className="m-t-1">
                 <div className="field is-grouped">
                   <div className="control">
                     <button className="button is-small is-primary">Save</button>

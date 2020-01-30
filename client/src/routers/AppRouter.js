@@ -21,6 +21,7 @@ import ORElectiveOperations from "../components/clmmrh/ORElectiveOperations";
 import ORScheduleForm from "../components/clmmrh/ORScheduleForm";
 import Optech from "../components/clmmrh/Optech";
 import OptechSelectionForm from "../components/clmmrh/OptechSelectionForm";
+import OptechReport from "../components/clmmrh/OptechReport";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -91,7 +92,7 @@ const AppRouter = () => (
 
         <Route
           path="/or-slip/:id/operative-technique/:index/:optech_type"
-          component={Optech}
+          component={OptechReport}
           exact={true}
         />
       </Switch>

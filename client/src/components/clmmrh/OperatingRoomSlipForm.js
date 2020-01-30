@@ -77,6 +77,7 @@ import {
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
+import { Editor } from "@tinymce/tinymce-react";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
@@ -180,6 +181,8 @@ const form_data = {
 
   rvs: [],
   surgical_memos: [],
+
+  optech_content: "",
 
   errors: {}
 };
@@ -3220,16 +3223,51 @@ class OperatingRoomSlipForm extends Component {
                         value={
                           this.state.optech && this.state.optech.description
                         }
-                        onChange={index =>
+                        onChange={index => {
+                          const optech_selection = this.state.options.optech[
+                            index
+                          ];
+
                           this.setState({
-                            optech: this.state.options.optech[index]
-                          })
-                        }
+                            optech: this.state.options.optech[index],
+                            optech_content:
+                              (optech_selection && optech_selection.content) ||
+                              ""
+                          });
+                        }}
                         onSearch={this.onOptechSelectionSearch}
                         error={errors.optech}
                         formItemLayout={smallFormItemLayout}
                         data={this.state.options.optech}
                         column="description"
+                      />
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col span={24}>
+                      <Editor
+                        apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
+                        initialValue={this.state.optech_content}
+                        init={{
+                          height: 500,
+                          menubar: false,
+                          plugins: [
+                            "advlist autolink lists link image charmap print preview anchor",
+                            "searchreplace visualblocks code fullscreen",
+                            "insertdatetime media table paste code help wordcount"
+                          ],
+                          toolbar:
+                            "undo redo | formatselect | bold italic backcolor | \
+             alignleft aligncenter alignright alignjustify | \
+             bullist numlist outdent indent | removeformat | help"
+                        }}
+                        onChange={e => {
+                          this.setState({
+                            optech_content: e.target.getContent()
+                          });
+                        }}
+                        value={this.state.optech_content}
                       />
                     </Col>
                   </Row>
@@ -3269,20 +3307,21 @@ class OperatingRoomSlipForm extends Component {
                                 </Button>
                               </Link>
                             </div>,
-                            this.state.optech && this.state.optech.tag && 
-                            <div className="control">
-                              <Link
-                                to={`/or-slip/${this.state._id}/operative-technique/0/${this.state.optech.tag}`}
-                                target="_blank"
-                              >
-                                <Button className="button is-small is-outlined is-info">
-                                  <span className="icon is-small">
-                                    <i className="fas fa-print" />
-                                  </span>
-                                  Operative Technique
-                                </Button>
-                              </Link>
-                            </div>,
+                            this.state.optech && this.state.optech.tag && (
+                              <div className="control">
+                                <Link
+                                  to={`/or-slip/${this.state._id}/operative-technique/0/${this.state.optech.tag}`}
+                                  target="_blank"
+                                >
+                                  <Button className="button is-small is-outlined is-info">
+                                    <span className="icon is-small">
+                                      <i className="fas fa-print" />
+                                    </span>
+                                    Operative Technique
+                                  </Button>
+                                </Link>
+                              </div>
+                            ),
                             false && (
                               <div className="control">
                                 <Link
