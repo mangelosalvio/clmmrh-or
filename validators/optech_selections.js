@@ -12,10 +12,6 @@ module.exports = function validateInput(data) {
     errors.description = "Description is required";
   }
 
-  if (isEmpty(data.tag)) {
-    errors.tag = "Tag is required";
-  }
-
   return {
     errors,
     isValid: isEmpty(errors)
