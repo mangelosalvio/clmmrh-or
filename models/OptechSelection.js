@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 const OptechSelectionSchema = new Schema({
   service: String,
-  tag: String,
-  description: String
+  description: String,
+  content: String
 });
 
 module.exports = mongoose.model("optech_selections", OptechSelectionSchema);

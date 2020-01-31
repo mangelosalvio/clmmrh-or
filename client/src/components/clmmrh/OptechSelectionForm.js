@@ -184,6 +184,12 @@ class OptechSelectionForm extends Component {
       });
   };
 
+  handleEditorChange = e => {
+    this.setState({
+      content: e.target.getContent()
+    });
+  };
+
   render() {
     const records_column = [
       {
@@ -260,6 +266,7 @@ class OptechSelectionForm extends Component {
               <Editor
                 apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
                 initialValue={this.state.content}
+                value={this.state.value}
                 init={{
                   height: 500,
                   menubar: false,

@@ -52,24 +52,15 @@ router.put("/", (req, res) => {
   const body = filterId(req);
   const user = req.body.user;
 
-  Model.findOne({
-    code: body.code
-  }).then(record => {
-    if (record) {
-      errors["code"] = "Code already exists";
-      return res.status(401).json(errors);
-    } else {
-      const newRecord = new Model({
-        ...body
-      });
-      newRecord
-        .save()
-        .then(record => {
-          return res.json(record);
-        })
-        .catch(err => console.log(err));
-    }
+  const newRecord = new Model({
+    ...body
   });
+  newRecord
+    .save()
+    .then(record => {
+      return res.json(record);
+    })
+    .catch(err => console.log(err));
 });
 
 router.post("/selections", (req, res) => {

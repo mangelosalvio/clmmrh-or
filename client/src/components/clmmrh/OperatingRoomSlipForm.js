@@ -3224,16 +3224,18 @@ class OperatingRoomSlipForm extends Component {
                           this.state.optech && this.state.optech.description
                         }
                         onChange={index => {
-                          const optech_selection = this.state.options.optech[
-                            index
-                          ];
-
-                          this.setState({
-                            optech: this.state.options.optech[index],
-                            optech_content:
-                              (optech_selection && optech_selection.content) ||
-                              ""
-                          });
+                          if (index === undefined) {
+                            this.setState({ optech: null, optech_content: "" });
+                          } else {
+                            const optech_selection = this.state.options.optech[
+                              index
+                            ];
+                            console.log(optech_selection.content);
+                            this.setState({
+                              optech: this.state.options.optech[index],
+                              optech_content: optech_selection.content
+                            });
+                          }
                         }}
                         onSearch={this.onOptechSelectionSearch}
                         error={errors.optech}
@@ -3274,7 +3276,7 @@ class OperatingRoomSlipForm extends Component {
 
                   <Row>
                     <Col span={12}>
-                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
+                      <Form.Item className="m-t-1">
                         <div className="field is-grouped">
                           <div className="control">
                             <button className="button is-small is-primary">
