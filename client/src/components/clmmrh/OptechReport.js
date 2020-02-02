@@ -117,6 +117,41 @@ class OperativeTechinqueReport extends Component {
 
         {this.renderHTML(this.state.optech_content)}
 
+        <Row style={{ marginTop: "64px" }}>
+          <Col
+            offset={2}
+            span={8}
+            className="b-b-1 has-text-centered"
+            style={{ height: "52px" }}
+          >
+            {this.state.surgeon && this.state.surgeon.full_name}
+            {this.state.surgeon &&
+              this.state.surgeon.license_number && [
+                <br />,
+                `Lic. No.${this.state.surgeon.license_number}`
+              ]}
+            {this.state.surgeon &&
+              this.state.surgeon.department && [
+                <br />,
+                this.state.surgeon.department
+              ]}
+          </Col>
+          <Col span={1} className="is-flex" style={{ height: "48px" }}>
+            <span
+              style={{
+                alignSelf: "flex-end"
+              }}
+            >
+              M.D.
+            </span>
+          </Col>
+        </Row>
+        <Row>
+          <Col offset={2} span={8} className="has-text-centered">
+            Surgeon
+          </Col>
+        </Row>
+
         <div className="print-iso-footer">
           Operative Technique <br />
           CLMMRH-MRS.F.044 <br />

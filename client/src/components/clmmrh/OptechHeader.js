@@ -122,13 +122,13 @@ class OperativeTechinqueReport extends Component {
             &nbsp;
           </Col>
         </Row>
-        <div style={{ marginTop: "3rem" }}>
+        <div style={{ marginTop: "1rem" }}>
           <span className="has-text-weight-bold surgical-memo-heading">
             OPERATION DONE
           </span>
           <div
             style={{
-              marginTop: "1rem"
+              margin: "1rem 0rem"
             }}
           >
             {this.state.rvs.map(r => (
