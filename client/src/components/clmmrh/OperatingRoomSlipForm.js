@@ -3309,7 +3309,7 @@ class OperatingRoomSlipForm extends Component {
                                 </Button>
                               </Link>
                             </div>,
-                            this.state.optech && this.state.optech.tag && (
+                            this.state.optech && (
                               <div className="control">
                                 <Link
                                   to={`/or-slip/${this.state._id}/operative-technique/0/${this.state.optech.tag}`}
