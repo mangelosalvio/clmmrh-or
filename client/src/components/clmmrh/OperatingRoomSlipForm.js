@@ -655,6 +655,7 @@ class OperatingRoomSlipForm extends Component {
         ...surgical_memos[i],
         [name]: null
       };
+      this.setState({ surgical_memos });
     }
   };
 
@@ -674,6 +675,7 @@ class OperatingRoomSlipForm extends Component {
         ...surgical_memos[i],
         [name]: null
       };
+      this.setState({ surgical_memos });
     }
   };
 
@@ -877,6 +879,7 @@ class OperatingRoomSlipForm extends Component {
         ...surgical_memos[i],
         [name]: null
       };
+      this.setState({ surgical_memos });
     }
   };
 
@@ -3744,13 +3747,13 @@ class OperatingRoomSlipForm extends Component {
                               o.assistant_surgeon &&
                               o.assistant_surgeon.full_name
                             }
-                            onChange={index =>
+                            onChange={index => {
                               this.onSurgeonChangeSurgMemo(
                                 index,
                                 "assistant_surgeon",
                                 surg_memo_index
-                              )
-                            }
+                              );
+                            }}
                             onSearch={this.onSurgeonSearch}
                             error={errors.assistant_surgeon}
                             formItemLayout={smallFormItemLayout}
@@ -4420,6 +4423,80 @@ class OperatingRoomSlipForm extends Component {
                           />
                         </Col>
                       </Row>
+                      <Divider orientation="left">Operative Technique</Divider>
+                      <Row>
+                        <Col span={12}>
+                          <SelectFieldGroup
+                            label="Operative Technique"
+                            name="optech"
+                            value={o.optech && o.optech.description}
+                            onChange={index => {
+                              const surgical_memos = [...this.state.surgical_memos];
+
+                              if (index === undefined) {
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  optech: null,
+                                  optech_content: ""
+                                };
+                              } else {
+                                const optech_selection = this.state.options
+                                  .optech[index];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  optech: optech_selection,
+                                  optech_content: optech_selection.content
+                                };
+                              }
+                              this.setState({
+                                surgical_memos
+                              });
+                            }}
+                            onSearch={this.onOptechSelectionSearch}
+                            error={errors.optech}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.optech}
+                            column="description"
+                          />
+                        </Col>
+                      </Row>
+
+                      <Row>
+                        <Col span={24}>
+                          <Editor
+                            apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
+                            initialValue={this.state.optech_content}
+                            init={{
+                              height: 500,
+                              menubar: false,
+                              plugins: [
+                                "advlist autolink lists link image charmap print preview anchor",
+                                "searchreplace visualblocks code fullscreen",
+                                "insertdatetime media table paste code help wordcount"
+                              ],
+                              toolbar:
+                                "undo redo | formatselect | bold italic backcolor | \
+             alignleft aligncenter alignright alignjustify | \
+             bullist numlist outdent indent | removeformat | help"
+                            }}
+                            handleEditorChange={(content, editor) => {
+                              const surgical_memos = [...this.state.surgical_memos]
+
+                              surgical_memos[surg_memo_index] = {
+                                ...surgical_memos[surg_memo_index],
+                                optech_content : content
+                              }
+
+                              this.setState({
+                                surgical_memos
+                              });
+                            }}
+                            value={o.optech_content}
+                          />
+                        </Col>
+                      </Row>
+
                       <Row>
                         <Col span={12}>
                           <Form.Item

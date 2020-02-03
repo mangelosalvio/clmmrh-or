@@ -6,6 +6,8 @@ import { Layout, message, Col, Row, Input } from "antd";
 import { debounce } from "lodash";
 
 import moment from "moment";
+import { NOT_APPLICABLE } from "../../utils/constants";
+import isEmpty from "../../validation/is-empty";
 
 const { Content } = Layout;
 
@@ -133,7 +135,11 @@ class OperativeTechinqueReport extends Component {
           >
             {this.state.rvs.map(r => (
               <div>
-                {r.rvs_description} - {r.rvs_laterality} - {r.rvs_code}
+                {r.rvs_description}{" "}
+                {!isEmpty(r.rvs_laterality) &&
+                  r.rvs_laterality !== NOT_APPLICABLE &&
+                  `- ${r.rvs_laterality}`}{" "}
+                - {r.rvs_code}
               </div>
             ))}
           </div>

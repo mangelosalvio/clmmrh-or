@@ -161,7 +161,9 @@ const OperatingRoomSlipSchema = new Schema({
           rvs_description: String,
           rvs_laterality: String
         }
-      ]
+      ],
+      optech: Object,
+      optech_content: String
     }
   ],
 

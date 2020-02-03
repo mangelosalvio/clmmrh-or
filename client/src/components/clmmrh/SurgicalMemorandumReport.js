@@ -359,7 +359,7 @@ class SurgicalMemorandumReport extends Component {
           </Col>
           <Col span={3}>Surgeon</Col>
           <Col span={6} className="b-b-1">
-            {this.state.surgeon && this.state.surgeon.full_name}
+            {this.state.surgeon && this.state.surgeon.full_name} &nbsp;
           </Col>
           <Col span={3}>Assistant</Col>
           <Col span={6} className="b-b-1">

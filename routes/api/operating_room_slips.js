@@ -60,8 +60,36 @@ router.get("/:id/surgical-memorandum/:surg_memo_id", (req, res) => {
     }
   ])
     .then(records => {
+      const record = {
+        ...records[0]
+      };
+
+      const {
+        name,
+        asa,
+        hospital_number,
+        address,
+        ward,
+        age,
+        sex,
+        registration_date,
+        date_time_of_surgery,
+        weight,
+        weight_unit
+      } = record;
+
       return res.json({
-        ...records[0],
+        name,
+        asa,
+        hospital_number,
+        address,
+        ward,
+        age,
+        sex,
+        registration_date,
+        date_time_of_surgery,
+        weight,
+        weight_unit,
         ...records[0].surgical_memos
       });
     })
