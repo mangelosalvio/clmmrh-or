@@ -23,7 +23,7 @@ const form_data = {
 
   service: "",
   description: "",
-  content: "",
+  content: null,
 
   errors: {}
 };
@@ -36,6 +36,10 @@ class OptechSelectionForm extends Component {
     ...form_data,
     service_options: []
   };
+  constructor(props) {
+    super(props);
+    this.editor = React.createRef();
+  }
 
   componentDidMount() {
     this.searchRecords();
@@ -103,6 +107,7 @@ class OptechSelectionForm extends Component {
   addNew = () => {
     this.setState({
       ...form_data,
+      content: "",
       errors: {},
       message: ""
     });
@@ -184,9 +189,9 @@ class OptechSelectionForm extends Component {
       });
   };
 
-  handleEditorChange = e => {
+  handleEditorChange = (content, editor) => {
     this.setState({
-      content: e.target.getContent()
+      content
     });
   };
 
@@ -264,9 +269,11 @@ class OptechSelectionForm extends Component {
               />
 
               <Editor
+                ref={this.editor}
+                id="editor"
                 apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
                 initialValue={this.state.content}
-                value={this.state.value}
+                value={this.state.content}
                 init={{
                   height: 500,
                   menubar: false,
@@ -280,7 +287,7 @@ class OptechSelectionForm extends Component {
              alignleft aligncenter alignright alignjustify | \
              bullist numlist outdent indent | removeformat | help"
                 }}
-                onChange={this.handleEditorChange}
+                onEditorChange={this.handleEditorChange}
               />
 
               <Form.Item className="m-t-1">

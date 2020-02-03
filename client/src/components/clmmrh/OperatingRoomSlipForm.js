@@ -3264,9 +3264,9 @@ class OperatingRoomSlipForm extends Component {
              alignleft aligncenter alignright alignjustify | \
              bullist numlist outdent indent | removeformat | help"
                         }}
-                        onChange={e => {
+                        handleEditorChange={(content, editor) => {
                           this.setState({
-                            optech_content: e.target.getContent()
+                            optech_content: content
                           });
                         }}
                         value={this.state.optech_content}
