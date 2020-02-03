@@ -12,7 +12,95 @@ const { Content } = Layout;
 
 const collection_name = "slips";
 
-class OperativeTechinqueReport extends Component {
+const form_data = {
+  [collection_name]: [],
+  _id: "",
+
+  name: "",
+  age: "",
+  address: "",
+  sex: "",
+  weight: "",
+  hospital_number: "",
+  ward: "",
+  date_of_birth: null,
+  registration_date: null,
+  service: "",
+  diagnosis: "",
+  procedure: "",
+  case: "",
+  surgeon: "",
+  classification: "",
+  date_time_ordered: null,
+  date_time_received: null,
+  surgery_is_date: false,
+  date_time_of_surgery: null,
+  case_order: "",
+  received_by: "",
+
+  operation_type: "",
+  operation_status: "",
+  main_anes: "",
+  other_anes: [],
+  laterality: "",
+  operating_room_number: "",
+
+  assistant_surgeon: "",
+  other_surgeons: [],
+  instrument_nurse: "",
+  other_inst_nurses: [],
+  other_sponge_nurses: [],
+  sponge_nurse: "",
+  anes_method: "",
+  anes_methods: [],
+
+  anesthetics: [],
+  anes_used: "",
+  anes_quantity: "",
+  anes_route: "",
+
+  anes_start: null,
+  operation_started: null,
+  operation_finished: null,
+  tentative_diagnosis: "",
+  final_diagnosis: "",
+  before_operation: "",
+  during_operation: "",
+  after_operation: "",
+  complications_during_operation: "",
+  complications_after_operation: "",
+  operation_performed: "",
+  position_in_bed: "",
+  proctoclysis: "",
+  hypodermoclysis: "",
+  nutrition: "",
+  stimulant: "",
+  asa: "",
+
+  time_ward_informed: null,
+  arrival_time: null,
+  room_is_ready: null,
+  equip_ready: null,
+  patient_placed_in_or_table: null,
+  time_anes_arrived: null,
+  time_surgeon_arrived: null,
+  induction_time: null,
+  induction_completed: null,
+  time_or_started: null,
+  or_ended: null,
+  trans_out_from_or: null,
+  surgical_safety_checklist: null,
+  remarks: "",
+
+  rvs_code: "",
+  rvs_description: "",
+
+  rvs: [],
+
+  errors: {}
+};
+
+class OptechReport extends Component {
   state = {
     title: "Operating Room Form",
     url: "/api/operating-room-slips/",
@@ -32,19 +120,109 @@ class OperativeTechinqueReport extends Component {
   }
 
   getRecord = () => {
+    let promise = null;
     const id = this.props.match.params.id;
+    const surg_memo_id = this.props.match.params.surg_memo_id;
+    console.log(surg_memo_id);
+    if (surg_memo_id) {
+      promise = axios.get(
+        `${this.state.url}${id}/surgical-memorandum/${surg_memo_id}`
+      );
+    } else {
+      promise = axios.get(this.state.url + id);
+    }
 
-    axios
-      .get(`${this.state.url}${this.props.match.params.id}`)
+    promise
       .then(response => {
-        if (response.data) {
-          const optech_content = `<div>${response.data.optech_content}</div>`;
+        const record = response.data;
+        const {
+          date_of_birth,
+          registration_date,
+          date_time_ordered,
+          date_time_of_surgery,
+          date_time_received,
+          anes_start,
+          operation_started,
+          operation_finished,
+          time_ward_informed,
+          arrival_time,
+          room_is_ready,
+          equip_ready,
+          patient_placed_in_or_table,
+          time_anes_arrived,
+          time_surgeon_arrived,
+          induction_time,
+          induction_completed,
+          time_or_started,
+          or_ended,
+          trans_out_from_or,
+          surgical_safety_checklist
+        } = response.data;
+        this.setState(
+          prevState => {
+            return {
+              ...form_data,
+              [collection_name]: [],
+              ...record,
+              date_of_birth: date_of_birth ? moment(date_of_birth) : null,
+              registration_date: registration_date
+                ? moment(registration_date)
+                : null,
+              date_time_ordered: date_time_ordered
+                ? moment(date_time_ordered)
+                : null,
+              date_time_received: date_time_received
+                ? moment(date_time_received)
+                : null,
+              date_time_of_surgery: date_time_of_surgery
+                ? moment(date_time_of_surgery)
+                : null,
+              anes_start: anes_start ? moment(anes_start) : null,
+              operation_started: operation_started
+                ? moment(operation_started)
+                : null,
+              operation_finished: operation_finished
+                ? moment(operation_finished)
+                : null,
 
-          this.setState({
-            ...response.data,
-            optech_content
-          });
-        }
+              time_ward_informed: time_ward_informed
+                ? moment(time_ward_informed)
+                : null,
+              arrival_time: arrival_time ? moment(arrival_time) : null,
+              room_is_ready: room_is_ready ? moment(room_is_ready) : null,
+              equip_ready: equip_ready ? moment(equip_ready) : null,
+              patient_placed_in_or_table: patient_placed_in_or_table
+                ? moment(patient_placed_in_or_table)
+                : null,
+              time_anes_arrived: time_anes_arrived
+                ? moment(time_anes_arrived)
+                : null,
+              time_surgeon_arrived: time_surgeon_arrived
+                ? moment(time_surgeon_arrived)
+                : null,
+              induction_time: induction_time ? moment(induction_time) : null,
+              induction_completed: induction_completed
+                ? moment(induction_completed)
+                : null,
+              time_or_started: time_or_started ? moment(time_or_started) : null,
+              or_ended: or_ended ? moment(or_ended) : null,
+              trans_out_from_or: trans_out_from_or
+                ? moment(trans_out_from_or)
+                : null,
+              surgical_safety_checklist: surgical_safety_checklist
+                ? moment(surgical_safety_checklist)
+                : null,
+              errors: {}
+            };
+          },
+          () => {
+            //window.print();
+          }
+        );
+      })
+      .catch(err => {
+        message.error("An error has occurred");
+        console.log(err);
       });
   };
 
@@ -171,4 +349,4 @@ const mapToState = state => {
   };
 };
 
-export default connect(mapToState)(withRouter(OperativeTechinqueReport));
+export default connect(mapToState)(withRouter(OptechReport));

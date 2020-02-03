@@ -85,6 +85,12 @@ const AppRouter = () => (
         />
 
         <Route
+          path="/or-slip/:id/optech/:surg_memo_id"
+          component={OptechReport}
+          exact={true}
+        />
+
+        <Route
           path="/or-elective-operations"
           component={ORElectiveOperations}
           exact={true}

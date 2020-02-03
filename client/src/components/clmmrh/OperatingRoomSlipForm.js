@@ -3267,7 +3267,7 @@ class OperatingRoomSlipForm extends Component {
              alignleft aligncenter alignright alignjustify | \
              bullist numlist outdent indent | removeformat | help"
                         }}
-                        handleEditorChange={(content, editor) => {
+                        onEditorChange={(content, editor) => {
                           this.setState({
                             optech_content: content
                           });
@@ -4431,7 +4431,9 @@ class OperatingRoomSlipForm extends Component {
                             name="optech"
                             value={o.optech && o.optech.description}
                             onChange={index => {
-                              const surgical_memos = [...this.state.surgical_memos];
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
 
                               if (index === undefined) {
                                 surgical_memos[surg_memo_index] = {
@@ -4466,7 +4468,7 @@ class OperatingRoomSlipForm extends Component {
                         <Col span={24}>
                           <Editor
                             apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
-                            initialValue={this.state.optech_content}
+                            initialValue={o.optech_content}
                             init={{
                               height: 500,
                               menubar: false,
@@ -4480,13 +4482,15 @@ class OperatingRoomSlipForm extends Component {
              alignleft aligncenter alignright alignjustify | \
              bullist numlist outdent indent | removeformat | help"
                             }}
-                            handleEditorChange={(content, editor) => {
-                              const surgical_memos = [...this.state.surgical_memos]
+                            onEditorChange={(content, editor) => {
+                              const surgical_memos = [
+                                ...this.state.surgical_memos
+                              ];
 
                               surgical_memos[surg_memo_index] = {
                                 ...surgical_memos[surg_memo_index],
-                                optech_content : content
-                              }
+                                optech_content: content
+                              };
 
                               this.setState({
                                 surgical_memos
@@ -4535,6 +4539,21 @@ class OperatingRoomSlipForm extends Component {
                                     </Button>
                                   </Link>
                                 </div>,
+                                o.optech && (
+                                  <div className="control">
+                                    <Link
+                                      to={`/or-slip/${this.state._id}/optech/${o._id}`}
+                                      target="_blank"
+                                    >
+                                      <Button className="button is-small is-outlined is-info">
+                                        <span className="icon is-small">
+                                          <i className="fas fa-print" />
+                                        </span>
+                                        Operative Technique
+                                      </Button>
+                                    </Link>
+                                  </div>
+                                ),
                                 <div className="control">
                                   <Button
                                     className="button is-small is-outlined is-danger"
