@@ -41,8 +41,14 @@ const relative_value_scales = require("./routes/api/relative_value_scales");
 const or_schedules = require("./routes/api/or_schedules");
 const optech_selections = require("./routes/api/optech_selections");
 
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "100mb" }));
+app.use(
+  bodyParser.urlencoded({
+    limit: "100mb",
+    extended: true,
+    parameterLimit: 50000
+  })
+);
 
 mongoose
   .connect(db, { useNewUrlParser: true })

@@ -23,7 +23,8 @@ import {
   Select,
   Modal,
   PageHeader,
-  Collapse
+  Collapse,
+  Popconfirm
 } from "antd";
 import {
   formItemLayout,
@@ -72,7 +73,8 @@ import {
   CASE_EMERGENCY_PROCEDURE,
   CLASSIFICATION_PRIVATE,
   CLASSIFICATION_HOUSECASE,
-  CLASSIFICATION_SERVICE
+  CLASSIFICATION_SERVICE,
+  USER_ADMIN
 } from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
@@ -276,6 +278,8 @@ class OperatingRoomSlipForm extends Component {
       form,
       user: this.props.auth.user
     };
+
+    delete form_data.options;
 
     const loading = message.loading("Processing...");
     if (isEmpty(this.state._id)) {
@@ -1441,6 +1445,9 @@ class OperatingRoomSlipForm extends Component {
   };
 
   render() {
+    const is_admin =
+      this.props.auth.user && this.props.auth.user.role === USER_ADMIN;
+
     const rowSelection = {
       onChange: (selected_row_keys, selected_rows) => {
         this.setState({ selected_row_keys });
@@ -2196,17 +2203,18 @@ class OperatingRoomSlipForm extends Component {
                               Save
                             </button>
                           </div>
-                          {!isEmpty(this.state._id) ? (
-                            <a
+                          {is_admin && !isEmpty(this.state._id) && (
+                            <Popconfirm
+                              title="Are you sure you want to delete this item?"
                               className="button is-danger is-outlined is-small"
-                              onClick={this.onDelete}
+                              onConfirm={this.onDelete}
                             >
                               <span>Delete</span>
                               <span className="icon is-small">
                                 <i className="fas fa-times" />
                               </span>
-                            </a>
-                          ) : null}
+                            </Popconfirm>
+                          )}
                         </div>
                       </Form.Item>
                     </Col>
@@ -2468,17 +2476,18 @@ class OperatingRoomSlipForm extends Component {
                               Save
                             </button>
                           </div>
-                          {!isEmpty(this.state._id) ? (
-                            <a
+                          {is_admin && !isEmpty(this.state._id) && (
+                            <Popconfirm
+                              title="Are you sure to delete this item?"
                               className="button is-danger is-outlined is-small"
-                              onClick={this.onDelete}
+                              onConfirm={this.onDelete}
                             >
                               <span>Delete</span>
                               <span className="icon is-small">
                                 <i className="fas fa-times" />
                               </span>
-                            </a>
-                          ) : null}
+                            </Popconfirm>
+                          )}
                         </div>
                       </Form.Item>
                     </Col>
@@ -3342,15 +3351,18 @@ class OperatingRoomSlipForm extends Component {
                                 </Link>
                               </div>
                             ),
-                            <a
-                              className="button is-danger is-outlined is-small control"
-                              onClick={this.onDelete}
-                            >
-                              <span>Delete</span>
-                              <span className="icon is-small">
-                                <i className="fas fa-times" />
-                              </span>
-                            </a>
+                            is_admin && (
+                              <Popconfirm
+                                title="Are you sure to delete this item?"
+                                className="button is-danger is-outlined is-small control"
+                                onConfirm={this.onDelete}
+                              >
+                                <span>Delete</span>
+                                <span className="icon is-small">
+                                  <i className="fas fa-times" />
+                                </span>
+                              </Popconfirm>
+                            )
                           ]}
                         </div>
                       </Form.Item>
@@ -4554,19 +4566,25 @@ class OperatingRoomSlipForm extends Component {
                                     </Link>
                                   </div>
                                 ),
-                                <div className="control">
-                                  <Button
-                                    className="button is-small is-outlined is-danger"
-                                    onClick={() =>
-                                      this.onDeleteSurgicalMemo(surg_memo_index)
-                                    }
-                                  >
-                                    <span className="icon is-small">
-                                      <i className="fas fa-times" />
-                                    </span>
-                                    Delete Surgical Memo
-                                  </Button>
-                                </div>,
+                                is_admin && (
+                                  <div className="control">
+                                    <Popconfirm
+                                      title="Are you sure to delete this item?"
+                                      onConfirm={() =>
+                                        this.onDeleteSurgicalMemo(
+                                          surg_memo_index
+                                        )
+                                      }
+                                    >
+                                      <Button className="button is-small is-outlined is-danger">
+                                        <span className="icon is-small">
+                                          <i className="fas fa-times" />
+                                        </span>
+                                        Delete Surgical Memo
+                                      </Button>
+                                    </Popconfirm>
+                                  </div>
+                                ),
                                 false && (
                                   <div className="control">
                                     <Link
@@ -4769,17 +4787,19 @@ class OperatingRoomSlipForm extends Component {
                               Save
                             </button>
                           </div>
-                          {!isEmpty(this.state._id) ? (
-                            <a
-                              className="button is-danger is-outlined is-small"
-                              onClick={this.onDelete}
+                          {is_admin && !isEmpty(this.state._id) && (
+                            <Popconfirm
+                              title="Are you sure to delete this item?"
+                              onConfirm={this.onDelete}
                             >
-                              <span>Delete</span>
-                              <span className="icon is-small">
-                                <i className="fas fa-times" />
-                              </span>
-                            </a>
-                          ) : null}
+                              <a className="button is-danger is-outlined is-small">
+                                <span>Delete</span>
+                                <span className="icon is-small">
+                                  <i className="fas fa-times" />
+                                </span>
+                              </a>
+                            </Popconfirm>
+                          )}
                         </div>
                       </Form.Item>
                     </Col>
@@ -4790,7 +4810,7 @@ class OperatingRoomSlipForm extends Component {
           ) : (
             <div>
               <div className="m-b-1 ">
-                {this.state.selected_row_keys.length > 0 && (
+                {is_admin && this.state.selected_row_keys.length > 0 && (
                   <Button
                     type="danger"
                     icon="delete"
