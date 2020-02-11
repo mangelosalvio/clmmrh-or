@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const { Sequelize } = require("sequelize");
 const sortBy = require("lodash").sortBy;
+const sumBy = require("lodash").sumBy;
 const sqldatabase = require("./../../config/sqldatabase");
 
 const OperatingRoomSlip = require("./../../models/OperatingRoomSlip");
@@ -121,6 +122,23 @@ router.get("/", (req, res) => {
       };
 
   Model.find(form_data)
+    .select({
+      hospital_number: 1,
+      ward: 1,
+      name: 1,
+      age: 1,
+      sex: 1,
+      diagnosis: 1,
+      procedure: 1,
+      surgeon: 1,
+      main_anes: 1,
+      operating_room_number: 1,
+      service: 1,
+      date_time_of_surgery: 1,
+      classification: 1,
+      operation_status: 1,
+      case: 1
+    })
     .sort({
       _id: -1,
       name: 1
@@ -532,6 +550,123 @@ router.post("/logs", (req, res) => {
       date_time_of_surgery: 1
     })
     .then(records => res.json(records));
+});
+
+router.post("/room-statistics", (req, res) => {
+  const {
+    search_period_covered,
+    search_operating_room_number,
+    search_surgeon,
+    search_procedure,
+    search_classification,
+    search_main_anes
+  } = req.body;
+
+  OperatingRoomSlip.aggregate([
+    {
+      $match: {
+        time_or_started: {
+          $ne: null
+        },
+        trans_out_from_or: {
+          $ne: null
+        },
+        ...(search_period_covered[0] &&
+          search_period_covered[1] && {
+            date_time_of_surgery: {
+              $gte: moment(search_period_covered[0])
+                .startOf("day")
+                .toDate(),
+              $lte: moment(search_period_covered[1])
+                .endOf("day")
+                .toDate()
+            }
+          }),
+        ...(search_procedure && {
+          procedure: {
+            $regex: new RegExp(search_procedure, "i")
+          }
+        }),
+        ...(search_operating_room_number && {
+          operating_room_number: search_operating_room_number
+        }),
+        ...(!["All", ""].includes(search_classification) && {
+          classification: search_classification
+        }),
+        ...(search_surgeon && {
+          "surgeon._id": search_surgeon._id
+        }),
+        ...(search_main_anes && {
+          "main_anes._id": search_main_anes._id
+        })
+      }
+    },
+    {
+      $project: {
+        time_or_started: 1,
+        trans_out_from_or: 1,
+        operating_room_number: 1,
+        mins: {
+          $divide: [
+            {
+              $subtract: ["$trans_out_from_or", "$time_or_started"]
+            },
+            60000
+          ]
+        }
+      }
+    },
+    {
+      $sort: {
+        time_or_started: 1,
+        operating_room_number: 1
+      }
+    },
+    {
+      $group: {
+        _id: {
+          day: {
+            $dayOfYear: {
+              date: "$time_or_started",
+              timezone: "Asia/Manila"
+            }
+          },
+          operating_room_number: "$operating_room_number"
+        },
+        date: {
+          $first: "$time_or_started"
+        },
+        times: {
+          $push: {
+            patient_in: "$time_or_started",
+            patient_out: "$trans_out_from_or",
+            mins: "$mins"
+          }
+        }
+      }
+    },
+    {
+      $group: {
+        _id: "$_id.day",
+        date: {
+          $first: "$date"
+        },
+        items: {
+          $push: {
+            operating_room_number: "$_id.operating_room_number",
+            times: "$times"
+          }
+        }
+      }
+    },
+    {
+      $sort: {
+        date: 1
+      }
+    }
+  ]).then(records => {
+    return res.json(records);
+  });
 });
 
 router.post("/display-monitor", (req, res) => {

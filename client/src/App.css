@@ -233,6 +233,10 @@ div.flex-end-container {
   border-top: 2px solid #000 !important;
 }
 
+.b-t-3 {
+  border-top: 3px double #000;
+}
+
 .b-b-1 {
   border-bottom: 1px solid #000;
 }
@@ -669,4 +673,25 @@ li.ant-select-dropdown-menu-item:hover {
 .optech-heading-margin {
   margin-top: 16px;
   margin-bottom: 16px;
+}
+
+.room-statistics {
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.room-statistics .subtotal {
+  background-color: #357ca5;
+  color: #fff;
+  text-align: right;
+  padding: 2px 4px;
+  font-weight: bold;
+}
+
+.room-statistics .grandtotal {
+  background-color: #000;
+  color: #fff;
+  text-align: right;
+  padding: 2px 4px;
+  font-weight: bold;
 }
