@@ -137,7 +137,8 @@ router.get("/", (req, res) => {
       date_time_of_surgery: 1,
       classification: 1,
       operation_status: 1,
-      case: 1
+      case: 1,
+      or_ended: 1
     })
     .sort({
       _id: -1,

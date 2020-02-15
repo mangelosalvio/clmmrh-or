@@ -1681,6 +1681,13 @@ class OperatingRoomSlipForm extends Component {
         )
       },
       {
+        title: "OR Ended",
+        dataIndex: "or_ended",
+        render: value => (
+          <span>{value && moment(value).format("MM/DD/YYYY hh:mm A")}</span>
+        )
+      },
+      {
         title: "Classification",
         dataIndex: "classification"
       },
