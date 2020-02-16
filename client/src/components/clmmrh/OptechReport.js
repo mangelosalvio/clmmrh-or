@@ -96,6 +96,7 @@ const form_data = {
   rvs_description: "",
 
   rvs: [],
+  optech_others: [],
 
   errors: {}
 };
@@ -123,12 +124,18 @@ class OptechReport extends Component {
     let promise = null;
     const id = this.props.match.params.id;
     const surg_memo_id = this.props.match.params.surg_memo_id;
-    console.log(surg_memo_id);
+
     if (surg_memo_id) {
+      /**
+       * from additional surgical memo
+       */
       promise = axios.get(
         `${this.state.url}${id}/surgical-memorandum/${surg_memo_id}`
       );
     } else {
+      /**
+       * from current post operation
+       */
       promise = axios.get(this.state.url + id);
     }
 
@@ -289,11 +296,23 @@ class OptechReport extends Component {
   );
 
   render() {
+    let optech_content;
+    const optech_index = this.props.match.params.optech_index;
+    if (
+      optech_index &&
+      this.state.optech_others &&
+      this.state.optech_others[optech_index]
+    ) {
+      optech_content = this.state.optech_others[optech_index].optech_content;
+    } else {
+      optech_content = this.state.optech_content;
+    }
+
     return (
       <Content className="content report operative-technique-container">
         <OptechHeader id={this.props.match.params.id} />
 
-        {this.renderHTML(this.state.optech_content)}
+        {this.renderHTML(optech_content)}
 
         <Row style={{ marginTop: "64px" }}>
           <Col

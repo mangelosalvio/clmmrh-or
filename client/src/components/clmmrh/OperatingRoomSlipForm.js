@@ -186,6 +186,8 @@ const form_data = {
 
   optech_content: "",
 
+  optech_others: [],
+
   errors: {}
 };
 
@@ -1442,6 +1444,18 @@ class OperatingRoomSlipForm extends Component {
         }
       })
       .catch(err => console.log(err));
+  };
+
+  onAddOptech = () => {
+    const optech_others = [
+      ...this.state.optech_others,
+      {
+        optech: null,
+        optech_content: null
+      }
+    ];
+
+    this.setState({ optech_others });
   };
 
   render() {
@@ -3265,6 +3279,26 @@ class OperatingRoomSlipForm extends Component {
                     </Col>
                   </Row>
 
+                  {this.state.optech && (
+                    <Row>
+                      <Col offset={4} span={12}>
+                        <div className="control">
+                          <Link
+                            to={`/or-slip/${this.state._id}/operative-technique`}
+                            target="_blank"
+                          >
+                            <Button className="button is-small is-outlined is-info">
+                              <span className="icon is-small">
+                                <i className="fas fa-print" />
+                              </span>
+                              Operative Technique
+                            </Button>
+                          </Link>
+                        </div>
+                      </Col>
+                    </Row>
+                  )}
+
                   <Row>
                     <Col span={24}>
                       <Editor
@@ -3293,6 +3327,129 @@ class OperatingRoomSlipForm extends Component {
                     </Col>
                   </Row>
 
+                  {this.state.optech_others.map((o, optech_index) => [
+                    <Divider />,
+                    <Row>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Operative Technique"
+                          name="optech"
+                          value={o.optech && o.optech.description}
+                          onChange={index => {
+                            if (index === undefined) {
+                              const optech_others = [
+                                ...this.state.optech_others
+                              ];
+
+                              optech_others[optech_index] = {
+                                ...optech_others[optech_index],
+                                optech: null,
+                                optech_content: ""
+                              };
+
+                              this.setState({
+                                optech_others
+                              });
+                            } else {
+                              const optech_selection = this.state.options
+                                .optech[index];
+
+                              const optech_others = [
+                                ...this.state.optech_others
+                              ];
+
+                              optech_others[optech_index] = {
+                                ...optech_others[optech_index],
+                                optech: this.state.options.optech[index],
+                                optech_content: optech_selection.content
+                              };
+
+                              this.setState({
+                                optech_others
+                              });
+                            }
+                          }}
+                          onSearch={this.onOptechSelectionSearch}
+                          error={errors.optech}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.optech}
+                          column="description"
+                        />
+                      </Col>
+                    </Row>,
+                    <Row>
+                      <Col offset={4} span={12}>
+                        {this.state._id &&
+                          o.optech && [
+                            <div className="field is-grouped">
+                              <div className="control">
+                                <Link
+                                  to={`/or-slip/${this.state._id}/operative-technique/${optech_index}`}
+                                  target="_blank"
+                                >
+                                  <Button className="button is-small is-outlined is-info">
+                                    <span className="icon is-small">
+                                      <i className="fas fa-print" />
+                                    </span>
+                                    Operative Technique
+                                  </Button>
+                                </Link>
+                              </div>
+                              ,
+                              <Popconfirm
+                                title="Are you sure to delete this item?"
+                                onConfirm={() => {
+                                  const optech_others = [
+                                    ...this.state.optech_others
+                                  ];
+                                  optech_others.splice(optech_index, 1);
+                                  this.setState({ optech_others });
+                                }}
+                              >
+                                <a className="button is-danger is-outlined is-small control">
+                                  <span>Delete Operative Technique</span>
+                                  <span className="icon is-small">
+                                    <i className="fas fa-times" />
+                                  </span>
+                                </a>
+                              </Popconfirm>
+                            </div>
+                          ]}
+                      </Col>
+                    </Row>,
+
+                    <Row>
+                      <Col span={24}>
+                        <Editor
+                          apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
+                          initialValue={o.optech_content}
+                          init={{
+                            height: 500,
+                            menubar: false,
+                            plugins: [
+                              "advlist autolink lists link image charmap print preview anchor",
+                              "searchreplace visualblocks code fullscreen",
+                              "insertdatetime media table paste code help wordcount"
+                            ],
+                            toolbar:
+                              "undo redo | formatselect | bold italic backcolor | \
+             alignleft aligncenter alignright alignjustify | \
+             bullist numlist outdent indent | removeformat | help"
+                          }}
+                          onEditorChange={(content, editor) => {
+                            const optech_others = [...this.state.optech_others];
+
+                            optech_others[optech_index] = {
+                              ...optech_others[optech_index],
+                              optech_content: content
+                            };
+                          }}
+                          value={o.optech_content}
+                        />
+                      </Col>
+                    </Row>
+                  ])}
+
                   <Row>
                     <Col span={12}>
                       <Form.Item className="m-t-1">
@@ -3307,6 +3464,17 @@ class OperatingRoomSlipForm extends Component {
                             <div className="control">
                               <Button
                                 className="button is-small is-outlined is-info"
+                                onClick={this.onAddOptech}
+                              >
+                                <span className="icon is-small">
+                                  <i className="fas fa-plus" />
+                                </span>
+                                Add Operative Technique
+                              </Button>
+                            </div>,
+                            <div className="control">
+                              <Button
+                                className="button is-small is-outlined is-info"
                                 onClick={this.onAddSurgicalMemo}
                               >
                                 <span className="icon is-small">
@@ -3315,34 +3483,6 @@ class OperatingRoomSlipForm extends Component {
                                 Add Surgical Memo
                               </Button>
                             </div>,
-                            <div className="control">
-                              <Link
-                                to={`/or-slip/${this.state._id}/surgical-memorandum`}
-                                target="_blank"
-                              >
-                                <Button className="button is-small is-outlined is-info">
-                                  <span className="icon is-small">
-                                    <i className="fas fa-print" />
-                                  </span>
-                                  Print Surgical Memo
-                                </Button>
-                              </Link>
-                            </div>,
-                            this.state.optech && (
-                              <div className="control">
-                                <Link
-                                  to={`/or-slip/${this.state._id}/operative-technique/0/${this.state.optech.tag}`}
-                                  target="_blank"
-                                >
-                                  <Button className="button is-small is-outlined is-info">
-                                    <span className="icon is-small">
-                                      <i className="fas fa-print" />
-                                    </span>
-                                    Operative Technique
-                                  </Button>
-                                </Link>
-                              </div>
-                            ),
                             false && (
                               <div className="control">
                                 <Link
@@ -4482,6 +4622,25 @@ class OperatingRoomSlipForm extends Component {
                           />
                         </Col>
                       </Row>
+                      {o.optech && (
+                        <Row>
+                          <Col span={12} offset={4}>
+                            <div className="control">
+                              <Link
+                                to={`/or-slip/${this.state._id}/optech/${o._id}`}
+                                target="_blank"
+                              >
+                                <Button className="button is-small is-outlined is-info">
+                                  <span className="icon is-small">
+                                    <i className="fas fa-print" />
+                                  </span>
+                                  Operative Technique
+                                </Button>
+                              </Link>
+                            </div>
+                          </Col>
+                        </Row>
+                      )}
 
                       <Row>
                         <Col span={24}>
@@ -4522,10 +4681,7 @@ class OperatingRoomSlipForm extends Component {
 
                       <Row>
                         <Col span={12}>
-                          <Form.Item
-                            className="m-t-1"
-                            {...smallTailFormItemLayout}
-                          >
+                          <Form.Item className="m-t-1">
                             <div className="field is-grouped">
                               <div className="control">
                                 <button className="button is-small is-primary">
@@ -4558,21 +4714,6 @@ class OperatingRoomSlipForm extends Component {
                                     </Button>
                                   </Link>
                                 </div>,
-                                o.optech && (
-                                  <div className="control">
-                                    <Link
-                                      to={`/or-slip/${this.state._id}/optech/${o._id}`}
-                                      target="_blank"
-                                    >
-                                      <Button className="button is-small is-outlined is-info">
-                                        <span className="icon is-small">
-                                          <i className="fas fa-print" />
-                                        </span>
-                                        Operative Technique
-                                      </Button>
-                                    </Link>
-                                  </div>
-                                ),
                                 is_admin && (
                                   <div className="control">
                                     <Popconfirm

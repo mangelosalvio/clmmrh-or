@@ -104,7 +104,12 @@ const AppRouter = () => (
         />
 
         <Route
-          path="/or-slip/:id/operative-technique/:index/:optech_type"
+          path="/or-slip/:id/operative-technique"
+          component={OptechReport}
+          exact={true}
+        />
+        <Route
+          path="/or-slip/:id/operative-technique/:optech_index"
           component={OptechReport}
           exact={true}
         />

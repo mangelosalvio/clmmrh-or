@@ -184,7 +184,13 @@ const OperatingRoomSlipSchema = new Schema({
     ligation_equipment: String
   },
   optech: Object,
-  optech_content: String
+  optech_content: String,
+  optech_others: [
+    {
+      optech: Object,
+      optech_content: String
+    }
+  ]
 });
 
 module.exports = mongoose.model(
