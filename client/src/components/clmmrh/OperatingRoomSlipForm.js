@@ -3473,6 +3473,19 @@ class OperatingRoomSlipForm extends Component {
                               </Button>
                             </div>,
                             <div className="control">
+                              <Link
+                                to={`/or-slip/${this.state._id}/surgical-memorandum`}
+                                target="_blank"
+                              >
+                                <Button className="button is-small is-outlined is-info">
+                                  <span className="icon is-small">
+                                    <i className="fas fa-print" />
+                                  </span>
+                                  Print Surgical Memo
+                                </Button>
+                              </Link>
+                            </div>,
+                            <div className="control">
                               <Button
                                 className="button is-small is-outlined is-info"
                                 onClick={this.onAddSurgicalMemo}
