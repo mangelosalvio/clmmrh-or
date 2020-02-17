@@ -454,6 +454,10 @@ input[type="checkbox"] {
   font-weight: bold;
 }
 
+.is-backlog {
+  color: yellow;
+}
+
 .is-scrollable .ant-table td {
   white-space: nowrap;
 }

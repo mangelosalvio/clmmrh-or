@@ -465,47 +465,57 @@ class MainDisplay extends Component {
                 flexWrap: "wrap"
               }}
             >
-              {this.state.emergency_list.map(record => (
-                <div
-                  className="outline-full-bordered is-flex"
-                  style={{ width: `${100 / 8}%`, height: "50%" }}
-                >
+              {this.state.emergency_list.map(record => {
+                const backlog_hours =
+                  record &&
+                  record.date_time_of_surgery &&
+                  moment
+                    .duration(moment().diff(moment(record.date_time_received)))
+                    .asHours();
+                const is_backlog = backlog_hours > 24;
+                return (
                   <div
-                    className={classnames("display-wrapper", {
-                      "is-emergency":
-                        record && record.case === EMERGENCY_PROCEDURE
-                    })}
+                    className="outline-full-bordered is-flex"
+                    style={{ width: `${100 / 8}%`, height: "50%" }}
                   >
-                    {record && (
-                      <div className="is-flex flex-column">
-                        <div>
-                          {record.service} {record.case_order}{" "}
-                          {record.classification} <br />{" "}
-                          <span className="has-text-weight-bold">
-                            {record.name}
-                          </span>{" "}
-                          <br />
-                          {record.age} / {record.sex && record.sex.charAt(0)}
-                          <br />
-                          {record.ward}
+                    <div
+                      className={classnames("display-wrapper", {
+                        "is-emergency":
+                          record && record.case === EMERGENCY_PROCEDURE,
+                        "is-backlog": is_backlog
+                      })}
+                    >
+                      {record && (
+                        <div className="is-flex flex-column">
+                          <div>
+                            {record.service} {record.case_order}{" "}
+                            {record.classification} <br />{" "}
+                            <span className="has-text-weight-bold">
+                              {record.name}
+                            </span>{" "}
+                            <br />
+                            {record.age} / {record.sex && record.sex.charAt(0)}
+                            <br />
+                            {record.ward}
+                          </div>
+                          <div>{this.filterProcedure(record.procedure)}</div>
+                          <div>
+                            {record.surgeon && (
+                              <span>{this.getScreenName(record.surgeon)}</span>
+                            )}{" "}
+                            {record.main_anes && (
+                              <span>
+                                {" "}
+                                / {this.getScreenName(record.main_anes)}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        <div>{this.filterProcedure(record.procedure)}</div>
-                        <div>
-                          {record.surgeon && (
-                            <span>{this.getScreenName(record.surgeon)}</span>
-                          )}{" "}
-                          {record.main_anes && (
-                            <span>
-                              {" "}
-                              / {this.getScreenName(record.main_anes)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
