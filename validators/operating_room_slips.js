@@ -111,6 +111,14 @@ module.exports = function validateInput(data) {
     } */
   }
 
+  if (
+    data.operation_status &&
+    data.operation_status === constants.ON_GOING &&
+    isEmpty(data.operating_room_number)
+  ) {
+    errors.operating_room_number = "OR Number is required";
+  }
+
   return {
     errors,
     isValid: isEmpty(errors)
