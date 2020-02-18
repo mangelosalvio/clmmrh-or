@@ -468,9 +468,9 @@ class MainDisplay extends Component {
               {this.state.emergency_list.map(record => {
                 const backlog_hours =
                   record &&
-                  record.date_time_of_surgery &&
+                  record.date_time_ordered &&
                   moment
-                    .duration(moment().diff(moment(record.date_time_received)))
+                    .duration(moment().diff(moment(record.date_time_ordered)))
                     .asHours();
                 const is_backlog = backlog_hours > 24;
                 return (
