@@ -342,10 +342,10 @@ class RoomStatistics extends Component {
                             return (
                               <Row gutter={8}>
                                 <Col span={8} className="has-text-right">
-                                  {moment(time.patient_in).format("h:mm A")}
+                                  {moment(time.patient_in).format("HH:mm")}
                                 </Col>
                                 <Col span={8} className="has-text-right">
-                                  {moment(time.patient_out).format("h:mm A")}
+                                  {moment(time.patient_out).format("HH:mm")}
                                 </Col>
                                 <Col span={8} className="has-text-right">
                                   {round(time.mins)}
