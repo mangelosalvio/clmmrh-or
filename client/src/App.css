@@ -492,6 +492,9 @@ input[type="checkbox"] {
   .content.report {
     padding: 0px;
   }
+  .print .room-statistics {
+    font-size: 6px;
+  }
 }
 
 .p-8 {
@@ -680,8 +683,8 @@ li.ant-select-dropdown-menu-item:hover {
 }
 
 .room-statistics {
-  font-size: 9px;
-  white-space: nowrap;
+  font-size: 8px;
+  /* white-space: nowrap; */
 }
 
 .room-statistics .subtotal {

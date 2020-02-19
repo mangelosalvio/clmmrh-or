@@ -27,6 +27,7 @@ import {
 } from "../../utils/Options";
 import { sumBy } from "lodash";
 import numeral from "numeral";
+import ReactToPrint from "react-to-print";
 const { Content } = Layout;
 
 const collection_name = "surgeons";
@@ -258,6 +259,9 @@ class RoomStatistics extends Component {
                       <Row>
                         <Col offset={8} span={12}>
                           <Button
+                            style={{
+                              marginRight: "8px"
+                            }}
                             type="primary"
                             size="small"
                             icon="search"
@@ -265,6 +269,19 @@ class RoomStatistics extends Component {
                           >
                             Search
                           </Button>
+                          <ReactToPrint
+                            trigger={() => (
+                              <Button
+                                type="primary"
+                                size="small"
+                                icon="printer"
+                              >
+                                Print
+                              </Button>
+                            )}
+                            content={() => this.printableRef}
+                            bodyClass="print"
+                          />
                         </Col>
                       </Row>
                     </Col>
@@ -275,7 +292,11 @@ class RoomStatistics extends Component {
               </PageHeader>
             </Col>
           </Row>
-          <div className="room-statistics" style={{ overflow: "auto" }}>
+          <div
+            className="room-statistics"
+            style={{ overflow: "auto" }}
+            ref={el => (this.printableRef = el)}
+          >
             <Row>
               <Col span={1}></Col>
               {operating_room_number_options.map(or_number => (

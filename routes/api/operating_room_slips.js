@@ -630,8 +630,7 @@ router.post("/room-statistics", (req, res) => {
         _id: {
           day: {
             $dayOfYear: {
-              date: "$time_or_started",
-              timezone: "Asia/Manila"
+              date: "$time_or_started"
             }
           },
           operating_room_number: "$operating_room_number"
