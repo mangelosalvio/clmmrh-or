@@ -62,6 +62,7 @@ import TextAreaAutocompleteGroup from "../../commons/TextAreaAutocompleteGroup";
 import { debounce } from "lodash";
 import {
   OPERATION_STATUS_ON_SCHEDULE,
+  OPERATION_STATUS_ON_GOING,
   IN_HOLDING_ROOM,
   ON_RECOVERY,
   EMERGENCY_PROCEDURE,
@@ -1712,22 +1713,38 @@ class OperatingRoomSlipForm extends Component {
       {
         title: "Case",
         dataIndex: "case",
-        render: value => (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              padding: "3px",
-              textAlign: "center"
-            }}
-            className={classnames("case", {
-              "is-emergency": value === EMERGENCY_PROCEDURE,
-              elective: value === ELECTIVE_SURGERY
-            })}
-          >
-            {value}
-          </div>
-        )
+        render: (value, record) => {
+          const backlog_hours =
+            record &&
+            record.date_time_ordered &&
+            moment
+              .duration(moment().diff(moment(record.date_time_ordered)))
+              .asHours();
+          const is_backlog =
+            backlog_hours > 24 &&
+            record.case === EMERGENCY_PROCEDURE &&
+            [OPERATION_STATUS_ON_SCHEDULE, OPERATION_STATUS_ON_GOING].includes(
+              record.operation_status
+            );
+
+          return (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                padding: "3px",
+                textAlign: "center"
+              }}
+              className={classnames("case", {
+                "is-emergency": value === EMERGENCY_PROCEDURE,
+                elective: value === ELECTIVE_SURGERY,
+                "is-backlog": is_backlog
+              })}
+            >
+              {value}
+            </div>
+          );
+        }
       },
       {
         title: "",

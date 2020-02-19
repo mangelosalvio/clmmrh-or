@@ -138,7 +138,9 @@ router.get("/", (req, res) => {
       classification: 1,
       operation_status: 1,
       case: 1,
-      or_ended: 1
+      or_ended: 1,
+      date_time_ordered: 1,
+      operation_status: 1
     })
     .sort({
       _id: -1,
@@ -725,6 +727,9 @@ router.post("/display-monitor", (req, res) => {
               },
               case_order: {
                 $first: "$case_order"
+              },
+              date_time_ordered: {
+                $first: "$date_time_ordered"
               }
             }
           },

@@ -6,7 +6,11 @@ import moment from "moment";
 import { message, Row, Col } from "antd";
 import classnames from "classnames";
 import { sortBy } from "lodash";
-import { EMERGENCY_PROCEDURE, SOCKET_ENDPOINT } from "./../../utils/constants";
+import {
+  EMERGENCY_PROCEDURE,
+  SOCKET_ENDPOINT,
+  CASE_EMERGENCY_PROCEDURE
+} from "./../../utils/constants";
 import socketIoClient from "socket.io-client";
 import { year_level_order } from "../../utils/Options";
 
@@ -270,42 +274,55 @@ class MainDisplay extends Component {
               <div className="display-wrapper-accent">ONGOING</div>
             </div>
             <div className="is-flex" style={{ flex: "8" }}>
-              {this.state.on_going.map(record => (
-                <div className="outline-full-bordered is-flex-1 is-flex">
-                  <div
-                    className={classnames("display-wrapper", {
-                      "is-emergency":
-                        record && record.case === EMERGENCY_PROCEDURE
-                    })}
-                  >
-                    <div className="is-flex">
-                      <div className="has-text-weight-bold or-room-number-display">
-                        {record.operating_room_number}
+              {this.state.on_going.map(record => {
+                const backlog_hours =
+                  record &&
+                  record.date_time_ordered &&
+                  moment
+                    .duration(moment().diff(moment(record.date_time_ordered)))
+                    .asHours();
+                const is_backlog =
+                  backlog_hours > 24 &&
+                  record.case === CASE_EMERGENCY_PROCEDURE;
+
+                return (
+                  <div className="outline-full-bordered is-flex-1 is-flex">
+                    <div
+                      className={classnames("display-wrapper", {
+                        "is-emergency":
+                          record && record.case === EMERGENCY_PROCEDURE,
+                        "is-backlog": is_backlog
+                      })}
+                    >
+                      <div className="is-flex">
+                        <div className="has-text-weight-bold or-room-number-display">
+                          {record.operating_room_number}
+                        </div>
+                        <div className="is-flex-1">
+                          {record.service} {record.case_order}{" "}
+                          {record.classification} <br />{" "}
+                          <span className="has-text-weight-bold">
+                            {record.name}
+                          </span>{" "}
+                          <br />
+                          {record.age}/{record.sex && record.sex.charAt(0)}
+                          <br />
+                          {record.ward}
+                          <br />
+                        </div>
                       </div>
-                      <div className="is-flex-1">
-                        {record.service} {record.case_order}{" "}
-                        {record.classification} <br />{" "}
-                        <span className="has-text-weight-bold">
-                          {record.name}
-                        </span>{" "}
-                        <br />
-                        {record.age}/{record.sex && record.sex.charAt(0)}
-                        <br />
-                        {record.ward}
-                        <br />
-                      </div>
+                      {record.procedure}
+                      <br />
+                      {record.surgeon && (
+                        <span>{this.getScreenName(record.surgeon)}</span>
+                      )}{" "}
+                      {record.main_anes && (
+                        <span> / {this.getScreenName(record.main_anes)}</span>
+                      )}
                     </div>
-                    {record.procedure}
-                    <br />
-                    {record.surgeon && (
-                      <span>{this.getScreenName(record.surgeon)}</span>
-                    )}{" "}
-                    {record.main_anes && (
-                      <span> / {this.getScreenName(record.main_anes)}</span>
-                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
           <div className="outline-full-bordered is-flex is-flex-1">
@@ -472,7 +489,8 @@ class MainDisplay extends Component {
                   moment
                     .duration(moment().diff(moment(record.date_time_ordered)))
                     .asHours();
-                const is_backlog = backlog_hours > 24;
+                const is_backlog =
+                  backlog_hours > 24 && record.case === EMERGENCY_PROCEDURE;
                 return (
                   <div
                     className="outline-full-bordered is-flex"
