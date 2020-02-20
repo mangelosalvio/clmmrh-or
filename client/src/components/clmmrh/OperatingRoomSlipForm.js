@@ -4193,7 +4193,18 @@ class OperatingRoomSlipForm extends Component {
                               value={o.anes_method_others}
                               error={errors.anes_method_others}
                               formItemLayout={smallFormItemLayout}
-                              onChange={this.onChange}
+                              onChange={e => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  anes_method_others: e.target.value
+                                };
+
+                                this.setState({ surgical_memos });
+                              }}
                               extra="Press Enter to Add"
                               onPressEnter={e => {
                                 e.preventDefault();
@@ -4209,7 +4220,8 @@ class OperatingRoomSlipForm extends Component {
                                     {
                                       method: o.anes_method_others
                                     }
-                                  ]
+                                  ],
+                                  anes_method_others: ""
                                 };
 
                                 this.setState({
