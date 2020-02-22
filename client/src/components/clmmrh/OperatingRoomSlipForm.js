@@ -75,7 +75,8 @@ import {
   CLASSIFICATION_PRIVATE,
   CLASSIFICATION_HOUSECASE,
   CLASSIFICATION_SERVICE,
-  USER_ADMIN
+  USER_ADMIN,
+  CANCEL
 } from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
@@ -1721,7 +1722,9 @@ class OperatingRoomSlipForm extends Component {
               .duration(moment().diff(moment(record.date_time_ordered)))
               .asHours();
           const is_backlog =
-            backlog_hours > 24 && record.case === EMERGENCY_PROCEDURE;
+            backlog_hours > 24 &&
+            record.case === EMERGENCY_PROCEDURE &&
+            record.operation_status !== CANCEL;
 
           return (
             <div
@@ -1729,10 +1732,13 @@ class OperatingRoomSlipForm extends Component {
                 width: "100%",
                 height: "100%",
                 padding: "3px",
-                textAlign: "center"
+                textAlign: "center",
+                fontWeight: "bold"
               }}
               className={classnames("case", {
-                "is-emergency": value === EMERGENCY_PROCEDURE,
+                "is-emergency":
+                  value === EMERGENCY_PROCEDURE &&
+                  record.operation_status !== CANCEL,
                 elective: value === ELECTIVE_SURGERY,
                 "is-backlog": is_backlog
               })}

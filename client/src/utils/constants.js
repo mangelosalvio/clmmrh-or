@@ -12,6 +12,7 @@ export const OPERATION_STATUS_ON_GOING = "ON GOING";
 export const SOCKET_ENDPOINT = "http://:5007";
 export const IN_HOLDING_ROOM = "IN HOLDING ROOM";
 export const ON_RECOVERY = "ON RECOVERY";
+export const CANCEL = "CANCEL";
 
 export const RECEIVING_MODULE = "RECEIVING MODULE";
 export const PRE_OPERATION_MODULE = "PRE OPERATION MODULE";
