@@ -1721,11 +1721,7 @@ class OperatingRoomSlipForm extends Component {
               .duration(moment().diff(moment(record.date_time_ordered)))
               .asHours();
           const is_backlog =
-            backlog_hours > 24 &&
-            record.case === EMERGENCY_PROCEDURE &&
-            [OPERATION_STATUS_ON_SCHEDULE, OPERATION_STATUS_ON_GOING].includes(
-              record.operation_status
-            );
+            backlog_hours > 24 && record.case === EMERGENCY_PROCEDURE;
 
           return (
             <div
