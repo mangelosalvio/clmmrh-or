@@ -92,7 +92,7 @@ class ORElectiveOperations extends Component {
                     className="has-text-centered"
                     style={{
                       backgroundColor: "#BFBFBF",
-                      borderBottom: "1px solid #000"
+                      border: "1px solid #000"
                     }}
                   >
                     OR SCHEDULE OF ELECTIVE OPERATIONS
@@ -245,7 +245,7 @@ class ORElectiveOperations extends Component {
                       className="has-text-centered"
                       style={{
                         backgroundColor: "#BFBFBF",
-                        borderBottom: "1px solid #000"
+                        border: "1px solid #000"
                       }}
                     >
                       OR SCHEDULE OF ELECTIVE OPERATIONS
