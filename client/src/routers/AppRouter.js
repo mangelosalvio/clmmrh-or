@@ -98,6 +98,12 @@ const AppRouter = () => (
         />
 
         <Route
+          path="/or-elective-operations/:date"
+          component={ORElectiveOperations}
+          exact={true}
+        />
+
+        <Route
           path="/or-elective-operations"
           component={ORElectiveOperations}
           exact={true}

@@ -81,7 +81,7 @@ class SettingForm extends Component {
               <Form.Item className="m-t-1" {...tailFormItemLayout}>
                 <div className="control">
                   <Link
-                    to={`/or-slip/${this.state._id}/surgical-memorandum`}
+                    to={`/or-elective-operations/${this.state.or_elec_date.valueOf()}`}
                     target="_blank"
                   >
                     <Button className="button is-small is-outlined is-info">

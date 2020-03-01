@@ -32,18 +32,26 @@ class ORElectiveOperations extends Component {
     waiting_electives: [],
     on_duty_anes: [],
     pacu_anes: [],
-    team_captain_anes: []
+    team_captain_anes: [],
+    or_date: null
   };
 
   componentDidMount() {
-    this.getRecord();
+    const or_date = moment(this.props.match.params.date, "x").format("LLL");
+    this.setState({ or_date }, () => {
+      this.getRecord();
+    });
   }
 
   getRecord = () => {
     const id = this.props.match.params.id;
 
+    const form_data = {
+      or_date: this.state.or_date
+    };
+
     axios
-      .post("/api/operating-room-slips/or-elective-operations")
+      .post("/api/operating-room-slips/or-elective-operations", form_data)
       .then(response => {
         this.setState({ ...response.data }, () => {
           //window.print();
@@ -126,7 +134,7 @@ class ORElectiveOperations extends Component {
               <tr className="or-report-heading">
                 <td
                   style={{
-                    width: "60px"
+                    width: "90px"
                   }}
                 >
                   Hospital #
@@ -135,7 +143,7 @@ class ORElectiveOperations extends Component {
                 <td style={{ width: "140px" }}>Patient Name</td>
                 <td style={{ width: "24px" }}>Age</td>
                 <td style={{ width: "24px" }}>Sex</td>
-                <td>Diagnosis</td>
+                <td style={{ width: "280px" }}>Diagnosis</td>
                 <td style={{ width: "280px" }}>Procedure</td>
                 <td style={{ width: "80px" }}>Surgeon</td>
                 <td style={{ width: "96px" }}>Anesthesiologist</td>
@@ -279,7 +287,7 @@ class ORElectiveOperations extends Component {
                 <tr className="or-report-heading">
                   <td
                     style={{
-                      width: "60px"
+                      width: "90px"
                     }}
                   >
                     Hospital #
@@ -288,7 +296,7 @@ class ORElectiveOperations extends Component {
                   <td style={{ width: "140px" }}>Patient Name</td>
                   <td style={{ width: "24px" }}>Age</td>
                   <td style={{ width: "24px" }}>Sex</td>
-                  <td>Diagnosis</td>
+                  <td style={{ width: "280px" }}>Diagnosis</td>
                   <td style={{ width: "280px" }}>Procedure</td>
                   <td style={{ width: "80px" }}>Surgeon</td>
                   <td style={{ width: "96px" }}>Anesthesiologist</td>

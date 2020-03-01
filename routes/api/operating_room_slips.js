@@ -336,6 +336,7 @@ router.post("/patients", (req, res) => {
 
 router.post("/or-elective-operations", (req, res) => {
   const now = moment.tz(moment(), process.env.TIMEZONE);
+  const or_date = moment(req.body.or_date);
 
   async.parallel(
     {
@@ -344,12 +345,12 @@ router.post("/or-elective-operations", (req, res) => {
           {
             $match: {
               date_time_of_surgery: {
-                $gte: now
+                $gte: or_date
                   .clone()
                   .add({ day: 1 })
                   .startOf("day")
                   .toDate(),
-                $lte: now
+                $lte: or_date
                   .clone()
                   .add({ day: 1 })
                   .endOf("day")
@@ -398,12 +399,12 @@ router.post("/or-elective-operations", (req, res) => {
           {
             $match: {
               date_time_of_surgery: {
-                $gte: now
+                $gte: or_date
                   .clone()
                   .add({ day: 1 })
                   .startOf("day")
                   .toDate(),
-                $lte: now
+                $lte: or_date
                   .clone()
                   .add({ day: 1 })
                   .endOf("day")
@@ -433,14 +434,14 @@ router.post("/or-elective-operations", (req, res) => {
       schedule: cb => {
         ORSchedule.findOne({
           "period.0": {
-            $lte: now
+            $lte: or_date
               .clone()
               .add({ day: 1 })
               .endOf("day")
               .toDate()
           },
           "period.1": {
-            $gte: now
+            $gte: or_date
               .clone()
               .add({ day: 1 })
               .startOf("day")
