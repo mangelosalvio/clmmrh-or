@@ -2,15 +2,24 @@ import React, { Component } from "react";
 
 import axios from "axios";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 import "../../styles/Autosuggest.css";
 
-import { Layout } from "antd";
+import { Layout, Form, Row, Col, Button } from "antd";
+import DatePickerFieldGroup from "../../commons/DatePickerFieldGroup";
+import {
+  smallFormItemLayout,
+  formItemLayout,
+  tailFormItemLayout
+} from "../../utils/Layouts";
+import moment from "moment";
 
 const { Content } = Layout;
 
 const form_data = {
   errors: {},
-  purging_months_recording: ""
+  purging_months_recording: "",
+  or_elec_date: moment()
 };
 
 class SettingForm extends Component {
@@ -55,6 +64,38 @@ class SettingForm extends Component {
             <span className="is-size-5">{this.state.title}</span>
           </div>
         </div>
+        <Form>
+          <Row>
+            <Col span={12}>
+              <DatePickerFieldGroup
+                label="OR Elective Op"
+                name="or_elec_date"
+                value={this.state.or_elec_date}
+                onChange={value => this.setState({ or_elec_date: value })}
+                formItemLayout={formItemLayout}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col span={12}>
+              <Form.Item className="m-t-1" {...tailFormItemLayout}>
+                <div className="control">
+                  <Link
+                    to={`/or-slip/${this.state._id}/surgical-memorandum`}
+                    target="_blank"
+                  >
+                    <Button className="button is-small is-outlined is-info">
+                      <span className="icon is-small">
+                        <i className="fas fa-print" />
+                      </span>
+                      Print Surgical Memo
+                    </Button>
+                  </Link>
+                </div>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
       </Content>
     );
   }
