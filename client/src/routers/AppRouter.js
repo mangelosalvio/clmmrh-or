@@ -23,6 +23,7 @@ import Optech from "../components/clmmrh/Optech";
 import OptechSelectionForm from "../components/clmmrh/OptechSelectionForm";
 import OptechReport from "../components/clmmrh/OptechReport";
 import RoomStatistics from "../components/clmmrh/RoomStatistics";
+import ORElectiveForm from "../components/pas/ORElectiveForm";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -106,6 +107,12 @@ const AppRouter = () => (
         <Route
           path="/or-elective-operations"
           component={ORElectiveOperations}
+          exact={true}
+        />
+
+        <PrivateRoute
+          path="/or-elective-form"
+          component={ORElectiveForm}
           exact={true}
         />
 

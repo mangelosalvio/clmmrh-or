@@ -142,8 +142,8 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
             </span>
           </Link>
         </Menu.Item>
-        <Menu.Item key="/or-elective-operations">
-          <Link to="/or-elective-operations" target="_blank">
+        <Menu.Item key="/or-elective-form">
+          <Link to="/or-elective-form">
             <span>
               <Icon type="appstore" />
               OR Elective Op
