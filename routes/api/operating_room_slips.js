@@ -457,8 +457,10 @@ router.post("/or-elective-operations", (req, res) => {
       /* console.log(util.inspect(result.waiting_electives, false, null, true)); */
 
       let room_electives = [];
+      const operating_rooms = constants.OPERATING_ROOMS;
+      delete operating_rooms.OB;
 
-      Object.entries(constants.OPERATING_ROOMS).forEach(([key, value]) => {
+      Object.entries(operating_rooms).forEach(([key, value]) => {
         let _id = value;
         let elective_room = electives.find(o => o._id === key);
         let items = elective_room ? [...elective_room.items] : [];
