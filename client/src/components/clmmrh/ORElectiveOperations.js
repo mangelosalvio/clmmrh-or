@@ -183,7 +183,7 @@ class ORElectiveOperations extends Component {
                       Prepared by:
                     </Col>
 
-                    <Col offset={6} span={8}>
+                    <Col offset={10} span={8}>
                       Approved by:
                     </Col>
                   </Row>
@@ -196,7 +196,7 @@ class ORElectiveOperations extends Component {
                         <div>OR/PACU Supervisor</div>
                       </div>
                     </Col>
-                    <Col offset={10} span={4}>
+                    <Col offset={14} span={4}>
                       <div className="signatory">
                         <div contentEditable="true">
                           Jose Dominador J. Nalumen, MD
@@ -213,7 +213,7 @@ class ORElectiveOperations extends Component {
                     Issue Date: 09/15/2016 <br />
                     Issue No. 004
                   </Col>
-                  <Col offset={3} span={4}>
+                  <Col offset={7} span={4}>
                     <div className="has-text-centered">
                       <img
                         src={clmmrh_footer_logo}
@@ -336,7 +336,7 @@ class ORElectiveOperations extends Component {
                           Prepared by:
                         </Col>
 
-                        <Col offset={6} span={8}>
+                        <Col offset={10} span={8}>
                           Approved by:
                         </Col>
                       </Row>
@@ -349,7 +349,7 @@ class ORElectiveOperations extends Component {
                             <div>OR/PACU Supervisor</div>
                           </div>
                         </Col>
-                        <Col offset={10} span={4}>
+                        <Col offset={14} span={4}>
                           <div className="signatory">
                             <div contentEditable="true">
                               Jose Dominador J. Nalumen, MD
@@ -366,7 +366,7 @@ class ORElectiveOperations extends Component {
                         Issue Date: 09/15/2016 <br />
                         Issue No. 004
                       </Col>
-                      <Col offset={3} span={4}>
+                      <Col offset={7} span={4}>
                         <div className="has-text-centered">
                           <img
                             src={clmmrh_footer_logo}
