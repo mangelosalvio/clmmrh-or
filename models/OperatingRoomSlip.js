@@ -15,6 +15,7 @@ const OperatingRoomSlipSchema = new Schema({
   service: String,
   diagnosis: String,
   procedure: String,
+  or_elec_notes: String,
   case: String,
   surgeon: Object,
   other_surgeon: Object,

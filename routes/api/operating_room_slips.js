@@ -378,6 +378,7 @@ router.post("/or-elective-operations", (req, res) => {
                   sex: "$sex",
                   diagnosis: "$diagnosis",
                   procedure: "$procedure",
+                  or_elec_notes: "$or_elec_notes",
                   surgeon: "$surgeon",
                   main_anes: "$main_anes",
                   classification: "$classification",

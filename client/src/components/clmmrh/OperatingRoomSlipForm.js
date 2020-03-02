@@ -82,6 +82,7 @@ import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup
 import CheckboxGroup from "antd/lib/checkbox/Group";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 import { Editor } from "@tinymce/tinymce-react";
+import { TextField } from "@material-ui/core";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
@@ -108,6 +109,7 @@ const form_data = {
   service: "",
   diagnosis: "",
   procedure: "",
+  or_elec_notes: "",
   case: "",
   surgeon: "",
   other_surgeons: [],
@@ -2423,6 +2425,17 @@ class OperatingRoomSlipForm extends Component {
                         onChange={this.onChange}
                         rows={5}
                       />
+
+                      {is_admin && (
+                        <TextFieldGroup
+                          label="OR Elective Notes"
+                          name="or_elec_notes"
+                          value={this.state.or_elec_notes}
+                          error={errors.or_elec_notes}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
+                      )}
 
                       <SelectFieldGroup
                         label="Surgeon"
