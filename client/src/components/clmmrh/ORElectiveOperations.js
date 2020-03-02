@@ -179,11 +179,11 @@ class ORElectiveOperations extends Component {
               <td colSpan="10">
                 <div className="signatories-container">
                   <Row gutter={48}>
-                    <Col offset={1} span={8}>
+                    <Col offset={1} span={4}>
                       Prepared by:
                     </Col>
 
-                    <Col offset={10} span={8}>
+                    <Col offset={13} span={4}>
                       Approved by:
                     </Col>
                   </Row>
@@ -332,11 +332,11 @@ class ORElectiveOperations extends Component {
                   <td colSpan="10">
                     <div className="signatories-container">
                       <Row gutter={48}>
-                        <Col offset={1} span={8}>
+                        <Col offset={1} span={4}>
                           Prepared by:
                         </Col>
 
-                        <Col offset={10} span={8}>
+                        <Col offset={13} span={4}>
                           Approved by:
                         </Col>
                       </Row>
