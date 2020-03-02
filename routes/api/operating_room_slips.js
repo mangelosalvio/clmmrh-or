@@ -347,19 +347,18 @@ router.post("/or-elective-operations", (req, res) => {
               date_time_of_surgery: {
                 $gte: or_date
                   .clone()
-                  .add({ day: 1 })
                   .startOf("day")
                   .toDate(),
                 $lte: or_date
                   .clone()
-                  .add({ day: 1 })
                   .endOf("day")
                   .toDate()
               },
               operating_room_number: {
                 $exists: true,
                 $nin: ["", null]
-              }
+              },
+              case: constants.ELECTIVE_SURGERY
             }
           },
           {
@@ -401,15 +400,14 @@ router.post("/or-elective-operations", (req, res) => {
               date_time_of_surgery: {
                 $gte: or_date
                   .clone()
-                  .add({ day: 1 })
                   .startOf("day")
                   .toDate(),
                 $lte: or_date
                   .clone()
-                  .add({ day: 1 })
                   .endOf("day")
                   .toDate()
               },
+              case: constants.ELECTIVE_SURGERY,
               $or: [
                 {
                   operating_room_number: {
@@ -436,14 +434,12 @@ router.post("/or-elective-operations", (req, res) => {
           "period.0": {
             $lte: or_date
               .clone()
-              .add({ day: 1 })
               .endOf("day")
               .toDate()
           },
           "period.1": {
             $gte: or_date
               .clone()
-              .add({ day: 1 })
               .startOf("day")
               .toDate()
           }

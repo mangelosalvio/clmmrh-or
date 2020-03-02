@@ -206,7 +206,7 @@ class ORElectiveOperations extends Component {
                 <Row className="m-t-1">
                   <Col span={16}>
                     OR SCHEDULE OF ELECTIVE OPERATIONS <br />
-                    CLMMRH-MRS.F.001 <br />
+                    CLMMRH-OR.F.001 <br />
                     Issue Date: 09/15/2016 <br />
                     Issue No. 004
                   </Col>
@@ -358,7 +358,7 @@ class ORElectiveOperations extends Component {
                   <Row className="m-t-1">
                     <Col span={16}>
                       OR SCHEDULE OF ELECTIVE OPERATIONS <br />
-                      CLMMRH-MRS.F.001 <br />
+                      CLMMRH-OR.F.001 <br />
                       Issue Date: 09/15/2016 <br />
                       Issue No. 004
                     </Col>
