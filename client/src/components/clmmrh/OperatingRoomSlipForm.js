@@ -1717,13 +1717,11 @@ class OperatingRoomSlipForm extends Component {
         title: "Case",
         dataIndex: "case",
         render: (value, record) => {
-          const backlog_hours =
-            record &&
-            record.date_time_ordered &&
-            moment
-              .duration(moment().diff(moment(record.date_time_ordered)))
-              .asHours();
+          const backlog_hours = moment
+            .duration(moment().diff(moment(record.date_time_ordered)))
+            .asHours();
           const is_backlog =
+            !isEmpty(record.date_time_ordered) &&
             backlog_hours > 24 &&
             record.case === EMERGENCY_PROCEDURE &&
             record.operation_status !== CANCEL;
@@ -1738,11 +1736,9 @@ class OperatingRoomSlipForm extends Component {
                 fontWeight: "bold"
               }}
               className={classnames("case", {
-                "is-emergency":
-                  value === EMERGENCY_PROCEDURE &&
-                  record.operation_status !== CANCEL,
+                "is-emergency": value === EMERGENCY_PROCEDURE,
                 elective: value === ELECTIVE_SURGERY,
-                "is-backlog": is_backlog
+                "is-backlog": is_backlog && record.operation_status !== CANCEL
               })}
             >
               {value}

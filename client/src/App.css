@@ -597,29 +597,6 @@ input[type="checkbox"] {
   }
 }
 
-@media print {
-  html {
-    background-color: #fff !important;
-  }
-  body {
-    background-color: #fff !important;
-  }
-  .is-full-height,
-  .or-report {
-    background-color: #fff !important;
-  }
-  thead {
-    display: table-header-group;
-  }
-  tfoot {
-    display: table-footer-group;
-  }
-
-  .or-report table {
-    page-break-after: always;
-  }
-}
-
 .case {
   background-color: #22301e !important;
 }
@@ -702,4 +679,31 @@ li.ant-select-dropdown-menu-item:hover {
   text-align: right;
   padding: 2px 4px;
   font-weight: bold;
+}
+
+@media print {
+  html {
+    background-color: #fff !important;
+  }
+  body {
+    background-color: #fff !important;
+  }
+  .is-full-height,
+  .or-report {
+    background-color: #fff !important;
+  }
+
+  table {
+    page-break-inside: auto;
+  }
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
 }

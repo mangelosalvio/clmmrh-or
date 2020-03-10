@@ -119,6 +119,59 @@ module.exports = function validateInput(data) {
     errors.operating_room_number = "OR Number is required";
   }
 
+  if (
+    data.operation_status &&
+    data.operation_status === constants.ON_RECOVERY &&
+    isEmpty(data.bed_number)
+  ) {
+    errors.bed_number = "Bed Number is required";
+  }
+
+  if (data.form === constants.TIME_LOGS_MODULE) {
+    if (isEmpty(data.time_ward_informed)) {
+      errors.time_ward_informed = "Time Ward Informed required";
+    }
+
+    if (isEmpty(data.arrival_time)) {
+      errors.arrival_time = "Arrival Time required";
+    }
+    if (isEmpty(data.room_is_ready)) {
+      errors.room_is_ready = "Room is ready required";
+    }
+    if (isEmpty(data.equip_ready)) {
+      errors.equip_ready = "Equip/Inst ready required";
+    }
+    if (isEmpty(data.patient_placed_in_or_table)) {
+      errors.patient_placed_in_or_table = "Patient placed in OR Table required";
+    }
+    if (isEmpty(data.time_anes_arrived)) {
+      errors.time_anes_arrived = "Time Anes arrived required";
+    }
+    if (isEmpty(data.time_surgeon_arrived)) {
+      errors.time_surgeon_arrived = "Time Surgeon required";
+    }
+
+    if (isEmpty(data.induction_time)) {
+      errors.induction_time = "Induction time required";
+    }
+
+    if (isEmpty(data.induction_completed)) {
+      errors.induction_completed = "Induction completed required";
+    }
+
+    if (isEmpty(data.time_or_started)) {
+      errors.time_or_started = "Time OR started required";
+    }
+
+    if (isEmpty(data.or_ended)) {
+      errors.or_ended = "OR ended required";
+    }
+
+    if (isEmpty(data.trans_out_from_or)) {
+      errors.trans_out_from_or = "Trans out from OR required";
+    }
+  }
+
   return {
     errors,
     isValid: isEmpty(errors)
