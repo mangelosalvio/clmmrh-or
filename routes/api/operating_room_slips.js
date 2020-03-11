@@ -140,7 +140,8 @@ router.get("/", (req, res) => {
       case: 1,
       or_ended: 1,
       date_time_ordered: 1,
-      operation_status: 1
+      operation_status: 1,
+      operation_finished: 1
     })
     .sort({
       _id: -1,
