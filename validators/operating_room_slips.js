@@ -22,9 +22,6 @@ module.exports = function validateInput(data) {
       errors.sex = "Sex is required";
     }
 
-    if (isEmpty(data.weight)) {
-      errors.weight = "Weight is required";
-    }
 
     if (isEmpty(data.weight_unit)) {
       errors.weight_unit = "Weight unit is required";
@@ -42,9 +39,11 @@ module.exports = function validateInput(data) {
       errors.hospital_number = "Hospital # is required";
     }
 
-    if (isEmpty(data.ward)) {
-      errors.ward = "Ward is required";
-    } */
+    */
+
+    if (isEmpty(data.weight)) {
+      errors.weight = "Weight is required";
+    }
 
     if (isEmpty(data.service)) {
       errors.service = "Service is required";
@@ -62,14 +61,6 @@ module.exports = function validateInput(data) {
       errors.case = "Case is required";
     }
 
-    /* if (isEmpty(data.classification)) {
-      errors.classification = "Classification is required";
-    }
-
-    if (isEmpty(data.surgeon)) {
-      errors.surgeon = "Surgeon is required";
-    }
-
     if (isEmpty(data.date_time_ordered)) {
       errors.date_time_ordered = "Date/Time Ordered is required";
     }
@@ -77,6 +68,28 @@ module.exports = function validateInput(data) {
     if (isEmpty(data.date_time_received)) {
       errors.date_time_received = "Date/Time Received is required";
     }
+
+    if (isEmpty(data.received_by)) {
+      errors.received_by = "Received by is required";
+    }
+
+    if (isEmpty(data.surgeon)) {
+      errors.surgeon = "Surgeon is required";
+    }
+
+    if (isEmpty(data.ward)) {
+      errors.ward = "Ward is required";
+    }
+
+    /* if (isEmpty(data.classification)) {
+      errors.classification = "Classification is required";
+    }
+
+    
+
+    
+
+    
 
     if (isEmpty(data.date_time_of_surgery)) {
       errors.date_time_of_surgery = "Date of Surgery is required";
