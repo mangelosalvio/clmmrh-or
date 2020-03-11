@@ -128,6 +128,8 @@ export const year_level_options = [
   "CONSULTANT"
 ];
 
+export const room_status_options = ["STATS", "OPEN", "CLOSED"];
+
 export const year_level_order = {
   NA: 5,
   "1ST YEAR": 4,

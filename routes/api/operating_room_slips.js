@@ -465,10 +465,30 @@ router.post("/or-elective-operations", (req, res) => {
         let elective_room = electives.find(o => o._id === key);
         let items = elective_room ? [...elective_room.items] : [];
 
+        let on_duty_anes = [];
+        let team_captain_anes = [];
+        let pacu_anes = [];
+        const schedule = result.schedule;
+
+        if (schedule) {
+          on_duty_anes = schedule.on_duty;
+          pacu_anes = schedule.pacu;
+          team_captain_anes = schedule.team_captains;
+        }
+
+        arr_return["on_duty_anes"] = on_duty_anes;
+        arr_return["team_captain_anes"] = team_captain_anes;
+        arr_return["pacu_anes"] = pacu_anes;
+        arr_return["electives"] = room_electives;
+
+        const room_obj_schedule = (schedule.room_schedule || []).find(
+          o => o.room === key
+        );
+
         if (items.length <= 0) {
           items = [
             {
-              procedure: "STATS"
+              procedure: room_obj_schedule ? room_obj_schedule.status : "STATS"
             }
           ];
         }
@@ -481,22 +501,6 @@ router.post("/or-elective-operations", (req, res) => {
           }
         ];
       });
-
-      let on_duty_anes = [];
-      let team_captain_anes = [];
-      let pacu_anes = [];
-      const schedule = result.schedule;
-
-      if (schedule) {
-        on_duty_anes = schedule.on_duty;
-        pacu_anes = schedule.pacu;
-        team_captain_anes = schedule.team_captains;
-      }
-
-      arr_return["on_duty_anes"] = on_duty_anes;
-      arr_return["team_captain_anes"] = team_captain_anes;
-      arr_return["pacu_anes"] = pacu_anes;
-      arr_return["electives"] = room_electives;
 
       /**
        * ORDER ROOMS

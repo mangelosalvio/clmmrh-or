@@ -6,6 +6,12 @@ const ORSchedule = new Schema({
   team_captains: [Object],
   pacu: [Object],
   on_duty: [Object],
+  room_schedule: [
+    {
+      room: String,
+      status: String
+    }
+  ],
   logs: [
     {
       user: Object,

@@ -12,6 +12,12 @@ import { formItemLayout } from "./../../utils/Layouts";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
 import moment from "moment-timezone";
+import {
+  assignment_options,
+  room_status_options,
+  operating_room_number_options
+} from "../../utils/Options";
+import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 
 const { Content } = Layout;
 
@@ -30,7 +36,8 @@ const form_data = {
   pacu: [],
   on_duty: [],
 
-  errors: {}
+  errors: {},
+  room_schedule: []
 };
 
 class ORScheduleForm extends Component {
@@ -224,6 +231,16 @@ class ORScheduleForm extends Component {
     this.setState({
       [field]: records
     });
+  };
+
+  getRoomStatus = room => {
+    const room_schedule = [...this.state.room_schedule];
+    const obj = room_schedule.find(o => o.room === room);
+    if (obj) {
+      return obj.status;
+    }
+
+    return null;
   };
 
   render() {
@@ -474,6 +491,39 @@ class ORScheduleForm extends Component {
                 rowKey={record => record._id}
                 pagination={false}
               />
+
+              <Divider orientation="left">Room Availability</Divider>
+
+              {operating_room_number_options.map((room, index) => {
+                return (
+                  <SimpleSelectFieldGroup
+                    key={index}
+                    label={room}
+                    name="room"
+                    value={this.getRoomStatus(room)}
+                    onChange={value => {
+                      let room_schedule = [...this.state.room_schedule];
+
+                      let obj = room_schedule.find(o => o.room === room);
+
+                      if (obj) {
+                        obj.status = value;
+                      } else {
+                        room_schedule = [
+                          ...room_schedule,
+                          {
+                            room,
+                            status: value
+                          }
+                        ];
+                      }
+                      this.setState({ room_schedule });
+                    }}
+                    formItemLayout={formItemLayout}
+                    options={room_status_options}
+                  />
+                );
+              })}
 
               <Form.Item className="m-t-1" {...formItemLayout}>
                 <div className="field is-grouped">

@@ -34,7 +34,8 @@ class ORElectiveOperations extends Component {
     on_duty_anes: [],
     pacu_anes: [],
     team_captain_anes: [],
-    or_date: null
+    or_date: null,
+    room_schedule: []
   };
 
   componentDidMount() {
