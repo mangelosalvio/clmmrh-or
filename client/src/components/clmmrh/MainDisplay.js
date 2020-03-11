@@ -9,7 +9,8 @@ import { sortBy } from "lodash";
 import {
   EMERGENCY_PROCEDURE,
   SOCKET_ENDPOINT,
-  CASE_EMERGENCY_PROCEDURE
+  CASE_EMERGENCY_PROCEDURE,
+  CANCEL
 } from "./../../utils/constants";
 import socketIoClient from "socket.io-client";
 import { year_level_order } from "../../utils/Options";
@@ -275,15 +276,19 @@ class MainDisplay extends Component {
             </div>
             <div className="is-flex" style={{ flex: "8" }}>
               {this.state.on_going.map(record => {
-                const backlog_hours =
-                  record &&
-                  record.date_time_ordered &&
-                  moment
-                    .duration(moment().diff(moment(record.date_time_ordered)))
-                    .asHours();
+                const time_finished = record.operation_finished
+                  ? moment(record.operation_finished)
+                  : moment();
+                const backlog_hours = moment
+                  .duration(
+                    time_finished.diff(moment(record.date_time_ordered))
+                  )
+                  .asHours();
                 const is_backlog =
+                  !isEmpty(record.date_time_ordered) &&
                   backlog_hours > 24 &&
-                  record.case === CASE_EMERGENCY_PROCEDURE;
+                  record.case === EMERGENCY_PROCEDURE &&
+                  record.operation_status !== CANCEL;
 
                 return (
                   <div className="outline-full-bordered is-flex-1 is-flex">
