@@ -32,7 +32,7 @@ router.get("/", (req, res) => {
       };
 
   Model.find(form_data)
-    .sort({ name: 1 })
+    .sort({ last_name: 1, first_name: 1 })
     .then(records => {
       return res.json(records);
     })
