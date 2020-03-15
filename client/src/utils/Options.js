@@ -52,7 +52,8 @@ export const service_options = [
   "PEDIATRICS",
   "DENTAL",
   "OPD",
-  "RADIOLOGY"
+  "RADIOLOGY",
+  "URO"
 ];
 
 export const case_order_options = [
