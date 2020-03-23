@@ -359,13 +359,13 @@ class SurgicalMemorandumReport extends Component {
           </Col>
           <Col span={3}>Surgeon</Col>
           <Col span={6} className="b-b-1">
-            {this.state.surgeon && this.state.surgeon.full_name} &nbsp;
+            {this.state.surgeon ? this.state.surgeon.full_name : "N/A"} &nbsp;
           </Col>
           <Col span={3}>Assistant</Col>
           <Col span={6} className="b-b-1">
             {" "}
             &nbsp;
-            {other_surgeons.join("/")}
+            {other_surgeons.length > 0 ? other_surgeons.join("/") : "N/A"}
           </Col>
         </Row>
         <Row>
@@ -373,13 +373,13 @@ class SurgicalMemorandumReport extends Component {
           <Col span={9} className="b-b-1">
             {" "}
             &nbsp;
-            {inst_nurses.join("/")}
+            {inst_nurses.length > 0 ? inst_nurses.join("/") : "N/A"}
           </Col>
           <Col span={3}>Sponge Nurse</Col>
           <Col span={9} className="b-b-1">
             {" "}
             &nbsp;
-            {sponge_nurses.join("/")}
+            {sponge_nurses.length > 0 ? sponge_nurses.join("/") : "N/A"}
           </Col>
         </Row>
         <div className="m-t-1">
@@ -401,7 +401,8 @@ class SurgicalMemorandumReport extends Component {
         <Row className="m-t-16">
           <Col span={3}>Anesthesiologist</Col>
           <Col span={7} className="b-b-1">
-            &nbsp;{other_anes.join("/")}
+            &nbsp;
+            {other_anes.length > 0 ? other_anes.join("/") : "N/A"}
           </Col>
           <Col span={5}>Anesthetic Method</Col>
           <Col span={9} className="b-b-1">
