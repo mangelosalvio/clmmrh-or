@@ -1,4 +1,4 @@
-export const roles_options = ["Administrator", "Staff"];
+export const roles_options = ["Administrator", "Staff", "Ward"];
 export const lot_status_options = ["Home Owner", "Lot Owner"];
 export const civil_status_options = [
   "Single",

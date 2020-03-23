@@ -76,7 +76,8 @@ import {
   CLASSIFICATION_HOUSECASE,
   CLASSIFICATION_SERVICE,
   USER_ADMIN,
-  CANCEL
+  CANCEL,
+  USER_WARD
 } from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
@@ -2262,960 +2263,979 @@ class OperatingRoomSlipForm extends Component {
                   </Row>
                 </Form>
               </TabPane>
-              <TabPane tab="Pre Operation" key="2">
-                <Form
-                  onSubmit={e =>
-                    this.onSubmit(e, { form: PRE_OPERATION_MODULE })
-                  }
-                  className="tab-content or-slip-form"
-                >
-                  <Divider orientation="left">Patient Information</Divider>
-                  <Row>
-                    <Col span={12}>
-                      <TextFieldGroup
-                        label="Name"
-                        name="name"
-                        value={this.state.name}
-                        error={errors.name}
-                        formItemLayout={smallFormItemLayout}
-                        disabled
-                      />
-
-                      <DatePickerFieldGroup
-                        label="Date of Birth"
-                        name="date_of_birth"
-                        value={this.state.date_of_birth}
-                        onChange={value =>
-                          this.setState({ date_of_birth: value })
-                        }
-                        error={errors.date_of_birth}
-                        formItemLayout={smallFormItemLayout}
-                        disabled
-                      />
-
-                      <TextFieldGroup
-                        label="Age"
-                        name="age"
-                        value={this.state.age}
-                        error={errors.age}
-                        formItemLayout={smallFormItemLayout}
-                        disabled
-                      />
-
-                      <RadioGroupFieldGroup
-                        label="Sex"
-                        name="sex"
-                        value={this.state.sex}
-                        onChange={this.onChange}
-                        error={errors.sex}
-                        formItemLayout={smallFormItemLayout}
-                        options={gender_options}
-                        disabled
-                      />
-
-                      <Row className="ant-form-item" gutter={4}>
-                        <Col span={8} className="ant-form-item-label">
-                          <label>Weight</label>
-                        </Col>
-                        <Col
-                          span={12}
-                          className="ant-form-item-control-wrapper"
-                        >
-                          <Input
-                            name="weight"
-                            value={this.state.weight}
-                            onChange={this.onChange}
-                            disabled
-                          />
-                        </Col>
-                        <Col span={4}>
-                          <Select
-                            value={this.state.weight_unit}
-                            name="weight_unit"
-                            onChange={value =>
-                              this.setState({ weight_unit: value })
-                            }
-                            disabled
-                          >
-                            {weight_unit_options.map((d, index) => (
-                              <Option key={d} value={d}>
-                                {d}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col span={12}>
-                      <TextAreaGroup
-                        label="Address"
-                        name="address"
-                        value={this.state.address}
-                        error={errors.address}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        disabled
-                      />
-
-                      <DatePickerFieldGroup
-                        label="Registration Date"
-                        name="registration_date"
-                        value={this.state.registration_date}
-                        onChange={value =>
-                          this.setState({ registration_date: value })
-                        }
-                        error={errors.registration_date}
-                        formItemLayout={smallFormItemLayout}
-                        disabled
-                      />
-
-                      <TextFieldGroup
-                        label="Hospital #"
-                        name="hospital_number"
-                        value={this.state.hospital_number}
-                        error={errors.hospital_number}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        disabled
-                      />
-
-                      <TextFieldGroup
-                        label="Ward"
-                        name="ward"
-                        value={this.state.ward}
-                        error={errors.ward}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        disabled
-                      />
-
-                      <SimpleSelectFieldGroup
-                        label="Service"
-                        name="service"
-                        value={this.state.service}
-                        onChange={value => this.setState({ service: value })}
-                        formItemLayout={smallFormItemLayout}
-                        error={errors.service}
-                        options={service_options}
-                        disabled
-                      />
-                    </Col>
-                  </Row>
-
-                  <Divider orientation="left">Surgical Procedures</Divider>
-                  <Row>
-                    <Col span={12}>
-                      <TextAreaGroup
-                        label="Diagnosis"
-                        name="diagnosis"
-                        value={this.state.diagnosis}
-                        error={errors.diagnosis}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        rows={5}
-                      />
-
-                      <TextAreaGroup
-                        label="Procedure"
-                        name="procedure"
-                        value={this.state.procedure}
-                        error={errors.procedure}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        rows={5}
-                      />
-
-                      {is_admin && (
+              {this.props.auth.user.role !== USER_WARD && [
+                <TabPane tab="Pre Operation" key="2">
+                  <Form
+                    onSubmit={e =>
+                      this.onSubmit(e, { form: PRE_OPERATION_MODULE })
+                    }
+                    className="tab-content or-slip-form"
+                  >
+                    <Divider orientation="left">Patient Information</Divider>
+                    <Row>
+                      <Col span={12}>
                         <TextFieldGroup
-                          label="OR Elective Notes"
-                          name="or_elec_notes"
-                          value={this.state.or_elec_notes}
-                          error={errors.or_elec_notes}
+                          label="Name"
+                          name="name"
+                          value={this.state.name}
+                          error={errors.name}
                           formItemLayout={smallFormItemLayout}
-                          onChange={this.onChange}
+                          disabled
                         />
-                      )}
 
-                      <SelectFieldGroup
-                        label="Surgeon"
-                        name="surgeon"
-                        value={
-                          this.state.surgeon && this.state.surgeon.full_name
-                        }
-                        onChange={index =>
-                          this.onSurgeonChange(index, "surgeon")
-                        }
-                        onSearch={this.onSurgeonSearch}
-                        error={errors.surgeon}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.surgeons}
-                        column="full_name"
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <RadioGroupFieldGroup
-                        label="Operation Type"
-                        name="operation_type"
-                        value={this.state.operation_type}
-                        onChange={this.onChange}
-                        error={errors.operation_type}
-                        formItemLayout={smallFormItemLayout}
-                        options={operation_type_options}
-                      />
-
-                      <SimpleSelectFieldGroup
-                        label="Status"
-                        name="operation_status"
-                        value={this.state.operation_status}
-                        onChange={value =>
-                          this.setState({ operation_status: value })
-                        }
-                        formItemLayout={smallFormItemLayout}
-                        error={errors.operation_status}
-                        options={operation_status_options}
-                      />
-
-                      <SimpleSelectFieldGroup
-                        label="OR Number"
-                        name="operating_room_number"
-                        value={this.state.operating_room_number}
-                        onChange={value =>
-                          this.setState({ operating_room_number: value })
-                        }
-                        formItemLayout={smallFormItemLayout}
-                        error={errors.operating_room_number}
-                        options={operating_room_number_options}
-                      />
-
-                      {this.state.operation_status === ON_RECOVERY && (
-                        <SimpleSelectFieldGroup
-                          label="Bed No."
-                          name="bed_number"
-                          value={this.state.bed_number}
+                        <DatePickerFieldGroup
+                          label="Date of Birth"
+                          name="date_of_birth"
+                          value={this.state.date_of_birth}
                           onChange={value =>
-                            this.setState({ bed_number: value })
+                            this.setState({ date_of_birth: value })
                           }
+                          error={errors.date_of_birth}
                           formItemLayout={smallFormItemLayout}
-                          error={errors.bed_number}
-                          options={bed_number_options}
+                          disabled
                         />
-                      )}
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Main Anes"
-                        name="main_anes"
-                        value={
-                          this.state.main_anes && this.state.main_anes.full_name
-                        }
-                        onChange={this.onAnesChange}
-                        onSearch={this.onAnesSearch}
-                        error={errors.main_anes}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.anesthesiologists}
-                        column="full_name"
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col span={12}>
-                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
-                        <div className="field is-grouped">
-                          <div className="control">
-                            <button className="button is-small is-primary">
-                              Save
-                            </button>
-                          </div>
-                          {is_admin && !isEmpty(this.state._id) && (
-                            <Popconfirm
-                              title="Are you sure to delete this item?"
-                              className="button is-danger is-outlined is-small"
-                              onConfirm={this.onDelete}
-                            >
-                              <span>Delete</span>
-                              <span className="icon is-small">
-                                <i className="fas fa-times" />
-                              </span>
-                            </Popconfirm>
-                          )}
-                        </div>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Form>
-              </TabPane>
-              <TabPane tab="Post Operation" key="3">
-                <Form
-                  onSubmit={e =>
-                    this.onSubmit(e, { form: POST_OPERATION_MODULE })
-                  }
-                  className="tab-content or-slip-form"
-                >
-                  <Divider orientation="left">Patient Information</Divider>
-                  <Row>
-                    <Col span={12}>
-                      <TextFieldGroup
-                        label="Name"
-                        name="name"
-                        value={this.state.name}
-                        error={errors.name}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        disabled
-                      />
 
-                      <DatePickerFieldGroup
-                        label="Date of Birth"
-                        name="date_of_birth"
-                        value={this.state.date_of_birth}
-                        onChange={value =>
-                          this.setState({ date_of_birth: value })
-                        }
-                        error={errors.date_of_birth}
-                        formItemLayout={smallFormItemLayout}
-                        disabled
-                      />
-
-                      <TextFieldGroup
-                        label="Age"
-                        name="age"
-                        value={this.state.age}
-                        error={errors.age}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        disabled
-                      />
-
-                      <RadioGroupFieldGroup
-                        label="Sex"
-                        name="sex"
-                        value={this.state.sex}
-                        onChange={this.onChange}
-                        error={errors.sex}
-                        formItemLayout={smallFormItemLayout}
-                        options={gender_options}
-                        disabled
-                      />
-
-                      <Row className="ant-form-item" gutter={4}>
-                        <Col span={8} className="ant-form-item-label">
-                          <label>Weight</label>
-                        </Col>
-                        <Col
-                          span={12}
-                          className="ant-form-item-control-wrapper"
-                        >
-                          <Input
-                            name="weight"
-                            value={this.state.weight}
-                            onChange={this.onChange}
-                            disabled
-                          />
-                        </Col>
-                        <Col span={4}>
-                          <Select
-                            value={this.state.weight_unit}
-                            name="weight_unit"
-                            onChange={value =>
-                              this.setState({ weight_unit: value })
-                            }
-                            disabled
-                          >
-                            {weight_unit_options.map((d, index) => (
-                              <Option key={d} value={d}>
-                                {d}
-                              </Option>
-                            ))}
-                          </Select>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col span={12}>
-                      <TextAreaGroup
-                        label="Address"
-                        name="address"
-                        value={this.state.address}
-                        error={errors.address}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        disabled
-                      />
-
-                      <DatePickerFieldGroup
-                        label="Registration Date"
-                        name="registration_date"
-                        value={this.state.registration_date}
-                        onChange={value =>
-                          this.setState({ registration_date: value })
-                        }
-                        error={errors.registration_date}
-                        formItemLayout={smallFormItemLayout}
-                        disabled
-                      />
-
-                      <TextFieldGroup
-                        label="Hospital #"
-                        name="hospital_number"
-                        value={this.state.hospital_number}
-                        error={errors.hospital_number}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        disabled
-                      />
-
-                      <TextFieldGroup
-                        label="Ward"
-                        name="ward"
-                        value={this.state.ward}
-                        error={errors.ward}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        disabled
-                      />
-
-                      <SimpleSelectFieldGroup
-                        label="Service"
-                        name="service"
-                        value={this.state.service}
-                        onChange={value => this.setState({ service: value })}
-                        formItemLayout={smallFormItemLayout}
-                        error={errors.service}
-                        options={service_options}
-                        disabled
-                      />
-                    </Col>
-                  </Row>
-
-                  <Divider orientation="left">Surgical Procedures</Divider>
-
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Main Surgeon"
-                        name="surgeon"
-                        value={
-                          this.state.surgeon && this.state.surgeon.full_name
-                        }
-                        onChange={index =>
-                          this.onSurgeonChange(index, "surgeon")
-                        }
-                        onSearch={this.onSurgeonSearch}
-                        error={errors.surgeon}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.surgeons}
-                        column="full_name"
-                      />
-
-                      <SelectFieldGroup
-                        label="Asst. Surgeon"
-                        name="assistant_surgeon"
-                        value={
-                          this.state.assistant_surgeon &&
-                          this.state.assistant_surgeon.full_name
-                        }
-                        onChange={index =>
-                          this.onSurgeonChange(index, "assistant_surgeon")
-                        }
-                        onSearch={this.onSurgeonSearch}
-                        error={errors.assistant_surgeon}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.surgeons}
-                        column="full_name"
-                      />
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Other Surgeon"
-                        name="other_surgeon"
-                        value={
-                          this.state.other_surgeon &&
-                          this.state.other_surgeon.full_name
-                        }
-                        onChange={index =>
-                          this.onOtherSurgeonChange(index, "other_surgeon")
-                        }
-                        onSearch={this.onSurgeonSearch}
-                        error={errors.other_surgeon}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.surgeons}
-                        column="full_name"
-                      />
-                      <SelectFieldGroup
-                        label="Inst. Nurse"
-                        name="instrument_nurse"
-                        value={
-                          this.state.instrument_nurse &&
-                          this.state.instrument_nurse.full_name
-                        }
-                        onChange={index =>
-                          this.onNurseChange(index, "instrument_nurse")
-                        }
-                        onSearch={this.onNurseSearch}
-                        error={errors.instrument_nurse}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.nurses}
-                        column="full_name"
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.other_surgeons}
-                        columns={other_surgeons_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Other Inst. Nurse"
-                        name="other_inst_nurse"
-                        value={
-                          this.state.other_inst_nurse &&
-                          this.state.other_inst_nurse.full_name
-                        }
-                        onChange={index =>
-                          this.onOtherInstNurseChange(index, "other_inst_nurse")
-                        }
-                        onSearch={this.onNurseSearch}
-                        error={errors.instrument_nurse}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.nurses}
-                        column="full_name"
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.other_inst_nurses}
-                        columns={other_inst_nurses_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Sponge Nurse"
-                        name="sponge_nurse"
-                        value={
-                          this.state.sponge_nurse &&
-                          this.state.sponge_nurse.full_name
-                        }
-                        onChange={index =>
-                          this.onNurseChange(index, "sponge_nurse")
-                        }
-                        onSearch={this.onNurseSearch}
-                        error={errors.sponge_nurse}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.nurses}
-                        column="full_name"
-                      />
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Other Sponge Nurse"
-                        name="other_inst_nurse"
-                        value={
-                          this.state.other_sponge_nurse &&
-                          this.state.other_sponge_nurse.full_name
-                        }
-                        onChange={index =>
-                          this.onOtherSpongeNurseChange(
-                            index,
-                            "other_inst_nurse"
-                          )
-                        }
-                        onSearch={this.onNurseSearch}
-                        error={errors.other_sponge_nurse}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.nurses}
-                        column="full_name"
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.other_sponge_nurses}
-                        columns={other_sponge_nurses_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Main Anes"
-                        name="main_anes"
-                        value={
-                          this.state.main_anes && this.state.main_anes.full_name
-                        }
-                        onChange={this.onAnesChange}
-                        onSearch={this.onAnesSearch}
-                        error={errors.main_anes}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.anesthesiologists}
-                        column="full_name"
-                      />
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Other Anes"
-                        name="other_anes_input"
-                        value={
-                          this.state.other_anes_input &&
-                          this.state.other_anes_input.full_name
-                        }
-                        onChange={this.onOtherAnesChange}
-                        onSearch={this.onAnesSearch}
-                        error={errors.other_anes_input}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.anesthesiologists}
-                        column="full_name"
-                      />
-                      <TextFieldGroup
-                        label="ASA"
-                        name="asa"
-                        value={this.state.asa}
-                        error={errors.asa}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.other_anes}
-                        columns={other_anes_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <SimpleSelectFieldGroup
-                        label="Method"
-                        name="anes_method"
-                        value={this.state.anes_method}
-                        onChange={value => {
-                          if (value !== "Others") {
-                            this.setState({
-                              anes_methods: [
-                                ...this.state.anes_methods,
-                                {
-                                  method: value
-                                }
-                              ]
-                            });
-                          } else {
-                            this.setState({
-                              anes_method: value
-                            });
-                          }
-                        }}
-                        formItemLayout={smallFormItemLayout}
-                        error={errors.anes_method}
-                        options={anes_method_options}
-                      />
-
-                      {this.state.anes_method === "Others" && (
                         <TextFieldGroup
-                          label="Specify"
-                          name="anes_method_others"
-                          value={this.state.anes_method_others}
-                          error={errors.anes_method_others}
+                          label="Age"
+                          name="age"
+                          value={this.state.age}
+                          error={errors.age}
+                          formItemLayout={smallFormItemLayout}
+                          disabled
+                        />
+
+                        <RadioGroupFieldGroup
+                          label="Sex"
+                          name="sex"
+                          value={this.state.sex}
+                          onChange={this.onChange}
+                          error={errors.sex}
+                          formItemLayout={smallFormItemLayout}
+                          options={gender_options}
+                          disabled
+                        />
+
+                        <Row className="ant-form-item" gutter={4}>
+                          <Col span={8} className="ant-form-item-label">
+                            <label>Weight</label>
+                          </Col>
+                          <Col
+                            span={12}
+                            className="ant-form-item-control-wrapper"
+                          >
+                            <Input
+                              name="weight"
+                              value={this.state.weight}
+                              onChange={this.onChange}
+                              disabled
+                            />
+                          </Col>
+                          <Col span={4}>
+                            <Select
+                              value={this.state.weight_unit}
+                              name="weight_unit"
+                              onChange={value =>
+                                this.setState({ weight_unit: value })
+                              }
+                              disabled
+                            >
+                              {weight_unit_options.map((d, index) => (
+                                <Option key={d} value={d}>
+                                  {d}
+                                </Option>
+                              ))}
+                            </Select>
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Col span={12}>
+                        <TextAreaGroup
+                          label="Address"
+                          name="address"
+                          value={this.state.address}
+                          error={errors.address}
                           formItemLayout={smallFormItemLayout}
                           onChange={this.onChange}
-                          extra="Press Enter to Add"
+                          disabled
+                        />
+
+                        <DatePickerFieldGroup
+                          label="Registration Date"
+                          name="registration_date"
+                          value={this.state.registration_date}
+                          onChange={value =>
+                            this.setState({ registration_date: value })
+                          }
+                          error={errors.registration_date}
+                          formItemLayout={smallFormItemLayout}
+                          disabled
+                        />
+
+                        <TextFieldGroup
+                          label="Hospital #"
+                          name="hospital_number"
+                          value={this.state.hospital_number}
+                          error={errors.hospital_number}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          disabled
+                        />
+
+                        <TextFieldGroup
+                          label="Ward"
+                          name="ward"
+                          value={this.state.ward}
+                          error={errors.ward}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          disabled
+                        />
+
+                        <SimpleSelectFieldGroup
+                          label="Service"
+                          name="service"
+                          value={this.state.service}
+                          onChange={value => this.setState({ service: value })}
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.service}
+                          options={service_options}
+                          disabled
+                        />
+                      </Col>
+                    </Row>
+
+                    <Divider orientation="left">Surgical Procedures</Divider>
+                    <Row>
+                      <Col span={12}>
+                        <TextAreaGroup
+                          label="Diagnosis"
+                          name="diagnosis"
+                          value={this.state.diagnosis}
+                          error={errors.diagnosis}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          rows={5}
+                        />
+
+                        <TextAreaGroup
+                          label="Procedure"
+                          name="procedure"
+                          value={this.state.procedure}
+                          error={errors.procedure}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          rows={5}
+                        />
+
+                        {is_admin && (
+                          <TextFieldGroup
+                            label="OR Elective Notes"
+                            name="or_elec_notes"
+                            value={this.state.or_elec_notes}
+                            error={errors.or_elec_notes}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+                        )}
+
+                        <SelectFieldGroup
+                          label="Surgeon"
+                          name="surgeon"
+                          value={
+                            this.state.surgeon && this.state.surgeon.full_name
+                          }
+                          onChange={index =>
+                            this.onSurgeonChange(index, "surgeon")
+                          }
+                          onSearch={this.onSurgeonSearch}
+                          error={errors.surgeon}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.surgeons}
+                          column="full_name"
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <RadioGroupFieldGroup
+                          label="Operation Type"
+                          name="operation_type"
+                          value={this.state.operation_type}
+                          onChange={this.onChange}
+                          error={errors.operation_type}
+                          formItemLayout={smallFormItemLayout}
+                          options={operation_type_options}
+                        />
+
+                        <SimpleSelectFieldGroup
+                          label="Status"
+                          name="operation_status"
+                          value={this.state.operation_status}
+                          onChange={value =>
+                            this.setState({ operation_status: value })
+                          }
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.operation_status}
+                          options={operation_status_options}
+                        />
+
+                        <SimpleSelectFieldGroup
+                          label="OR Number"
+                          name="operating_room_number"
+                          value={this.state.operating_room_number}
+                          onChange={value =>
+                            this.setState({ operating_room_number: value })
+                          }
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.operating_room_number}
+                          options={operating_room_number_options}
+                        />
+
+                        {this.state.operation_status === ON_RECOVERY && (
+                          <SimpleSelectFieldGroup
+                            label="Bed No."
+                            name="bed_number"
+                            value={this.state.bed_number}
+                            onChange={value =>
+                              this.setState({ bed_number: value })
+                            }
+                            formItemLayout={smallFormItemLayout}
+                            error={errors.bed_number}
+                            options={bed_number_options}
+                          />
+                        )}
+                      </Col>
+                    </Row>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Main Anes"
+                          name="main_anes"
+                          value={
+                            this.state.main_anes &&
+                            this.state.main_anes.full_name
+                          }
+                          onChange={this.onAnesChange}
+                          onSearch={this.onAnesSearch}
+                          error={errors.main_anes}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.anesthesiologists}
+                          column="full_name"
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={12}>
+                        <Form.Item
+                          className="m-t-1"
+                          {...smallTailFormItemLayout}
+                        >
+                          <div className="field is-grouped">
+                            <div className="control">
+                              <button className="button is-small is-primary">
+                                Save
+                              </button>
+                            </div>
+                            {is_admin && !isEmpty(this.state._id) && (
+                              <Popconfirm
+                                title="Are you sure to delete this item?"
+                                className="button is-danger is-outlined is-small"
+                                onConfirm={this.onDelete}
+                              >
+                                <span>Delete</span>
+                                <span className="icon is-small">
+                                  <i className="fas fa-times" />
+                                </span>
+                              </Popconfirm>
+                            )}
+                          </div>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Form>
+                </TabPane>,
+                <TabPane tab="Post Operation" key="3">
+                  <Form
+                    onSubmit={e =>
+                      this.onSubmit(e, { form: POST_OPERATION_MODULE })
+                    }
+                    className="tab-content or-slip-form"
+                  >
+                    <Divider orientation="left">Patient Information</Divider>
+                    <Row>
+                      <Col span={12}>
+                        <TextFieldGroup
+                          label="Name"
+                          name="name"
+                          value={this.state.name}
+                          error={errors.name}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          disabled
+                        />
+
+                        <DatePickerFieldGroup
+                          label="Date of Birth"
+                          name="date_of_birth"
+                          value={this.state.date_of_birth}
+                          onChange={value =>
+                            this.setState({ date_of_birth: value })
+                          }
+                          error={errors.date_of_birth}
+                          formItemLayout={smallFormItemLayout}
+                          disabled
+                        />
+
+                        <TextFieldGroup
+                          label="Age"
+                          name="age"
+                          value={this.state.age}
+                          error={errors.age}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          disabled
+                        />
+
+                        <RadioGroupFieldGroup
+                          label="Sex"
+                          name="sex"
+                          value={this.state.sex}
+                          onChange={this.onChange}
+                          error={errors.sex}
+                          formItemLayout={smallFormItemLayout}
+                          options={gender_options}
+                          disabled
+                        />
+
+                        <Row className="ant-form-item" gutter={4}>
+                          <Col span={8} className="ant-form-item-label">
+                            <label>Weight</label>
+                          </Col>
+                          <Col
+                            span={12}
+                            className="ant-form-item-control-wrapper"
+                          >
+                            <Input
+                              name="weight"
+                              value={this.state.weight}
+                              onChange={this.onChange}
+                              disabled
+                            />
+                          </Col>
+                          <Col span={4}>
+                            <Select
+                              value={this.state.weight_unit}
+                              name="weight_unit"
+                              onChange={value =>
+                                this.setState({ weight_unit: value })
+                              }
+                              disabled
+                            >
+                              {weight_unit_options.map((d, index) => (
+                                <Option key={d} value={d}>
+                                  {d}
+                                </Option>
+                              ))}
+                            </Select>
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Col span={12}>
+                        <TextAreaGroup
+                          label="Address"
+                          name="address"
+                          value={this.state.address}
+                          error={errors.address}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          disabled
+                        />
+
+                        <DatePickerFieldGroup
+                          label="Registration Date"
+                          name="registration_date"
+                          value={this.state.registration_date}
+                          onChange={value =>
+                            this.setState({ registration_date: value })
+                          }
+                          error={errors.registration_date}
+                          formItemLayout={smallFormItemLayout}
+                          disabled
+                        />
+
+                        <TextFieldGroup
+                          label="Hospital #"
+                          name="hospital_number"
+                          value={this.state.hospital_number}
+                          error={errors.hospital_number}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          disabled
+                        />
+
+                        <TextFieldGroup
+                          label="Ward"
+                          name="ward"
+                          value={this.state.ward}
+                          error={errors.ward}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          disabled
+                        />
+
+                        <SimpleSelectFieldGroup
+                          label="Service"
+                          name="service"
+                          value={this.state.service}
+                          onChange={value => this.setState({ service: value })}
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.service}
+                          options={service_options}
+                          disabled
+                        />
+                      </Col>
+                    </Row>
+
+                    <Divider orientation="left">Surgical Procedures</Divider>
+
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Main Surgeon"
+                          name="surgeon"
+                          value={
+                            this.state.surgeon && this.state.surgeon.full_name
+                          }
+                          onChange={index =>
+                            this.onSurgeonChange(index, "surgeon")
+                          }
+                          onSearch={this.onSurgeonSearch}
+                          error={errors.surgeon}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.surgeons}
+                          column="full_name"
+                        />
+
+                        <SelectFieldGroup
+                          label="Asst. Surgeon"
+                          name="assistant_surgeon"
+                          value={
+                            this.state.assistant_surgeon &&
+                            this.state.assistant_surgeon.full_name
+                          }
+                          onChange={index =>
+                            this.onSurgeonChange(index, "assistant_surgeon")
+                          }
+                          onSearch={this.onSurgeonSearch}
+                          error={errors.assistant_surgeon}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.surgeons}
+                          column="full_name"
+                        />
+                      </Col>
+                    </Row>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Other Surgeon"
+                          name="other_surgeon"
+                          value={
+                            this.state.other_surgeon &&
+                            this.state.other_surgeon.full_name
+                          }
+                          onChange={index =>
+                            this.onOtherSurgeonChange(index, "other_surgeon")
+                          }
+                          onSearch={this.onSurgeonSearch}
+                          error={errors.other_surgeon}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.surgeons}
+                          column="full_name"
+                        />
+                        <SelectFieldGroup
+                          label="Inst. Nurse"
+                          name="instrument_nurse"
+                          value={
+                            this.state.instrument_nurse &&
+                            this.state.instrument_nurse.full_name
+                          }
+                          onChange={index =>
+                            this.onNurseChange(index, "instrument_nurse")
+                          }
+                          onSearch={this.onNurseSearch}
+                          error={errors.instrument_nurse}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.nurses}
+                          column="full_name"
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <Table
+                          dataSource={this.state.other_surgeons}
+                          columns={other_surgeons_column}
+                          rowKey={record => record._id}
+                          locale={{ emptyText: "No Records Found" }}
+                          pagination={false}
+                        />
+                      </Col>
+                    </Row>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Other Inst. Nurse"
+                          name="other_inst_nurse"
+                          value={
+                            this.state.other_inst_nurse &&
+                            this.state.other_inst_nurse.full_name
+                          }
+                          onChange={index =>
+                            this.onOtherInstNurseChange(
+                              index,
+                              "other_inst_nurse"
+                            )
+                          }
+                          onSearch={this.onNurseSearch}
+                          error={errors.instrument_nurse}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.nurses}
+                          column="full_name"
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <Table
+                          dataSource={this.state.other_inst_nurses}
+                          columns={other_inst_nurses_column}
+                          rowKey={record => record._id}
+                          locale={{ emptyText: "No Records Found" }}
+                          pagination={false}
+                        />
+                      </Col>
+                    </Row>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Sponge Nurse"
+                          name="sponge_nurse"
+                          value={
+                            this.state.sponge_nurse &&
+                            this.state.sponge_nurse.full_name
+                          }
+                          onChange={index =>
+                            this.onNurseChange(index, "sponge_nurse")
+                          }
+                          onSearch={this.onNurseSearch}
+                          error={errors.sponge_nurse}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.nurses}
+                          column="full_name"
+                        />
+                      </Col>
+                    </Row>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Other Sponge Nurse"
+                          name="other_inst_nurse"
+                          value={
+                            this.state.other_sponge_nurse &&
+                            this.state.other_sponge_nurse.full_name
+                          }
+                          onChange={index =>
+                            this.onOtherSpongeNurseChange(
+                              index,
+                              "other_inst_nurse"
+                            )
+                          }
+                          onSearch={this.onNurseSearch}
+                          error={errors.other_sponge_nurse}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.nurses}
+                          column="full_name"
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <Table
+                          dataSource={this.state.other_sponge_nurses}
+                          columns={other_sponge_nurses_column}
+                          rowKey={record => record._id}
+                          locale={{ emptyText: "No Records Found" }}
+                          pagination={false}
+                        />
+                      </Col>
+                    </Row>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Main Anes"
+                          name="main_anes"
+                          value={
+                            this.state.main_anes &&
+                            this.state.main_anes.full_name
+                          }
+                          onChange={this.onAnesChange}
+                          onSearch={this.onAnesSearch}
+                          error={errors.main_anes}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.anesthesiologists}
+                          column="full_name"
+                        />
+                      </Col>
+                    </Row>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SelectFieldGroup
+                          label="Other Anes"
+                          name="other_anes_input"
+                          value={
+                            this.state.other_anes_input &&
+                            this.state.other_anes_input.full_name
+                          }
+                          onChange={this.onOtherAnesChange}
+                          onSearch={this.onAnesSearch}
+                          error={errors.other_anes_input}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.anesthesiologists}
+                          column="full_name"
+                        />
+                        <TextFieldGroup
+                          label="ASA"
+                          name="asa"
+                          value={this.state.asa}
+                          error={errors.asa}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <Table
+                          dataSource={this.state.other_anes}
+                          columns={other_anes_column}
+                          rowKey={record => record._id}
+                          locale={{ emptyText: "No Records Found" }}
+                          pagination={false}
+                        />
+                      </Col>
+                    </Row>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <SimpleSelectFieldGroup
+                          label="Method"
+                          name="anes_method"
+                          value={this.state.anes_method}
+                          onChange={value => {
+                            if (value !== "Others") {
+                              this.setState({
+                                anes_methods: [
+                                  ...this.state.anes_methods,
+                                  {
+                                    method: value
+                                  }
+                                ]
+                              });
+                            } else {
+                              this.setState({
+                                anes_method: value
+                              });
+                            }
+                          }}
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.anes_method}
+                          options={anes_method_options}
+                        />
+
+                        {this.state.anes_method === "Others" && (
+                          <TextFieldGroup
+                            label="Specify"
+                            name="anes_method_others"
+                            value={this.state.anes_method_others}
+                            error={errors.anes_method_others}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                            extra="Press Enter to Add"
+                            onPressEnter={e => {
+                              e.preventDefault();
+                              this.setState({
+                                anes_methods: [
+                                  ...this.state.anes_methods,
+                                  {
+                                    method: this.state.anes_method_others
+                                  }
+                                ],
+                                anes_method_others: "",
+                                anes_method: ""
+                              });
+                            }}
+                          />
+                        )}
+
+                        <DateTimePickerFieldGroup
+                          label="Anesthesia Started"
+                          name="anes_start"
+                          value={this.state.anes_start}
+                          onChange={value =>
+                            this.setState({ anes_start: value })
+                          }
+                          error={errors.anes_start}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Operation Started"
+                          name="operation_started"
+                          value={this.state.operation_started}
+                          onChange={value =>
+                            this.setState({
+                              operation_started: value,
+                              time_or_started: value
+                            })
+                          }
+                          error={errors.operation_started}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Operation Finished"
+                          name="operation_finished"
+                          value={this.state.operation_finished}
+                          onChange={value =>
+                            this.setState({
+                              operation_finished: value,
+                              or_ended: value
+                            })
+                          }
+                          error={errors.operation_finished}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <TextAreaGroup
+                          label="Tentative Diagnosis"
+                          name="tentative_diagnosis"
+                          value={this.state.tentative_diagnosis}
+                          error={errors.tentative_diagnosis}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
+
+                        <TextAreaGroup
+                          label="Final Diagnosis"
+                          name="final_diagnosis"
+                          value={this.state.final_diagnosis}
+                          error={errors.final_diagnosis}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <Table
+                          dataSource={this.state.anes_methods}
+                          columns={anes_methods_column}
+                          rowKey={record => record._id}
+                          locale={{ emptyText: "No Records Found" }}
+                          pagination={false}
+                        />
+                      </Col>
+                    </Row>
+
+                    <Divider orientation="left">Anesthetics</Divider>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <TextFieldGroup
+                          label="Anesthetic Used"
+                          name="anes_used"
+                          value={this.state.anes_used}
+                          error={errors.anes_used}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          inputRef={this.anes_used_input}
                           onPressEnter={e => {
                             e.preventDefault();
-                            this.setState({
-                              anes_methods: [
-                                ...this.state.anes_methods,
-                                {
-                                  method: this.state.anes_method_others
-                                }
-                              ],
-                              anes_method_others: "",
-                              anes_method: ""
-                            });
+                            this.anes_quantity_input.current.focus();
                           }}
                         />
-                      )}
+                        <TextFieldGroup
+                          label="Quantity"
+                          name="anes_quantity"
+                          value={this.state.anes_quantity}
+                          error={errors.anes_quantity}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          inputRef={this.anes_quantity_input}
+                          onPressEnter={e => {
+                            e.preventDefault();
+                            this.anes_quantity_unit_input.current.focus();
+                          }}
+                        />
 
-                      <DateTimePickerFieldGroup
-                        label="Anesthesia Started"
-                        name="anes_start"
-                        value={this.state.anes_start}
-                        onChange={value => this.setState({ anes_start: value })}
-                        error={errors.anes_start}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
+                        <SimpleSelectFieldGroup
+                          label="Unit"
+                          name="anes_quantity_unit"
+                          value={this.state.anes_quantity_unit}
+                          onChange={value =>
+                            this.setState({ anes_quantity_unit: value })
+                          }
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.anes_quantity_unit}
+                          options={anes_unit_options}
+                          inputRef={this.anes_quantity_unit_input}
+                        />
 
-                      <DateTimePickerFieldGroup
-                        label="Operation Started"
-                        name="operation_started"
-                        value={this.state.operation_started}
-                        onChange={value =>
-                          this.setState({
-                            operation_started: value,
-                            time_or_started: value
-                          })
-                        }
-                        error={errors.operation_started}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
+                        <SimpleSelectFieldGroup
+                          label="Route"
+                          name="anes_route"
+                          value={this.state.anes_route}
+                          onChange={value =>
+                            this.setState({ anes_route: value })
+                          }
+                          formItemLayout={smallFormItemLayout}
+                          error={errors.anes_route}
+                          options={anes_route_options}
+                        />
 
-                      <DateTimePickerFieldGroup
-                        label="Operation Finished"
-                        name="operation_finished"
-                        value={this.state.operation_finished}
-                        onChange={value =>
-                          this.setState({
-                            operation_finished: value,
-                            or_ended: value
-                          })
-                        }
-                        error={errors.operation_finished}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <TextAreaGroup
-                        label="Tentative Diagnosis"
-                        name="tentative_diagnosis"
-                        value={this.state.tentative_diagnosis}
-                        error={errors.tentative_diagnosis}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-
-                      <TextAreaGroup
-                        label="Final Diagnosis"
-                        name="final_diagnosis"
-                        value={this.state.final_diagnosis}
-                        error={errors.final_diagnosis}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.anes_methods}
-                        columns={anes_methods_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Divider orientation="left">Anesthetics</Divider>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <TextFieldGroup
-                        label="Anesthetic Used"
-                        name="anes_used"
-                        value={this.state.anes_used}
-                        error={errors.anes_used}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        inputRef={this.anes_used_input}
-                        onPressEnter={e => {
-                          e.preventDefault();
-                          this.anes_quantity_input.current.focus();
-                        }}
-                      />
-                      <TextFieldGroup
-                        label="Quantity"
-                        name="anes_quantity"
-                        value={this.state.anes_quantity}
-                        error={errors.anes_quantity}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        inputRef={this.anes_quantity_input}
-                        onPressEnter={e => {
-                          e.preventDefault();
-                          this.anes_quantity_unit_input.current.focus();
-                        }}
-                      />
-
-                      <SimpleSelectFieldGroup
-                        label="Unit"
-                        name="anes_quantity_unit"
-                        value={this.state.anes_quantity_unit}
-                        onChange={value =>
-                          this.setState({ anes_quantity_unit: value })
-                        }
-                        formItemLayout={smallFormItemLayout}
-                        error={errors.anes_quantity_unit}
-                        options={anes_unit_options}
-                        inputRef={this.anes_quantity_unit_input}
-                      />
-
-                      <SimpleSelectFieldGroup
-                        label="Route"
-                        name="anes_route"
-                        value={this.state.anes_route}
-                        onChange={value => this.setState({ anes_route: value })}
-                        formItemLayout={smallFormItemLayout}
-                        error={errors.anes_route}
-                        options={anes_route_options}
-                      />
-
-                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
-                        <div className="field is-grouped">
-                          <div className="control">
-                            <Button
-                              className="button is-small"
-                              onClick={this.onAddAnesthetic}
-                            >
-                              Add Anesthetic
-                            </Button>
+                        <Form.Item
+                          className="m-t-1"
+                          {...smallTailFormItemLayout}
+                        >
+                          <div className="field is-grouped">
+                            <div className="control">
+                              <Button
+                                className="button is-small"
+                                onClick={this.onAddAnesthetic}
+                              >
+                                Add Anesthetic
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.anesthetics}
-                        columns={anesthetics_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Table
+                          dataSource={this.state.anesthetics}
+                          columns={anesthetics_column}
+                          rowKey={record => record._id}
+                          locale={{ emptyText: "No Records Found" }}
+                          pagination={false}
+                        />
+                      </Col>
+                    </Row>
 
-                  <Divider orientation="left">Operation Performed</Divider>
-                  <Row gutter={12}>
-                    <Col span={12}>
-                      <TextFieldGroup
-                        label="Operation Performed Code"
-                        name="rvs_code"
-                        value={this.state.rvs_code}
-                        error={errors.rvs_code}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                        onPressEnter={this.onRvsCodeLookup}
-                      />
+                    <Divider orientation="left">Operation Performed</Divider>
+                    <Row gutter={12}>
+                      <Col span={12}>
+                        <TextFieldGroup
+                          label="Operation Performed Code"
+                          name="rvs_code"
+                          value={this.state.rvs_code}
+                          error={errors.rvs_code}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                          onPressEnter={this.onRvsCodeLookup}
+                        />
 
-                      <TextAreaAutocompleteGroup
-                        label="Operation Performed Desc"
-                        name="rvs_description"
-                        value={this.state.rvs_description}
-                        error={errors.rvs_description}
-                        formItemLayout={smallFormItemLayout}
-                        rows="4"
-                        onChange={value =>
-                          this.setState({ rvs_description: value })
-                        }
-                        dataSource={rvs_desc_data_source}
-                        onSelect={this.onRvsSelect}
-                        onSearch={this.onRvsSearch}
-                      />
+                        <TextAreaAutocompleteGroup
+                          label="Operation Performed Desc"
+                          name="rvs_description"
+                          value={this.state.rvs_description}
+                          error={errors.rvs_description}
+                          formItemLayout={smallFormItemLayout}
+                          rows="4"
+                          onChange={value =>
+                            this.setState({ rvs_description: value })
+                          }
+                          dataSource={rvs_desc_data_source}
+                          onSelect={this.onRvsSelect}
+                          onSearch={this.onRvsSearch}
+                        />
 
-                      <RadioGroupFieldGroup
-                        label="Laterality"
-                        name="rvs_laterality"
-                        value={this.state.rvs_laterality}
-                        onChange={this.onChange}
-                        error={errors.rvs_laterality}
-                        formItemLayout={smallFormItemLayout}
-                        options={laterality_options}
-                      />
+                        <RadioGroupFieldGroup
+                          label="Laterality"
+                          name="rvs_laterality"
+                          value={this.state.rvs_laterality}
+                          onChange={this.onChange}
+                          error={errors.rvs_laterality}
+                          formItemLayout={smallFormItemLayout}
+                          options={laterality_options}
+                        />
 
-                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
-                        <div className="field is-grouped">
-                          <div className="control">
-                            <Button
-                              className="button is-small"
-                              onClick={this.onAddRvs}
-                            >
-                              Add Operation Performed
-                            </Button>
+                        <Form.Item
+                          className="m-t-1"
+                          {...smallTailFormItemLayout}
+                        >
+                          <div className="field is-grouped">
+                            <div className="control">
+                              <Button
+                                className="button is-small"
+                                onClick={this.onAddRvs}
+                              >
+                                Add Operation Performed
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Table
-                        dataSource={this.state.rvs}
-                        columns={rvs_column}
-                        rowKey={record => record._id}
-                        locale={{ emptyText: "No Records Found" }}
-                        pagination={false}
-                      />
-                    </Col>
-                  </Row>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Table
+                          dataSource={this.state.rvs}
+                          columns={rvs_column}
+                          rowKey={record => record._id}
+                          locale={{ emptyText: "No Records Found" }}
+                          pagination={false}
+                        />
+                      </Col>
+                    </Row>
 
-                  <Row>
-                    <Col span={12}>
-                      <Divider orientation="left">
-                        Treatment in the Operating Room
-                      </Divider>
+                    <Row>
+                      <Col span={12}>
+                        <Divider orientation="left">
+                          Treatment in the Operating Room
+                        </Divider>
 
-                      <TextAreaGroup
-                        label="Before Operation"
-                        name="before_operation"
-                        value={this.state.before_operation}
-                        error={errors.before_operation}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="Before Operation"
+                          name="before_operation"
+                          value={this.state.before_operation}
+                          error={errors.before_operation}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      <TextAreaGroup
-                        label="During Operation"
-                        name="during_operation"
-                        value={this.state.during_operation}
-                        error={errors.during_operation}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="During Operation"
+                          name="during_operation"
+                          value={this.state.during_operation}
+                          error={errors.during_operation}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      <TextAreaGroup
-                        label="After Operation"
-                        name="after_operation"
-                        value={this.state.after_operation}
-                        error={errors.after_operation}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="After Operation"
+                          name="after_operation"
+                          value={this.state.after_operation}
+                          error={errors.after_operation}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      <TextAreaGroup
-                        label="Comp. during oper"
-                        name="complications_during_operation"
-                        value={this.state.complications_during_operation}
-                        error={errors.complications_during_operation}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="Comp. during oper"
+                          name="complications_during_operation"
+                          value={this.state.complications_during_operation}
+                          error={errors.complications_during_operation}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      <TextAreaGroup
-                        label="Comp. after oper"
-                        name="complications_after_operation"
-                        value={this.state.complications_after_operation}
-                        error={errors.complications_after_operation}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="Comp. after oper"
+                          name="complications_after_operation"
+                          value={this.state.complications_after_operation}
+                          error={errors.complications_after_operation}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      {/* <Divider orientation="left">Operation Performed</Divider>
+                        {/* <Divider orientation="left">Operation Performed</Divider>
 
                       <TextAreaGroup
                         label="Operation Performed"
@@ -3225,178 +3245,81 @@ class OperatingRoomSlipForm extends Component {
                         formItemLayout={smallFormItemLayout}
                         onChange={this.onChange}
                       /> */}
-                    </Col>
-                    <Col span={12}>
-                      <Divider orientation="left">
-                        Immediate Post Operative Treatment
-                      </Divider>
+                      </Col>
+                      <Col span={12}>
+                        <Divider orientation="left">
+                          Immediate Post Operative Treatment
+                        </Divider>
 
-                      <TextAreaGroup
-                        label="Position in Bed"
-                        name="position_in_bed"
-                        value={this.state.position_in_bed}
-                        error={errors.position_in_bed}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="Position in Bed"
+                          name="position_in_bed"
+                          value={this.state.position_in_bed}
+                          error={errors.position_in_bed}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      <TextAreaGroup
-                        label="Proctoclysis"
-                        name="proctoclysis"
-                        value={this.state.proctoclysis}
-                        error={errors.proctoclysis}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="Proctoclysis"
+                          name="proctoclysis"
+                          value={this.state.proctoclysis}
+                          error={errors.proctoclysis}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      <TextAreaGroup
-                        label="Hypodermoclysis"
-                        name="hypodermoclysis"
-                        value={this.state.hypodermoclysis}
-                        error={errors.hypodermoclysis}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="Hypodermoclysis"
+                          name="hypodermoclysis"
+                          value={this.state.hypodermoclysis}
+                          error={errors.hypodermoclysis}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      <TextAreaGroup
-                        label="Nutrition"
-                        name="nutrition"
-                        value={this.state.nutrition}
-                        error={errors.nutrition}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
+                        <TextAreaGroup
+                          label="Nutrition"
+                          name="nutrition"
+                          value={this.state.nutrition}
+                          error={errors.nutrition}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
 
-                      <TextAreaGroup
-                        label="Stimulant and other med."
-                        name="stimulant"
-                        value={this.state.stimulant}
-                        error={errors.stimulant}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Divider orientation="left">Operative Technique</Divider>
-                  <Row>
-                    <Col span={12}>
-                      <SelectFieldGroup
-                        label="Operative Technique"
-                        name="optech"
-                        value={
-                          this.state.optech && this.state.optech.description
-                        }
-                        onChange={index => {
-                          if (index === undefined) {
-                            this.setState({ optech: null, optech_content: "" });
-                          } else {
-                            const optech_selection = this.state.options.optech[
-                              index
-                            ];
-                            console.log(optech_selection.content);
-                            this.setState({
-                              optech: this.state.options.optech[index],
-                              optech_content: optech_selection.content
-                            });
-                          }
-                        }}
-                        onSearch={this.onOptechSelectionSearch}
-                        error={errors.optech}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.optech}
-                        column="description"
-                      />
-                    </Col>
-                  </Row>
-
-                  {this.state.optech && (
-                    <Row>
-                      <Col offset={4} span={12}>
-                        <div className="control">
-                          <Link
-                            to={`/or-slip/${this.state._id}/operative-technique`}
-                            target="_blank"
-                          >
-                            <Button className="button is-small is-outlined is-info">
-                              <span className="icon is-small">
-                                <i className="fas fa-print" />
-                              </span>
-                              Operative Technique
-                            </Button>
-                          </Link>
-                        </div>
+                        <TextAreaGroup
+                          label="Stimulant and other med."
+                          name="stimulant"
+                          value={this.state.stimulant}
+                          error={errors.stimulant}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
                       </Col>
                     </Row>
-                  )}
 
-                  <Row>
-                    <Col span={24}>
-                      <Editor
-                        apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
-                        initialValue={this.state.optech_content}
-                        init={{
-                          height: 500,
-                          menubar: false,
-                          plugins: [
-                            "advlist autolink lists link image charmap print preview anchor",
-                            "searchreplace visualblocks code fullscreen",
-                            "insertdatetime media table paste code help wordcount"
-                          ],
-                          toolbar:
-                            "undo redo | formatselect | bold italic backcolor | \
-             alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help"
-                        }}
-                        onEditorChange={(content, editor) => {
-                          this.setState({
-                            optech_content: content
-                          });
-                        }}
-                        value={this.state.optech_content}
-                      />
-                    </Col>
-                  </Row>
-
-                  {this.state.optech_others.map((o, optech_index) => [
-                    <Divider />,
+                    <Divider orientation="left">Operative Technique</Divider>
                     <Row>
                       <Col span={12}>
                         <SelectFieldGroup
                           label="Operative Technique"
                           name="optech"
-                          value={o.optech && o.optech.description}
+                          value={
+                            this.state.optech && this.state.optech.description
+                          }
                           onChange={index => {
                             if (index === undefined) {
-                              const optech_others = [
-                                ...this.state.optech_others
-                              ];
-
-                              optech_others[optech_index] = {
-                                ...optech_others[optech_index],
+                              this.setState({
                                 optech: null,
                                 optech_content: ""
-                              };
-
-                              this.setState({
-                                optech_others
                               });
                             } else {
                               const optech_selection = this.state.options
                                 .optech[index];
-
-                              const optech_others = [
-                                ...this.state.optech_others
-                              ];
-
-                              optech_others[optech_index] = {
-                                ...optech_others[optech_index],
+                              console.log(optech_selection.content);
+                              this.setState({
                                 optech: this.state.options.optech[index],
                                 optech_content: optech_selection.content
-                              };
-
-                              this.setState({
-                                optech_others
                               });
                             }
                           }}
@@ -3407,53 +3330,33 @@ class OperatingRoomSlipForm extends Component {
                           column="description"
                         />
                       </Col>
-                    </Row>,
-                    <Row>
-                      <Col offset={4} span={12}>
-                        {this.state._id &&
-                          o.optech && [
-                            <div className="field is-grouped">
-                              <div className="control">
-                                <Link
-                                  to={`/or-slip/${this.state._id}/operative-technique/${optech_index}`}
-                                  target="_blank"
-                                >
-                                  <Button className="button is-small is-outlined is-info">
-                                    <span className="icon is-small">
-                                      <i className="fas fa-print" />
-                                    </span>
-                                    Operative Technique
-                                  </Button>
-                                </Link>
-                              </div>
-                              ,
-                              <Popconfirm
-                                title="Are you sure to delete this item?"
-                                onConfirm={() => {
-                                  const optech_others = [
-                                    ...this.state.optech_others
-                                  ];
-                                  optech_others.splice(optech_index, 1);
-                                  this.setState({ optech_others });
-                                }}
-                              >
-                                <a className="button is-danger is-outlined is-small control">
-                                  <span>Delete Operative Technique</span>
-                                  <span className="icon is-small">
-                                    <i className="fas fa-times" />
-                                  </span>
-                                </a>
-                              </Popconfirm>
-                            </div>
-                          ]}
-                      </Col>
-                    </Row>,
+                    </Row>
+
+                    {this.state.optech && (
+                      <Row>
+                        <Col offset={4} span={12}>
+                          <div className="control">
+                            <Link
+                              to={`/or-slip/${this.state._id}/operative-technique`}
+                              target="_blank"
+                            >
+                              <Button className="button is-small is-outlined is-info">
+                                <span className="icon is-small">
+                                  <i className="fas fa-print" />
+                                </span>
+                                Operative Technique
+                              </Button>
+                            </Link>
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
 
                     <Row>
                       <Col span={24}>
                         <Editor
                           apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
-                          initialValue={o.optech_content}
+                          initialValue={this.state.optech_content}
                           init={{
                             height: 500,
                             menubar: false,
@@ -3468,1177 +3371,17 @@ class OperatingRoomSlipForm extends Component {
              bullist numlist outdent indent | removeformat | help"
                           }}
                           onEditorChange={(content, editor) => {
-                            const optech_others = [...this.state.optech_others];
-
-                            optech_others[optech_index] = {
-                              ...optech_others[optech_index],
+                            this.setState({
                               optech_content: content
-                            };
+                            });
                           }}
-                          value={o.optech_content}
+                          value={this.state.optech_content}
                         />
                       </Col>
                     </Row>
-                  ])}
 
-                  <Row>
-                    <Col span={12}>
-                      <Form.Item className="m-t-1">
-                        <div className="field is-grouped">
-                          <div className="control">
-                            <button className="button is-small is-primary">
-                              Save
-                            </button>
-                          </div>
-
-                          {!isEmpty(this.state._id) && [
-                            <div className="control">
-                              <Button
-                                className="button is-small is-outlined is-info"
-                                onClick={this.onAddOptech}
-                              >
-                                <span className="icon is-small">
-                                  <i className="fas fa-plus" />
-                                </span>
-                                Add Operative Technique
-                              </Button>
-                            </div>,
-                            <div className="control">
-                              <Link
-                                to={`/or-slip/${this.state._id}/surgical-memorandum`}
-                                target="_blank"
-                              >
-                                <Button className="button is-small is-outlined is-info">
-                                  <span className="icon is-small">
-                                    <i className="fas fa-print" />
-                                  </span>
-                                  Print Surgical Memo
-                                </Button>
-                              </Link>
-                            </div>,
-                            <div className="control">
-                              <Button
-                                className="button is-small is-outlined is-info"
-                                onClick={this.onAddSurgicalMemo}
-                              >
-                                <span className="icon is-small">
-                                  <i className="fas fa-plus" />
-                                </span>
-                                Add Surgical Memo
-                              </Button>
-                            </div>,
-                            false && (
-                              <div className="control">
-                                <Link
-                                  to={`/or-slip/${this.state._id}/operative-technique`}
-                                  target="_blank"
-                                >
-                                  <Button className="button is-small is-outlined is-info">
-                                    <span className="icon is-small">
-                                      <i className="fas fa-print" />
-                                    </span>
-                                    Print OB Operative Technique
-                                  </Button>
-                                </Link>
-                              </div>
-                            ),
-                            is_admin && (
-                              <Popconfirm
-                                title="Are you sure to delete this item?"
-                                className="button is-danger is-outlined is-small control"
-                                onConfirm={this.onDelete}
-                              >
-                                <span>Delete</span>
-                                <span className="icon is-small">
-                                  <i className="fas fa-times" />
-                                </span>
-                              </Popconfirm>
-                            )
-                          ]}
-                        </div>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Form>
-              </TabPane>
-              {this.state.surgical_memos.map((o, surg_memo_index) => {
-                const other_surgeons_column = [
-                  {
-                    title: "Other Surgeon",
-                    dataIndex: "full_name"
-                  },
-                  {
-                    title: "",
-                    key: "action",
-                    width: 10,
-                    render: (text, record, index) => (
-                      <span>
-                        <Icon
-                          type="delete"
-                          theme="filled"
-                          className="pointer"
-                          onClick={() =>
-                            this.onDeleteOtherSurgeonSurgMemo(
-                              index,
-                              surg_memo_index
-                            )
-                          }
-                        />
-                      </span>
-                    )
-                  }
-                ];
-
-                const other_inst_nurses_column = [
-                  {
-                    title: "Other Inst Nurse",
-                    dataIndex: "full_name"
-                  },
-                  {
-                    title: "",
-                    key: "action",
-                    width: 10,
-                    render: (text, record, index) => (
-                      <span>
-                        <Icon
-                          type="delete"
-                          theme="filled"
-                          className="pointer"
-                          onClick={() =>
-                            this.onDeleteOtherInstNurseSurgMemo(
-                              index,
-                              surg_memo_index
-                            )
-                          }
-                        />
-                      </span>
-                    )
-                  }
-                ];
-
-                const other_sponge_nurses_column = [
-                  {
-                    title: "Other Sponge Nurse",
-                    dataIndex: "full_name"
-                  },
-                  {
-                    title: "",
-                    key: "action",
-                    width: 10,
-                    render: (text, record, index) => (
-                      <span>
-                        <Icon
-                          type="delete"
-                          theme="filled"
-                          className="pointer"
-                          onClick={() =>
-                            this.onDeleteOtherSpongeNurseSurgMemo(
-                              index,
-                              surg_memo_index
-                            )
-                          }
-                        />
-                      </span>
-                    )
-                  }
-                ];
-
-                const other_anes_column = [
-                  {
-                    title: "Other Anesthesiologist",
-                    dataIndex: "full_name"
-                  },
-                  {
-                    title: "",
-                    key: "action",
-                    width: 10,
-                    render: (text, record, index) => (
-                      <span>
-                        <Icon
-                          type="delete"
-                          theme="filled"
-                          className="pointer"
-                          onClick={() =>
-                            this.onDeleteOtherAnesSurgMemo(
-                              index,
-                              surg_memo_index
-                            )
-                          }
-                        />
-                      </span>
-                    )
-                  }
-                ];
-
-                const anes_methods_column = [
-                  {
-                    title: "Method",
-                    dataIndex: "method"
-                  },
-                  {
-                    title: "",
-                    key: "action",
-                    width: 10,
-                    render: (text, record, index) => (
-                      <span>
-                        <Icon
-                          type="delete"
-                          theme="filled"
-                          className="pointer"
-                          onClick={() =>
-                            this.onDeleteAnesMethodSurgMemo(
-                              index,
-                              surg_memo_index
-                            )
-                          }
-                        />
-                      </span>
-                    )
-                  }
-                ];
-
-                const anesthetics_column = [
-                  {
-                    title: "Used",
-                    dataIndex: "anes_used"
-                  },
-                  {
-                    title: "Qty",
-                    dataIndex: "anes_quantity"
-                  },
-                  {
-                    title: "Unit",
-                    dataIndex: "anes_quantity_unit"
-                  },
-                  {
-                    title: "Route",
-                    dataIndex: "anes_route"
-                  },
-                  {
-                    title: "",
-                    key: "action",
-                    width: 10,
-                    render: (text, record, index) => (
-                      <span>
-                        <Icon
-                          type="delete"
-                          theme="filled"
-                          className="pointer"
-                          onClick={() =>
-                            this.onDeleteAnestheticsSurgMemo(
-                              index,
-                              surg_memo_index
-                            )
-                          }
-                        />
-                      </span>
-                    )
-                  }
-                ];
-
-                const rvs_column = [
-                  {
-                    title: "Operation Performed Code",
-                    dataIndex: "rvs_code"
-                  },
-                  {
-                    title: "Operation Performed Description",
-                    dataIndex: "rvs_description"
-                  },
-                  {
-                    title: "Laterality",
-                    dataIndex: "rvs_laterality"
-                  },
-                  {
-                    title: "",
-                    key: "action",
-                    width: 10,
-                    render: (text, record, index) => (
-                      <span>
-                        <Icon
-                          type="delete"
-                          theme="filled"
-                          className="pointer"
-                          onClick={() =>
-                            this.onDeleteRvsSurgMemo(index, surg_memo_index)
-                          }
-                        />
-                      </span>
-                    )
-                  }
-                ];
-
-                return (
-                  <TabPane
-                    tab={`Post Operation - ${o.service}`}
-                    key={`p${surg_memo_index}`}
-                  >
-                    <Form
-                      onSubmit={e =>
-                        this.onSubmit(e, { form: POST_OPERATION_MODULE })
-                      }
-                      className="tab-content or-slip-form"
-                    >
-                      <Divider orientation="left">Patient Information</Divider>
-                      <Row>
-                        <Col span={12}>
-                          <TextFieldGroup
-                            label="Name"
-                            name="name"
-                            value={this.state.name}
-                            error={errors.name}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
-                            disabled
-                          />
-
-                          <DatePickerFieldGroup
-                            label="Date of Birth"
-                            name="date_of_birth"
-                            value={this.state.date_of_birth}
-                            onChange={value =>
-                              this.setState({ date_of_birth: value })
-                            }
-                            error={errors.date_of_birth}
-                            formItemLayout={smallFormItemLayout}
-                            disabled
-                          />
-
-                          <TextFieldGroup
-                            label="Age"
-                            name="age"
-                            value={this.state.age}
-                            error={errors.age}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
-                            disabled
-                          />
-
-                          <RadioGroupFieldGroup
-                            label="Sex"
-                            name="sex"
-                            value={this.state.sex}
-                            onChange={this.onChange}
-                            error={errors.sex}
-                            formItemLayout={smallFormItemLayout}
-                            options={gender_options}
-                            disabled
-                          />
-
-                          <Row className="ant-form-item" gutter={4}>
-                            <Col span={8} className="ant-form-item-label">
-                              <label>Weight</label>
-                            </Col>
-                            <Col
-                              span={12}
-                              className="ant-form-item-control-wrapper"
-                            >
-                              <Input
-                                name="weight"
-                                value={this.state.weight}
-                                onChange={this.onChange}
-                                disabled
-                              />
-                            </Col>
-                            <Col span={4}>
-                              <Select
-                                value={this.state.weight_unit}
-                                name="weight_unit"
-                                onChange={value =>
-                                  this.setState({ weight_unit: value })
-                                }
-                                disabled
-                              >
-                                {weight_unit_options.map((d, index) => (
-                                  <Option key={d} value={d}>
-                                    {d}
-                                  </Option>
-                                ))}
-                              </Select>
-                            </Col>
-                          </Row>
-                        </Col>
-                        <Col span={12}>
-                          <TextAreaGroup
-                            label="Address"
-                            name="address"
-                            value={this.state.address}
-                            error={errors.address}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
-                            disabled
-                          />
-
-                          <DatePickerFieldGroup
-                            label="Registration Date"
-                            name="registration_date"
-                            value={this.state.registration_date}
-                            onChange={value =>
-                              this.setState({ registration_date: value })
-                            }
-                            error={errors.registration_date}
-                            formItemLayout={smallFormItemLayout}
-                            disabled
-                          />
-
-                          <TextFieldGroup
-                            label="Hospital #"
-                            name="hospital_number"
-                            value={this.state.hospital_number}
-                            error={errors.hospital_number}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
-                            disabled
-                          />
-
-                          <TextFieldGroup
-                            label="Ward"
-                            name="ward"
-                            value={this.state.ward}
-                            error={errors.ward}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={this.onChange}
-                            disabled
-                          />
-
-                          <SimpleSelectFieldGroup
-                            label="Service"
-                            name="service"
-                            value={o.service}
-                            onChange={value => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
-                              ];
-                              surgical_memos[surg_memo_index] = {
-                                ...this.state.surgical_memos[surg_memo_index],
-                                service: value
-                              };
-                              this.setState({ surgical_memos });
-                            }}
-                            formItemLayout={smallFormItemLayout}
-                            options={service_options}
-                          />
-                        </Col>
-                      </Row>
-
-                      <Divider orientation="left">Surgical Procedures</Divider>
-
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <SelectFieldGroup
-                            label="Main Surgeon"
-                            name="surgeon"
-                            value={o.surgeon && o.surgeon.full_name}
-                            onChange={index =>
-                              this.onSurgeonChangeSurgMemo(
-                                index,
-                                "surgeon",
-                                surg_memo_index
-                              )
-                            }
-                            onSearch={this.onSurgeonSearch}
-                            error={errors.surgeon}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.surgeons}
-                            column="full_name"
-                          />
-
-                          <SelectFieldGroup
-                            label="Asst. Surgeon"
-                            name="assistant_surgeon"
-                            value={
-                              o.assistant_surgeon &&
-                              o.assistant_surgeon.full_name
-                            }
-                            onChange={index => {
-                              this.onSurgeonChangeSurgMemo(
-                                index,
-                                "assistant_surgeon",
-                                surg_memo_index
-                              );
-                            }}
-                            onSearch={this.onSurgeonSearch}
-                            error={errors.assistant_surgeon}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.surgeons}
-                            column="full_name"
-                          />
-                        </Col>
-                      </Row>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <SelectFieldGroup
-                            label="Other Surgeon"
-                            name="other_surgeon"
-                            value={o.other_surgeon && o.other_surgeon.full_name}
-                            onChange={index =>
-                              this.onOtherSurgeonChangeSurgMemo(
-                                index,
-                                "other_surgeon",
-                                surg_memo_index
-                              )
-                            }
-                            onSearch={this.onSurgeonSearch}
-                            error={errors.other_surgeon}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.surgeons}
-                            column="full_name"
-                          />
-                          <SelectFieldGroup
-                            label="Inst. Nurse"
-                            name="instrument_nurse"
-                            value={
-                              o.instrument_nurse && o.instrument_nurse.full_name
-                            }
-                            onChange={index =>
-                              this.onNurseChangeSurgMemo(
-                                index,
-                                "instrument_nurse",
-                                surg_memo_index
-                              )
-                            }
-                            onSearch={this.onNurseSearch}
-                            error={errors.instrument_nurse}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.nurses}
-                            column="full_name"
-                          />
-                        </Col>
-                        <Col span={12}>
-                          <Table
-                            dataSource={o.other_surgeons}
-                            columns={other_surgeons_column}
-                            rowKey={record => record._id}
-                            locale={{ emptyText: "No Records Found" }}
-                            pagination={false}
-                          />
-                        </Col>
-                      </Row>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <SelectFieldGroup
-                            label="Other Inst. Nurse"
-                            name="other_inst_nurse"
-                            value={
-                              o.other_inst_nurse && o.other_inst_nurse.full_name
-                            }
-                            onChange={index =>
-                              this.onOtherInstNurseChangeSurgMemo(
-                                index,
-                                "other_inst_nurse",
-                                surg_memo_index
-                              )
-                            }
-                            onSearch={this.onNurseSearch}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.nurses}
-                            column="full_name"
-                          />
-                        </Col>
-                        <Col span={12}>
-                          <Table
-                            dataSource={o.other_inst_nurses}
-                            columns={other_inst_nurses_column}
-                            rowKey={record => record._id}
-                            locale={{ emptyText: "No Records Found" }}
-                            pagination={false}
-                          />
-                        </Col>
-                      </Row>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <SelectFieldGroup
-                            label="Sponge Nurse"
-                            name="sponge_nurse"
-                            value={o.sponge_nurse && o.sponge_nurse.full_name}
-                            onChange={index =>
-                              this.onNurseChangeSurgMemo(
-                                index,
-                                "sponge_nurse",
-                                surg_memo_index
-                              )
-                            }
-                            onSearch={this.onNurseSearch}
-                            error={errors.sponge_nurse}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.nurses}
-                            column="full_name"
-                          />
-                        </Col>
-                      </Row>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <SelectFieldGroup
-                            label="Other Sponge Nurse"
-                            name="other_spong"
-                            value={
-                              o.other_sponge_nurse &&
-                              o.other_sponge_nurse.full_name
-                            }
-                            onChange={index =>
-                              this.onOtherSpongeNurseChangeSurgMemo(
-                                index,
-                                "other_sponge_nurse",
-                                surg_memo_index
-                              )
-                            }
-                            onSearch={this.onNurseSearch}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.nurses}
-                            column="full_name"
-                          />
-                        </Col>
-                        <Col span={12}>
-                          <Table
-                            dataSource={o.other_sponge_nurses}
-                            columns={other_sponge_nurses_column}
-                            rowKey={record => record._id}
-                            locale={{ emptyText: "No Records Found" }}
-                            pagination={false}
-                          />
-                        </Col>
-                      </Row>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <SelectFieldGroup
-                            label="Main Anes"
-                            name="main_anes"
-                            value={o.main_anes && o.main_anes.full_name}
-                            onChange={index => {
-                              this.onAnesChangeSurgMemo(
-                                index,
-                                "main_anes",
-                                surg_memo_index
-                              );
-                            }}
-                            onSearch={this.onAnesSearch}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.anesthesiologists}
-                            column="full_name"
-                          />
-                        </Col>
-                      </Row>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <SelectFieldGroup
-                            label="Other Anes"
-                            name="other_anes_input"
-                            value={
-                              o.other_anes_input && o.other_anes_input.full_name
-                            }
-                            onChange={index =>
-                              this.onOtherAnesSurgMemo(
-                                index,
-                                "other_anes_input",
-                                surg_memo_index
-                              )
-                            }
-                            onSearch={this.onAnesSearch}
-                            formItemLayout={smallFormItemLayout}
-                            data={this.state.options.anesthesiologists}
-                            column="full_name"
-                          />
-                          <TextFieldGroup
-                            label="ASA"
-                            name="asa"
-                            value={o.asa}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-                        </Col>
-                        <Col span={12}>
-                          <Table
-                            dataSource={o.other_anes}
-                            columns={other_anes_column}
-                            rowKey={record => record._id}
-                            locale={{ emptyText: "No Records Found" }}
-                            pagination={false}
-                          />
-                        </Col>
-                      </Row>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <SimpleSelectFieldGroup
-                            label="Method"
-                            name="anes_method"
-                            value={o.anes_method}
-                            onChange={value => {
-                              if (value !== "Others") {
-                                const surgical_memos = [
-                                  ...this.state.surgical_memos
-                                ];
-
-                                surgical_memos[surg_memo_index] = {
-                                  ...surgical_memos[surg_memo_index],
-                                  anes_methods: [
-                                    ...(o.anes_methods || []),
-                                    {
-                                      method: value
-                                    }
-                                  ]
-                                };
-
-                                this.setState({
-                                  surgical_memos
-                                });
-                              } else {
-                                const surgical_memos = [
-                                  ...this.state.surgical_memos
-                                ];
-
-                                surgical_memos[surg_memo_index] = {
-                                  ...surgical_memos[surg_memo_index],
-                                  anes_method: value
-                                };
-                                this.setState({ surgical_memos });
-                              }
-                            }}
-                            formItemLayout={smallFormItemLayout}
-                            error={errors.anes_method}
-                            options={anes_method_options}
-                          />
-
-                          {o.anes_method === "Others" && (
-                            <TextFieldGroup
-                              label="Specify"
-                              name="anes_method_others"
-                              value={o.anes_method_others}
-                              error={errors.anes_method_others}
-                              formItemLayout={smallFormItemLayout}
-                              onChange={e => {
-                                const surgical_memos = [
-                                  ...this.state.surgical_memos
-                                ];
-
-                                surgical_memos[surg_memo_index] = {
-                                  ...surgical_memos[surg_memo_index],
-                                  anes_method_others: e.target.value
-                                };
-
-                                this.setState({ surgical_memos });
-                              }}
-                              extra="Press Enter to Add"
-                              onPressEnter={e => {
-                                e.preventDefault();
-
-                                const surgical_memos = [
-                                  ...this.state.surgical_memos
-                                ];
-
-                                surgical_memos[surg_memo_index] = {
-                                  ...surgical_memos[surg_memo_index],
-                                  anes_methods: [
-                                    ...(o.anes_methods || []),
-                                    {
-                                      method: o.anes_method_others
-                                    }
-                                  ],
-                                  anes_method_others: ""
-                                };
-
-                                this.setState({
-                                  surgical_memos
-                                });
-                              }}
-                            />
-                          )}
-
-                          <DateTimePickerFieldGroup
-                            label="Anesthesia Started"
-                            name="anes_start"
-                            value={o.anes_start || null}
-                            onChange={value => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
-                              ];
-
-                              surgical_memos[surg_memo_index] = {
-                                ...surgical_memos[surg_memo_index],
-                                anes_start: value
-                              };
-
-                              this.setState({ surgical_memos });
-                            }}
-                            error={errors.anes_start}
-                            formItemLayout={smallFormItemLayout}
-                            showTime={true}
-                          />
-
-                          <DateTimePickerFieldGroup
-                            label="Operation Started"
-                            name="operation_started"
-                            value={o.operation_started || null}
-                            onChange={value => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
-                              ];
-
-                              surgical_memos[surg_memo_index] = {
-                                ...surgical_memos[surg_memo_index],
-                                operation_started: value
-                              };
-
-                              this.setState({ surgical_memos });
-                            }}
-                            formItemLayout={smallFormItemLayout}
-                            showTime={true}
-                          />
-
-                          <DateTimePickerFieldGroup
-                            label="Operation Finished"
-                            name="operation_finished"
-                            value={o.operation_finished || null}
-                            onChange={value => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
-                              ];
-
-                              surgical_memos[surg_memo_index] = {
-                                ...surgical_memos[surg_memo_index],
-                                operation_finished: value
-                              };
-
-                              this.setState({ surgical_memos });
-                            }}
-                            formItemLayout={smallFormItemLayout}
-                            showTime={true}
-                          />
-
-                          <TextAreaGroup
-                            label="Tentative Diagnosis"
-                            name="tentative_diagnosis"
-                            value={o.tentative_diagnosis}
-                            error={errors.tentative_diagnosis}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="Final Diagnosis"
-                            name="final_diagnosis"
-                            value={o.final_diagnosis}
-                            error={errors.final_diagnosis}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-                        </Col>
-                        <Col span={12}>
-                          <Table
-                            dataSource={o.anes_methods}
-                            columns={anes_methods_column}
-                            rowKey={record => record._id}
-                            locale={{ emptyText: "No Records Found" }}
-                            pagination={false}
-                          />
-                        </Col>
-                      </Row>
-
-                      <Divider orientation="left">Anesthetics</Divider>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <TextFieldGroup
-                            label="Anesthetic Used"
-                            name="anes_used"
-                            value={o.anes_used}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                            onPressEnter={e => {
-                              e.preventDefault();
-                            }}
-                          />
-                          <TextFieldGroup
-                            label="Quantity"
-                            name="anes_quantity"
-                            value={o.anes_quantity}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                            onPressEnter={e => {
-                              e.preventDefault();
-                            }}
-                          />
-
-                          <SimpleSelectFieldGroup
-                            label="Unit"
-                            name="anes_quantity_unit"
-                            value={o.anes_quantity_unit}
-                            onChange={value => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
-                              ];
-
-                              surgical_memos[surg_memo_index] = {
-                                ...surgical_memos[surg_memo_index],
-                                anes_quantity_unit: value
-                              };
-                              this.setState({ surgical_memos });
-                            }}
-                            formItemLayout={smallFormItemLayout}
-                            options={anes_unit_options}
-                          />
-
-                          <SimpleSelectFieldGroup
-                            label="Route"
-                            name="anes_route"
-                            value={o.anes_route}
-                            onChange={value => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
-                              ];
-
-                              surgical_memos[surg_memo_index] = {
-                                ...surgical_memos[surg_memo_index],
-                                anes_route: value
-                              };
-                              this.setState({ surgical_memos });
-                            }}
-                            formItemLayout={smallFormItemLayout}
-                            error={errors.anes_route}
-                            options={anes_route_options}
-                          />
-
-                          <Form.Item
-                            className="m-t-1"
-                            {...smallTailFormItemLayout}
-                          >
-                            <div className="field is-grouped">
-                              <div className="control">
-                                <Button
-                                  className="button is-small"
-                                  onClick={() =>
-                                    this.onAddAnestheticSurgMemo(
-                                      surg_memo_index
-                                    )
-                                  }
-                                >
-                                  Add Anesthetic
-                                </Button>
-                              </div>
-                            </div>
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                          <Table
-                            dataSource={o.anesthetics}
-                            columns={anesthetics_column}
-                            rowKey={record => record._id}
-                            locale={{ emptyText: "No Records Found" }}
-                            pagination={false}
-                          />
-                        </Col>
-                      </Row>
-
-                      <Divider orientation="left">Operation Performed</Divider>
-                      <Row gutter={12}>
-                        <Col span={12}>
-                          <TextFieldGroup
-                            label="Operation Performed Code"
-                            name="rvs_code"
-                            value={o.rvs_code}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaAutocompleteGroup
-                            label="Operation Performed Desc"
-                            name="rvs_description"
-                            value={o.rvs_description}
-                            formItemLayout={smallFormItemLayout}
-                            rows="4"
-                            onChange={value => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
-                              ];
-
-                              surgical_memos[surg_memo_index] = {
-                                ...surgical_memos[surg_memo_index],
-                                rvs_description: value
-                              };
-                              this.setState({ surgical_memos });
-                            }}
-                            dataSource={rvs_desc_data_source}
-                            onSelect={value =>
-                              this.onRvsSelectSurgMemo(value, surg_memo_index)
-                            }
-                            onSearch={this.onRvsSearch}
-                          />
-
-                          <RadioGroupFieldGroup
-                            label="Laterality"
-                            name="rvs_laterality"
-                            value={o.rvs_laterality}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                            formItemLayout={smallFormItemLayout}
-                            options={laterality_options}
-                          />
-
-                          <Form.Item
-                            className="m-t-1"
-                            {...smallTailFormItemLayout}
-                          >
-                            <div className="field is-grouped">
-                              <div className="control">
-                                <Button
-                                  className="button is-small"
-                                  onClick={() =>
-                                    this.onAddRvsSurgMemo(surg_memo_index)
-                                  }
-                                >
-                                  Add Operation Performed
-                                </Button>
-                              </div>
-                            </div>
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                          <Table
-                            dataSource={o.rvs}
-                            columns={rvs_column}
-                            rowKey={record => record._id}
-                            locale={{ emptyText: "No Records Found" }}
-                            pagination={false}
-                          />
-                        </Col>
-                      </Row>
-
-                      <Row>
-                        <Col span={12}>
-                          <Divider orientation="left">
-                            Treatment in the Operating Room
-                          </Divider>
-
-                          <TextAreaGroup
-                            label="Before Operation"
-                            name="before_operation"
-                            value={o.before_operation}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="During Operation"
-                            name="during_operation"
-                            value={o.during_operation}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="After Operation"
-                            name="after_operation"
-                            value={o.after_operation}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="Comp. during oper"
-                            name="complications_during_operation"
-                            value={o.complications_during_operation}
-                            error={errors.complications_during_operation}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="Comp. after oper"
-                            name="complications_after_operation"
-                            value={o.complications_after_operation}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          {/* <Divider orientation="left">Operation Performed</Divider>
-
-                      <TextAreaGroup
-                        label="Operation Performed"
-                        name="operation_performed"
-                        value={o.operation_performed}
-                        error={errors.operation_performed}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      /> */}
-                        </Col>
-                        <Col span={12}>
-                          <Divider orientation="left">
-                            Immediate Post Operative Treatment
-                          </Divider>
-
-                          <TextAreaGroup
-                            label="Position in Bed"
-                            name="position_in_bed"
-                            value={o.position_in_bed}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="Proctoclysis"
-                            name="proctoclysis"
-                            value={o.proctoclysis}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="Hypodermoclysis"
-                            name="hypodermoclysis"
-                            value={o.hypodermoclysis}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="Nutrition"
-                            name="nutrition"
-                            value={o.nutrition}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-
-                          <TextAreaGroup
-                            label="Stimulant and other med."
-                            name="stimulant"
-                            value={o.stimulant}
-                            formItemLayout={smallFormItemLayout}
-                            onChange={e =>
-                              this.onSurgMemoChange(e, surg_memo_index)
-                            }
-                          />
-                        </Col>
-                      </Row>
-                      <Divider orientation="left">Operative Technique</Divider>
+                    {this.state.optech_others.map((o, optech_index) => [
+                      <Divider />,
                       <Row>
                         <Col span={12}>
                           <SelectFieldGroup
@@ -4646,29 +3389,38 @@ class OperatingRoomSlipForm extends Component {
                             name="optech"
                             value={o.optech && o.optech.description}
                             onChange={index => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
-                              ];
-
                               if (index === undefined) {
-                                surgical_memos[surg_memo_index] = {
-                                  ...surgical_memos[surg_memo_index],
+                                const optech_others = [
+                                  ...this.state.optech_others
+                                ];
+
+                                optech_others[optech_index] = {
+                                  ...optech_others[optech_index],
                                   optech: null,
                                   optech_content: ""
                                 };
+
+                                this.setState({
+                                  optech_others
+                                });
                               } else {
                                 const optech_selection = this.state.options
                                   .optech[index];
 
-                                surgical_memos[surg_memo_index] = {
-                                  ...surgical_memos[surg_memo_index],
-                                  optech: optech_selection,
+                                const optech_others = [
+                                  ...this.state.optech_others
+                                ];
+
+                                optech_others[optech_index] = {
+                                  ...optech_others[optech_index],
+                                  optech: this.state.options.optech[index],
                                   optech_content: optech_selection.content
                                 };
+
+                                this.setState({
+                                  optech_others
+                                });
                               }
-                              this.setState({
-                                surgical_memos
-                              });
                             }}
                             onSearch={this.onOptechSelectionSearch}
                             error={errors.optech}
@@ -4677,26 +3429,47 @@ class OperatingRoomSlipForm extends Component {
                             column="description"
                           />
                         </Col>
-                      </Row>
-                      {o.optech && (
-                        <Row>
-                          <Col span={12} offset={4}>
-                            <div className="control">
-                              <Link
-                                to={`/or-slip/${this.state._id}/optech/${o._id}`}
-                                target="_blank"
-                              >
-                                <Button className="button is-small is-outlined is-info">
-                                  <span className="icon is-small">
-                                    <i className="fas fa-print" />
-                                  </span>
-                                  Operative Technique
-                                </Button>
-                              </Link>
-                            </div>
-                          </Col>
-                        </Row>
-                      )}
+                      </Row>,
+                      <Row>
+                        <Col offset={4} span={12}>
+                          {this.state._id &&
+                            o.optech && [
+                              <div className="field is-grouped">
+                                <div className="control">
+                                  <Link
+                                    to={`/or-slip/${this.state._id}/operative-technique/${optech_index}`}
+                                    target="_blank"
+                                  >
+                                    <Button className="button is-small is-outlined is-info">
+                                      <span className="icon is-small">
+                                        <i className="fas fa-print" />
+                                      </span>
+                                      Operative Technique
+                                    </Button>
+                                  </Link>
+                                </div>
+                                ,
+                                <Popconfirm
+                                  title="Are you sure to delete this item?"
+                                  onConfirm={() => {
+                                    const optech_others = [
+                                      ...this.state.optech_others
+                                    ];
+                                    optech_others.splice(optech_index, 1);
+                                    this.setState({ optech_others });
+                                  }}
+                                >
+                                  <a className="button is-danger is-outlined is-small control">
+                                    <span>Delete Operative Technique</span>
+                                    <span className="icon is-small">
+                                      <i className="fas fa-times" />
+                                    </span>
+                                  </a>
+                                </Popconfirm>
+                              </div>
+                            ]}
+                        </Col>
+                      </Row>,
 
                       <Row>
                         <Col span={24}>
@@ -4717,299 +3490,1568 @@ class OperatingRoomSlipForm extends Component {
              bullist numlist outdent indent | removeformat | help"
                             }}
                             onEditorChange={(content, editor) => {
-                              const surgical_memos = [
-                                ...this.state.surgical_memos
+                              const optech_others = [
+                                ...this.state.optech_others
                               ];
 
-                              surgical_memos[surg_memo_index] = {
-                                ...surgical_memos[surg_memo_index],
+                              optech_others[optech_index] = {
+                                ...optech_others[optech_index],
                                 optech_content: content
                               };
-
-                              this.setState({
-                                surgical_memos
-                              });
                             }}
                             value={o.optech_content}
                           />
                         </Col>
                       </Row>
+                    ])}
 
-                      <Row>
-                        <Col span={12}>
-                          <Form.Item className="m-t-1">
-                            <div className="field is-grouped">
+                    <Row>
+                      <Col span={12}>
+                        <Form.Item className="m-t-1">
+                          <div className="field is-grouped">
+                            <div className="control">
+                              <button className="button is-small is-primary">
+                                Save
+                              </button>
+                            </div>
+
+                            {!isEmpty(this.state._id) && [
                               <div className="control">
-                                <button className="button is-small is-primary">
-                                  Save
-                                </button>
-                              </div>
-
-                              {!isEmpty(this.state._id) && [
-                                <div className="control">
-                                  <Button
-                                    className="button is-small is-outlined is-info"
-                                    onClick={this.onAddSurgicalMemo}
-                                  >
+                                <Button
+                                  className="button is-small is-outlined is-info"
+                                  onClick={this.onAddOptech}
+                                >
+                                  <span className="icon is-small">
+                                    <i className="fas fa-plus" />
+                                  </span>
+                                  Add Operative Technique
+                                </Button>
+                              </div>,
+                              <div className="control">
+                                <Link
+                                  to={`/or-slip/${this.state._id}/surgical-memorandum`}
+                                  target="_blank"
+                                >
+                                  <Button className="button is-small is-outlined is-info">
                                     <span className="icon is-small">
-                                      <i className="fas fa-plus" />
+                                      <i className="fas fa-print" />
                                     </span>
-                                    Add Surgical Memo
+                                    Print Surgical Memo
                                   </Button>
-                                </div>,
+                                </Link>
+                              </div>,
+                              <div className="control">
+                                <Button
+                                  className="button is-small is-outlined is-info"
+                                  onClick={this.onAddSurgicalMemo}
+                                >
+                                  <span className="icon is-small">
+                                    <i className="fas fa-plus" />
+                                  </span>
+                                  Add Surgical Memo
+                                </Button>
+                              </div>,
+                              false && (
                                 <div className="control">
                                   <Link
-                                    to={`/or-slip/${this.state._id}/surgical-memorandum/${o._id}`}
+                                    to={`/or-slip/${this.state._id}/operative-technique`}
                                     target="_blank"
                                   >
                                     <Button className="button is-small is-outlined is-info">
                                       <span className="icon is-small">
                                         <i className="fas fa-print" />
                                       </span>
-                                      Print Surgical Memo
+                                      Print OB Operative Technique
                                     </Button>
                                   </Link>
-                                </div>,
-                                is_admin && (
-                                  <div className="control">
-                                    <Popconfirm
-                                      title="Are you sure to delete this item?"
-                                      onConfirm={() =>
-                                        this.onDeleteSurgicalMemo(
-                                          surg_memo_index
-                                        )
+                                </div>
+                              ),
+                              is_admin && (
+                                <Popconfirm
+                                  title="Are you sure to delete this item?"
+                                  className="button is-danger is-outlined is-small control"
+                                  onConfirm={this.onDelete}
+                                >
+                                  <span>Delete</span>
+                                  <span className="icon is-small">
+                                    <i className="fas fa-times" />
+                                  </span>
+                                </Popconfirm>
+                              )
+                            ]}
+                          </div>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Form>
+                </TabPane>,
+
+                this.state.surgical_memos.map((o, surg_memo_index) => {
+                  const other_surgeons_column = [
+                    {
+                      title: "Other Surgeon",
+                      dataIndex: "full_name"
+                    },
+                    {
+                      title: "",
+                      key: "action",
+                      width: 10,
+                      render: (text, record, index) => (
+                        <span>
+                          <Icon
+                            type="delete"
+                            theme="filled"
+                            className="pointer"
+                            onClick={() =>
+                              this.onDeleteOtherSurgeonSurgMemo(
+                                index,
+                                surg_memo_index
+                              )
+                            }
+                          />
+                        </span>
+                      )
+                    }
+                  ];
+
+                  const other_inst_nurses_column = [
+                    {
+                      title: "Other Inst Nurse",
+                      dataIndex: "full_name"
+                    },
+                    {
+                      title: "",
+                      key: "action",
+                      width: 10,
+                      render: (text, record, index) => (
+                        <span>
+                          <Icon
+                            type="delete"
+                            theme="filled"
+                            className="pointer"
+                            onClick={() =>
+                              this.onDeleteOtherInstNurseSurgMemo(
+                                index,
+                                surg_memo_index
+                              )
+                            }
+                          />
+                        </span>
+                      )
+                    }
+                  ];
+
+                  const other_sponge_nurses_column = [
+                    {
+                      title: "Other Sponge Nurse",
+                      dataIndex: "full_name"
+                    },
+                    {
+                      title: "",
+                      key: "action",
+                      width: 10,
+                      render: (text, record, index) => (
+                        <span>
+                          <Icon
+                            type="delete"
+                            theme="filled"
+                            className="pointer"
+                            onClick={() =>
+                              this.onDeleteOtherSpongeNurseSurgMemo(
+                                index,
+                                surg_memo_index
+                              )
+                            }
+                          />
+                        </span>
+                      )
+                    }
+                  ];
+
+                  const other_anes_column = [
+                    {
+                      title: "Other Anesthesiologist",
+                      dataIndex: "full_name"
+                    },
+                    {
+                      title: "",
+                      key: "action",
+                      width: 10,
+                      render: (text, record, index) => (
+                        <span>
+                          <Icon
+                            type="delete"
+                            theme="filled"
+                            className="pointer"
+                            onClick={() =>
+                              this.onDeleteOtherAnesSurgMemo(
+                                index,
+                                surg_memo_index
+                              )
+                            }
+                          />
+                        </span>
+                      )
+                    }
+                  ];
+
+                  const anes_methods_column = [
+                    {
+                      title: "Method",
+                      dataIndex: "method"
+                    },
+                    {
+                      title: "",
+                      key: "action",
+                      width: 10,
+                      render: (text, record, index) => (
+                        <span>
+                          <Icon
+                            type="delete"
+                            theme="filled"
+                            className="pointer"
+                            onClick={() =>
+                              this.onDeleteAnesMethodSurgMemo(
+                                index,
+                                surg_memo_index
+                              )
+                            }
+                          />
+                        </span>
+                      )
+                    }
+                  ];
+
+                  const anesthetics_column = [
+                    {
+                      title: "Used",
+                      dataIndex: "anes_used"
+                    },
+                    {
+                      title: "Qty",
+                      dataIndex: "anes_quantity"
+                    },
+                    {
+                      title: "Unit",
+                      dataIndex: "anes_quantity_unit"
+                    },
+                    {
+                      title: "Route",
+                      dataIndex: "anes_route"
+                    },
+                    {
+                      title: "",
+                      key: "action",
+                      width: 10,
+                      render: (text, record, index) => (
+                        <span>
+                          <Icon
+                            type="delete"
+                            theme="filled"
+                            className="pointer"
+                            onClick={() =>
+                              this.onDeleteAnestheticsSurgMemo(
+                                index,
+                                surg_memo_index
+                              )
+                            }
+                          />
+                        </span>
+                      )
+                    }
+                  ];
+
+                  const rvs_column = [
+                    {
+                      title: "Operation Performed Code",
+                      dataIndex: "rvs_code"
+                    },
+                    {
+                      title: "Operation Performed Description",
+                      dataIndex: "rvs_description"
+                    },
+                    {
+                      title: "Laterality",
+                      dataIndex: "rvs_laterality"
+                    },
+                    {
+                      title: "",
+                      key: "action",
+                      width: 10,
+                      render: (text, record, index) => (
+                        <span>
+                          <Icon
+                            type="delete"
+                            theme="filled"
+                            className="pointer"
+                            onClick={() =>
+                              this.onDeleteRvsSurgMemo(index, surg_memo_index)
+                            }
+                          />
+                        </span>
+                      )
+                    }
+                  ];
+
+                  return (
+                    <TabPane
+                      tab={`Post Operation - ${o.service}`}
+                      key={`p${surg_memo_index}`}
+                    >
+                      <Form
+                        onSubmit={e =>
+                          this.onSubmit(e, { form: POST_OPERATION_MODULE })
+                        }
+                        className="tab-content or-slip-form"
+                      >
+                        <Divider orientation="left">
+                          Patient Information
+                        </Divider>
+                        <Row>
+                          <Col span={12}>
+                            <TextFieldGroup
+                              label="Name"
+                              name="name"
+                              value={this.state.name}
+                              error={errors.name}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={this.onChange}
+                              disabled
+                            />
+
+                            <DatePickerFieldGroup
+                              label="Date of Birth"
+                              name="date_of_birth"
+                              value={this.state.date_of_birth}
+                              onChange={value =>
+                                this.setState({ date_of_birth: value })
+                              }
+                              error={errors.date_of_birth}
+                              formItemLayout={smallFormItemLayout}
+                              disabled
+                            />
+
+                            <TextFieldGroup
+                              label="Age"
+                              name="age"
+                              value={this.state.age}
+                              error={errors.age}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={this.onChange}
+                              disabled
+                            />
+
+                            <RadioGroupFieldGroup
+                              label="Sex"
+                              name="sex"
+                              value={this.state.sex}
+                              onChange={this.onChange}
+                              error={errors.sex}
+                              formItemLayout={smallFormItemLayout}
+                              options={gender_options}
+                              disabled
+                            />
+
+                            <Row className="ant-form-item" gutter={4}>
+                              <Col span={8} className="ant-form-item-label">
+                                <label>Weight</label>
+                              </Col>
+                              <Col
+                                span={12}
+                                className="ant-form-item-control-wrapper"
+                              >
+                                <Input
+                                  name="weight"
+                                  value={this.state.weight}
+                                  onChange={this.onChange}
+                                  disabled
+                                />
+                              </Col>
+                              <Col span={4}>
+                                <Select
+                                  value={this.state.weight_unit}
+                                  name="weight_unit"
+                                  onChange={value =>
+                                    this.setState({ weight_unit: value })
+                                  }
+                                  disabled
+                                >
+                                  {weight_unit_options.map((d, index) => (
+                                    <Option key={d} value={d}>
+                                      {d}
+                                    </Option>
+                                  ))}
+                                </Select>
+                              </Col>
+                            </Row>
+                          </Col>
+                          <Col span={12}>
+                            <TextAreaGroup
+                              label="Address"
+                              name="address"
+                              value={this.state.address}
+                              error={errors.address}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={this.onChange}
+                              disabled
+                            />
+
+                            <DatePickerFieldGroup
+                              label="Registration Date"
+                              name="registration_date"
+                              value={this.state.registration_date}
+                              onChange={value =>
+                                this.setState({ registration_date: value })
+                              }
+                              error={errors.registration_date}
+                              formItemLayout={smallFormItemLayout}
+                              disabled
+                            />
+
+                            <TextFieldGroup
+                              label="Hospital #"
+                              name="hospital_number"
+                              value={this.state.hospital_number}
+                              error={errors.hospital_number}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={this.onChange}
+                              disabled
+                            />
+
+                            <TextFieldGroup
+                              label="Ward"
+                              name="ward"
+                              value={this.state.ward}
+                              error={errors.ward}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={this.onChange}
+                              disabled
+                            />
+
+                            <SimpleSelectFieldGroup
+                              label="Service"
+                              name="service"
+                              value={o.service}
+                              onChange={value => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+                                surgical_memos[surg_memo_index] = {
+                                  ...this.state.surgical_memos[surg_memo_index],
+                                  service: value
+                                };
+                                this.setState({ surgical_memos });
+                              }}
+                              formItemLayout={smallFormItemLayout}
+                              options={service_options}
+                            />
+                          </Col>
+                        </Row>
+
+                        <Divider orientation="left">
+                          Surgical Procedures
+                        </Divider>
+
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <SelectFieldGroup
+                              label="Main Surgeon"
+                              name="surgeon"
+                              value={o.surgeon && o.surgeon.full_name}
+                              onChange={index =>
+                                this.onSurgeonChangeSurgMemo(
+                                  index,
+                                  "surgeon",
+                                  surg_memo_index
+                                )
+                              }
+                              onSearch={this.onSurgeonSearch}
+                              error={errors.surgeon}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.surgeons}
+                              column="full_name"
+                            />
+
+                            <SelectFieldGroup
+                              label="Asst. Surgeon"
+                              name="assistant_surgeon"
+                              value={
+                                o.assistant_surgeon &&
+                                o.assistant_surgeon.full_name
+                              }
+                              onChange={index => {
+                                this.onSurgeonChangeSurgMemo(
+                                  index,
+                                  "assistant_surgeon",
+                                  surg_memo_index
+                                );
+                              }}
+                              onSearch={this.onSurgeonSearch}
+                              error={errors.assistant_surgeon}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.surgeons}
+                              column="full_name"
+                            />
+                          </Col>
+                        </Row>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <SelectFieldGroup
+                              label="Other Surgeon"
+                              name="other_surgeon"
+                              value={
+                                o.other_surgeon && o.other_surgeon.full_name
+                              }
+                              onChange={index =>
+                                this.onOtherSurgeonChangeSurgMemo(
+                                  index,
+                                  "other_surgeon",
+                                  surg_memo_index
+                                )
+                              }
+                              onSearch={this.onSurgeonSearch}
+                              error={errors.other_surgeon}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.surgeons}
+                              column="full_name"
+                            />
+                            <SelectFieldGroup
+                              label="Inst. Nurse"
+                              name="instrument_nurse"
+                              value={
+                                o.instrument_nurse &&
+                                o.instrument_nurse.full_name
+                              }
+                              onChange={index =>
+                                this.onNurseChangeSurgMemo(
+                                  index,
+                                  "instrument_nurse",
+                                  surg_memo_index
+                                )
+                              }
+                              onSearch={this.onNurseSearch}
+                              error={errors.instrument_nurse}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.nurses}
+                              column="full_name"
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <Table
+                              dataSource={o.other_surgeons}
+                              columns={other_surgeons_column}
+                              rowKey={record => record._id}
+                              locale={{ emptyText: "No Records Found" }}
+                              pagination={false}
+                            />
+                          </Col>
+                        </Row>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <SelectFieldGroup
+                              label="Other Inst. Nurse"
+                              name="other_inst_nurse"
+                              value={
+                                o.other_inst_nurse &&
+                                o.other_inst_nurse.full_name
+                              }
+                              onChange={index =>
+                                this.onOtherInstNurseChangeSurgMemo(
+                                  index,
+                                  "other_inst_nurse",
+                                  surg_memo_index
+                                )
+                              }
+                              onSearch={this.onNurseSearch}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.nurses}
+                              column="full_name"
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <Table
+                              dataSource={o.other_inst_nurses}
+                              columns={other_inst_nurses_column}
+                              rowKey={record => record._id}
+                              locale={{ emptyText: "No Records Found" }}
+                              pagination={false}
+                            />
+                          </Col>
+                        </Row>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <SelectFieldGroup
+                              label="Sponge Nurse"
+                              name="sponge_nurse"
+                              value={o.sponge_nurse && o.sponge_nurse.full_name}
+                              onChange={index =>
+                                this.onNurseChangeSurgMemo(
+                                  index,
+                                  "sponge_nurse",
+                                  surg_memo_index
+                                )
+                              }
+                              onSearch={this.onNurseSearch}
+                              error={errors.sponge_nurse}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.nurses}
+                              column="full_name"
+                            />
+                          </Col>
+                        </Row>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <SelectFieldGroup
+                              label="Other Sponge Nurse"
+                              name="other_spong"
+                              value={
+                                o.other_sponge_nurse &&
+                                o.other_sponge_nurse.full_name
+                              }
+                              onChange={index =>
+                                this.onOtherSpongeNurseChangeSurgMemo(
+                                  index,
+                                  "other_sponge_nurse",
+                                  surg_memo_index
+                                )
+                              }
+                              onSearch={this.onNurseSearch}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.nurses}
+                              column="full_name"
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <Table
+                              dataSource={o.other_sponge_nurses}
+                              columns={other_sponge_nurses_column}
+                              rowKey={record => record._id}
+                              locale={{ emptyText: "No Records Found" }}
+                              pagination={false}
+                            />
+                          </Col>
+                        </Row>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <SelectFieldGroup
+                              label="Main Anes"
+                              name="main_anes"
+                              value={o.main_anes && o.main_anes.full_name}
+                              onChange={index => {
+                                this.onAnesChangeSurgMemo(
+                                  index,
+                                  "main_anes",
+                                  surg_memo_index
+                                );
+                              }}
+                              onSearch={this.onAnesSearch}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.anesthesiologists}
+                              column="full_name"
+                            />
+                          </Col>
+                        </Row>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <SelectFieldGroup
+                              label="Other Anes"
+                              name="other_anes_input"
+                              value={
+                                o.other_anes_input &&
+                                o.other_anes_input.full_name
+                              }
+                              onChange={index =>
+                                this.onOtherAnesSurgMemo(
+                                  index,
+                                  "other_anes_input",
+                                  surg_memo_index
+                                )
+                              }
+                              onSearch={this.onAnesSearch}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.anesthesiologists}
+                              column="full_name"
+                            />
+                            <TextFieldGroup
+                              label="ASA"
+                              name="asa"
+                              value={o.asa}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <Table
+                              dataSource={o.other_anes}
+                              columns={other_anes_column}
+                              rowKey={record => record._id}
+                              locale={{ emptyText: "No Records Found" }}
+                              pagination={false}
+                            />
+                          </Col>
+                        </Row>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <SimpleSelectFieldGroup
+                              label="Method"
+                              name="anes_method"
+                              value={o.anes_method}
+                              onChange={value => {
+                                if (value !== "Others") {
+                                  const surgical_memos = [
+                                    ...this.state.surgical_memos
+                                  ];
+
+                                  surgical_memos[surg_memo_index] = {
+                                    ...surgical_memos[surg_memo_index],
+                                    anes_methods: [
+                                      ...(o.anes_methods || []),
+                                      {
+                                        method: value
                                       }
+                                    ]
+                                  };
+
+                                  this.setState({
+                                    surgical_memos
+                                  });
+                                } else {
+                                  const surgical_memos = [
+                                    ...this.state.surgical_memos
+                                  ];
+
+                                  surgical_memos[surg_memo_index] = {
+                                    ...surgical_memos[surg_memo_index],
+                                    anes_method: value
+                                  };
+                                  this.setState({ surgical_memos });
+                                }
+                              }}
+                              formItemLayout={smallFormItemLayout}
+                              error={errors.anes_method}
+                              options={anes_method_options}
+                            />
+
+                            {o.anes_method === "Others" && (
+                              <TextFieldGroup
+                                label="Specify"
+                                name="anes_method_others"
+                                value={o.anes_method_others}
+                                error={errors.anes_method_others}
+                                formItemLayout={smallFormItemLayout}
+                                onChange={e => {
+                                  const surgical_memos = [
+                                    ...this.state.surgical_memos
+                                  ];
+
+                                  surgical_memos[surg_memo_index] = {
+                                    ...surgical_memos[surg_memo_index],
+                                    anes_method_others: e.target.value
+                                  };
+
+                                  this.setState({ surgical_memos });
+                                }}
+                                extra="Press Enter to Add"
+                                onPressEnter={e => {
+                                  e.preventDefault();
+
+                                  const surgical_memos = [
+                                    ...this.state.surgical_memos
+                                  ];
+
+                                  surgical_memos[surg_memo_index] = {
+                                    ...surgical_memos[surg_memo_index],
+                                    anes_methods: [
+                                      ...(o.anes_methods || []),
+                                      {
+                                        method: o.anes_method_others
+                                      }
+                                    ],
+                                    anes_method_others: ""
+                                  };
+
+                                  this.setState({
+                                    surgical_memos
+                                  });
+                                }}
+                              />
+                            )}
+
+                            <DateTimePickerFieldGroup
+                              label="Anesthesia Started"
+                              name="anes_start"
+                              value={o.anes_start || null}
+                              onChange={value => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  anes_start: value
+                                };
+
+                                this.setState({ surgical_memos });
+                              }}
+                              error={errors.anes_start}
+                              formItemLayout={smallFormItemLayout}
+                              showTime={true}
+                            />
+
+                            <DateTimePickerFieldGroup
+                              label="Operation Started"
+                              name="operation_started"
+                              value={o.operation_started || null}
+                              onChange={value => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  operation_started: value
+                                };
+
+                                this.setState({ surgical_memos });
+                              }}
+                              formItemLayout={smallFormItemLayout}
+                              showTime={true}
+                            />
+
+                            <DateTimePickerFieldGroup
+                              label="Operation Finished"
+                              name="operation_finished"
+                              value={o.operation_finished || null}
+                              onChange={value => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  operation_finished: value
+                                };
+
+                                this.setState({ surgical_memos });
+                              }}
+                              formItemLayout={smallFormItemLayout}
+                              showTime={true}
+                            />
+
+                            <TextAreaGroup
+                              label="Tentative Diagnosis"
+                              name="tentative_diagnosis"
+                              value={o.tentative_diagnosis}
+                              error={errors.tentative_diagnosis}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="Final Diagnosis"
+                              name="final_diagnosis"
+                              value={o.final_diagnosis}
+                              error={errors.final_diagnosis}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+                          </Col>
+                          <Col span={12}>
+                            <Table
+                              dataSource={o.anes_methods}
+                              columns={anes_methods_column}
+                              rowKey={record => record._id}
+                              locale={{ emptyText: "No Records Found" }}
+                              pagination={false}
+                            />
+                          </Col>
+                        </Row>
+
+                        <Divider orientation="left">Anesthetics</Divider>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <TextFieldGroup
+                              label="Anesthetic Used"
+                              name="anes_used"
+                              value={o.anes_used}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                              onPressEnter={e => {
+                                e.preventDefault();
+                              }}
+                            />
+                            <TextFieldGroup
+                              label="Quantity"
+                              name="anes_quantity"
+                              value={o.anes_quantity}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                              onPressEnter={e => {
+                                e.preventDefault();
+                              }}
+                            />
+
+                            <SimpleSelectFieldGroup
+                              label="Unit"
+                              name="anes_quantity_unit"
+                              value={o.anes_quantity_unit}
+                              onChange={value => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  anes_quantity_unit: value
+                                };
+                                this.setState({ surgical_memos });
+                              }}
+                              formItemLayout={smallFormItemLayout}
+                              options={anes_unit_options}
+                            />
+
+                            <SimpleSelectFieldGroup
+                              label="Route"
+                              name="anes_route"
+                              value={o.anes_route}
+                              onChange={value => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  anes_route: value
+                                };
+                                this.setState({ surgical_memos });
+                              }}
+                              formItemLayout={smallFormItemLayout}
+                              error={errors.anes_route}
+                              options={anes_route_options}
+                            />
+
+                            <Form.Item
+                              className="m-t-1"
+                              {...smallTailFormItemLayout}
+                            >
+                              <div className="field is-grouped">
+                                <div className="control">
+                                  <Button
+                                    className="button is-small"
+                                    onClick={() =>
+                                      this.onAddAnestheticSurgMemo(
+                                        surg_memo_index
+                                      )
+                                    }
+                                  >
+                                    Add Anesthetic
+                                  </Button>
+                                </div>
+                              </div>
+                            </Form.Item>
+                          </Col>
+                          <Col span={12}>
+                            <Table
+                              dataSource={o.anesthetics}
+                              columns={anesthetics_column}
+                              rowKey={record => record._id}
+                              locale={{ emptyText: "No Records Found" }}
+                              pagination={false}
+                            />
+                          </Col>
+                        </Row>
+
+                        <Divider orientation="left">
+                          Operation Performed
+                        </Divider>
+                        <Row gutter={12}>
+                          <Col span={12}>
+                            <TextFieldGroup
+                              label="Operation Performed Code"
+                              name="rvs_code"
+                              value={o.rvs_code}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaAutocompleteGroup
+                              label="Operation Performed Desc"
+                              name="rvs_description"
+                              value={o.rvs_description}
+                              formItemLayout={smallFormItemLayout}
+                              rows="4"
+                              onChange={value => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  rvs_description: value
+                                };
+                                this.setState({ surgical_memos });
+                              }}
+                              dataSource={rvs_desc_data_source}
+                              onSelect={value =>
+                                this.onRvsSelectSurgMemo(value, surg_memo_index)
+                              }
+                              onSearch={this.onRvsSearch}
+                            />
+
+                            <RadioGroupFieldGroup
+                              label="Laterality"
+                              name="rvs_laterality"
+                              value={o.rvs_laterality}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                              formItemLayout={smallFormItemLayout}
+                              options={laterality_options}
+                            />
+
+                            <Form.Item
+                              className="m-t-1"
+                              {...smallTailFormItemLayout}
+                            >
+                              <div className="field is-grouped">
+                                <div className="control">
+                                  <Button
+                                    className="button is-small"
+                                    onClick={() =>
+                                      this.onAddRvsSurgMemo(surg_memo_index)
+                                    }
+                                  >
+                                    Add Operation Performed
+                                  </Button>
+                                </div>
+                              </div>
+                            </Form.Item>
+                          </Col>
+                          <Col span={12}>
+                            <Table
+                              dataSource={o.rvs}
+                              columns={rvs_column}
+                              rowKey={record => record._id}
+                              locale={{ emptyText: "No Records Found" }}
+                              pagination={false}
+                            />
+                          </Col>
+                        </Row>
+
+                        <Row>
+                          <Col span={12}>
+                            <Divider orientation="left">
+                              Treatment in the Operating Room
+                            </Divider>
+
+                            <TextAreaGroup
+                              label="Before Operation"
+                              name="before_operation"
+                              value={o.before_operation}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="During Operation"
+                              name="during_operation"
+                              value={o.during_operation}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="After Operation"
+                              name="after_operation"
+                              value={o.after_operation}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="Comp. during oper"
+                              name="complications_during_operation"
+                              value={o.complications_during_operation}
+                              error={errors.complications_during_operation}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="Comp. after oper"
+                              name="complications_after_operation"
+                              value={o.complications_after_operation}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            {/* <Divider orientation="left">Operation Performed</Divider>
+
+                      <TextAreaGroup
+                        label="Operation Performed"
+                        name="operation_performed"
+                        value={o.operation_performed}
+                        error={errors.operation_performed}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                      /> */}
+                          </Col>
+                          <Col span={12}>
+                            <Divider orientation="left">
+                              Immediate Post Operative Treatment
+                            </Divider>
+
+                            <TextAreaGroup
+                              label="Position in Bed"
+                              name="position_in_bed"
+                              value={o.position_in_bed}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="Proctoclysis"
+                              name="proctoclysis"
+                              value={o.proctoclysis}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="Hypodermoclysis"
+                              name="hypodermoclysis"
+                              value={o.hypodermoclysis}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="Nutrition"
+                              name="nutrition"
+                              value={o.nutrition}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+
+                            <TextAreaGroup
+                              label="Stimulant and other med."
+                              name="stimulant"
+                              value={o.stimulant}
+                              formItemLayout={smallFormItemLayout}
+                              onChange={e =>
+                                this.onSurgMemoChange(e, surg_memo_index)
+                              }
+                            />
+                          </Col>
+                        </Row>
+                        <Divider orientation="left">
+                          Operative Technique
+                        </Divider>
+                        <Row>
+                          <Col span={12}>
+                            <SelectFieldGroup
+                              label="Operative Technique"
+                              name="optech"
+                              value={o.optech && o.optech.description}
+                              onChange={index => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                if (index === undefined) {
+                                  surgical_memos[surg_memo_index] = {
+                                    ...surgical_memos[surg_memo_index],
+                                    optech: null,
+                                    optech_content: ""
+                                  };
+                                } else {
+                                  const optech_selection = this.state.options
+                                    .optech[index];
+
+                                  surgical_memos[surg_memo_index] = {
+                                    ...surgical_memos[surg_memo_index],
+                                    optech: optech_selection,
+                                    optech_content: optech_selection.content
+                                  };
+                                }
+                                this.setState({
+                                  surgical_memos
+                                });
+                              }}
+                              onSearch={this.onOptechSelectionSearch}
+                              error={errors.optech}
+                              formItemLayout={smallFormItemLayout}
+                              data={this.state.options.optech}
+                              column="description"
+                            />
+                          </Col>
+                        </Row>
+                        {o.optech && (
+                          <Row>
+                            <Col span={12} offset={4}>
+                              <div className="control">
+                                <Link
+                                  to={`/or-slip/${this.state._id}/optech/${o._id}`}
+                                  target="_blank"
+                                >
+                                  <Button className="button is-small is-outlined is-info">
+                                    <span className="icon is-small">
+                                      <i className="fas fa-print" />
+                                    </span>
+                                    Operative Technique
+                                  </Button>
+                                </Link>
+                              </div>
+                            </Col>
+                          </Row>
+                        )}
+
+                        <Row>
+                          <Col span={24}>
+                            <Editor
+                              apiKey="pxs5825cqo24pz2je9lyly5yy8uz4bdsw4hg7g0q2f5jimeo"
+                              initialValue={o.optech_content}
+                              init={{
+                                height: 500,
+                                menubar: false,
+                                plugins: [
+                                  "advlist autolink lists link image charmap print preview anchor",
+                                  "searchreplace visualblocks code fullscreen",
+                                  "insertdatetime media table paste code help wordcount"
+                                ],
+                                toolbar:
+                                  "undo redo | formatselect | bold italic backcolor | \
+             alignleft aligncenter alignright alignjustify | \
+             bullist numlist outdent indent | removeformat | help"
+                              }}
+                              onEditorChange={(content, editor) => {
+                                const surgical_memos = [
+                                  ...this.state.surgical_memos
+                                ];
+
+                                surgical_memos[surg_memo_index] = {
+                                  ...surgical_memos[surg_memo_index],
+                                  optech_content: content
+                                };
+
+                                this.setState({
+                                  surgical_memos
+                                });
+                              }}
+                              value={o.optech_content}
+                            />
+                          </Col>
+                        </Row>
+
+                        <Row>
+                          <Col span={12}>
+                            <Form.Item className="m-t-1">
+                              <div className="field is-grouped">
+                                <div className="control">
+                                  <button className="button is-small is-primary">
+                                    Save
+                                  </button>
+                                </div>
+
+                                {!isEmpty(this.state._id) && [
+                                  <div className="control">
+                                    <Button
+                                      className="button is-small is-outlined is-info"
+                                      onClick={this.onAddSurgicalMemo}
                                     >
-                                      <Button className="button is-small is-outlined is-danger">
-                                        <span className="icon is-small">
-                                          <i className="fas fa-times" />
-                                        </span>
-                                        Delete Surgical Memo
-                                      </Button>
-                                    </Popconfirm>
-                                  </div>
-                                ),
-                                false && (
+                                      <span className="icon is-small">
+                                        <i className="fas fa-plus" />
+                                      </span>
+                                      Add Surgical Memo
+                                    </Button>
+                                  </div>,
                                   <div className="control">
                                     <Link
-                                      to={`/or-slip/${this.state._id}/operative-technique`}
+                                      to={`/or-slip/${this.state._id}/surgical-memorandum/${o._id}`}
                                       target="_blank"
                                     >
                                       <Button className="button is-small is-outlined is-info">
                                         <span className="icon is-small">
                                           <i className="fas fa-print" />
                                         </span>
-                                        Print OB Operative Technique
+                                        Print Surgical Memo
                                       </Button>
                                     </Link>
-                                  </div>
-                                )
-                              ]}
+                                  </div>,
+                                  is_admin && (
+                                    <div className="control">
+                                      <Popconfirm
+                                        title="Are you sure to delete this item?"
+                                        onConfirm={() =>
+                                          this.onDeleteSurgicalMemo(
+                                            surg_memo_index
+                                          )
+                                        }
+                                      >
+                                        <Button className="button is-small is-outlined is-danger">
+                                          <span className="icon is-small">
+                                            <i className="fas fa-times" />
+                                          </span>
+                                          Delete Surgical Memo
+                                        </Button>
+                                      </Popconfirm>
+                                    </div>
+                                  ),
+                                  false && (
+                                    <div className="control">
+                                      <Link
+                                        to={`/or-slip/${this.state._id}/operative-technique`}
+                                        target="_blank"
+                                      >
+                                        <Button className="button is-small is-outlined is-info">
+                                          <span className="icon is-small">
+                                            <i className="fas fa-print" />
+                                          </span>
+                                          Print OB Operative Technique
+                                        </Button>
+                                      </Link>
+                                    </div>
+                                  )
+                                ]}
+                              </div>
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </Form>
+                    </TabPane>
+                  );
+                }),
+                <TabPane tab="Time Logs" key="4">
+                  <Form
+                    onSubmit={e => this.onSubmit(e, { form: TIME_LOGS_MODULE })}
+                    className="tab-content or-slip-form"
+                  >
+                    <Row>
+                      <Col span={12}>
+                        <DateTimePickerFieldGroup
+                          label="Time Ward Informed"
+                          name="time_ward_informed"
+                          value={this.state.time_ward_informed}
+                          onChange={value =>
+                            this.setState({ time_ward_informed: value })
+                          }
+                          error={errors.time_ward_informed}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Arrival Time"
+                          name="arrival_time"
+                          value={this.state.arrival_time}
+                          onChange={value =>
+                            this.setState({ arrival_time: value })
+                          }
+                          error={errors.arrival_time}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Room is Ready"
+                          name="room_is_ready"
+                          value={this.state.room_is_ready}
+                          onChange={value =>
+                            this.setState({ room_is_ready: value })
+                          }
+                          error={errors.room_is_ready}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Equip/Inst ready"
+                          name="equip_ready"
+                          value={this.state.equip_ready}
+                          onChange={value =>
+                            this.setState({ equip_ready: value })
+                          }
+                          error={errors.equip_ready}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Patient Placed in OR Table"
+                          name="patient_placed_in_or_table"
+                          value={this.state.patient_placed_in_or_table}
+                          onChange={value =>
+                            this.setState({ patient_placed_in_or_table: value })
+                          }
+                          error={errors.patient_placed_in_or_table}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Time Anes Arrived"
+                          name="time_anes_arrived"
+                          value={this.state.time_anes_arrived}
+                          onChange={value =>
+                            this.setState({ time_anes_arrived: value })
+                          }
+                          error={errors.time_anes_arrived}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+                      </Col>
+                      <Col span={12}>
+                        <DateTimePickerFieldGroup
+                          label="Time Surgeon Arrived"
+                          name="time_surgeon_arrived"
+                          value={this.state.time_surgeon_arrived}
+                          onChange={value =>
+                            this.setState({ time_surgeon_arrived: value })
+                          }
+                          error={errors.time_surgeon_arrived}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Induction Time"
+                          name="induction_time"
+                          value={this.state.induction_time}
+                          onChange={value =>
+                            this.setState({ induction_time: value })
+                          }
+                          error={errors.induction_time}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Induction Completed"
+                          name="induction_completed"
+                          value={this.state.induction_completed}
+                          onChange={value =>
+                            this.setState({ induction_completed: value })
+                          }
+                          error={errors.induction_completed}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Time OR Started"
+                          name="time_or_started"
+                          value={this.state.time_or_started}
+                          onChange={value =>
+                            this.setState({ time_or_started: value })
+                          }
+                          error={errors.time_or_started}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="OR Ended"
+                          name="or_ended"
+                          value={this.state.or_ended}
+                          onChange={value => this.setState({ or_ended: value })}
+                          error={errors.or_ended}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Trans out from OR"
+                          name="trans_out_from_or"
+                          value={this.state.trans_out_from_or}
+                          onChange={value =>
+                            this.setState({ trans_out_from_or: value })
+                          }
+                          error={errors.trans_out_from_or}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <CheckboxFieldGroup
+                          label="Surgical Safety Checklist"
+                          name="surgical_safety_checklist"
+                          checked={this.state.surgical_safety_checklist}
+                          onChange={this.onChange}
+                          error={errors.surgical_safety_checklist}
+                          formItemLayout={smallFormItemLayout}
+                        />
+
+                        <TextAreaGroup
+                          label="Remarks"
+                          name="remarks"
+                          value={this.state.remarks}
+                          error={errors.remarks}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={12}>
+                        <Form.Item
+                          className="m-t-1"
+                          {...smallTailFormItemLayout}
+                        >
+                          <div className="field is-grouped">
+                            <div className="control">
+                              <button className="button is-small is-primary">
+                                Save
+                              </button>
                             </div>
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </Form>
-                  </TabPane>
-                );
-              })}
-              <TabPane tab="Time Logs" key="4">
-                <Form
-                  onSubmit={e => this.onSubmit(e, { form: TIME_LOGS_MODULE })}
-                  className="tab-content or-slip-form"
-                >
-                  <Row>
-                    <Col span={12}>
-                      <DateTimePickerFieldGroup
-                        label="Time Ward Informed"
-                        name="time_ward_informed"
-                        value={this.state.time_ward_informed}
-                        onChange={value =>
-                          this.setState({ time_ward_informed: value })
-                        }
-                        error={errors.time_ward_informed}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Arrival Time"
-                        name="arrival_time"
-                        value={this.state.arrival_time}
-                        onChange={value =>
-                          this.setState({ arrival_time: value })
-                        }
-                        error={errors.arrival_time}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Room is Ready"
-                        name="room_is_ready"
-                        value={this.state.room_is_ready}
-                        onChange={value =>
-                          this.setState({ room_is_ready: value })
-                        }
-                        error={errors.room_is_ready}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Equip/Inst ready"
-                        name="equip_ready"
-                        value={this.state.equip_ready}
-                        onChange={value =>
-                          this.setState({ equip_ready: value })
-                        }
-                        error={errors.equip_ready}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Patient Placed in OR Table"
-                        name="patient_placed_in_or_table"
-                        value={this.state.patient_placed_in_or_table}
-                        onChange={value =>
-                          this.setState({ patient_placed_in_or_table: value })
-                        }
-                        error={errors.patient_placed_in_or_table}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Time Anes Arrived"
-                        name="time_anes_arrived"
-                        value={this.state.time_anes_arrived}
-                        onChange={value =>
-                          this.setState({ time_anes_arrived: value })
-                        }
-                        error={errors.time_anes_arrived}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-                    </Col>
-                    <Col span={12}>
-                      <DateTimePickerFieldGroup
-                        label="Time Surgeon Arrived"
-                        name="time_surgeon_arrived"
-                        value={this.state.time_surgeon_arrived}
-                        onChange={value =>
-                          this.setState({ time_surgeon_arrived: value })
-                        }
-                        error={errors.time_surgeon_arrived}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Induction Time"
-                        name="induction_time"
-                        value={this.state.induction_time}
-                        onChange={value =>
-                          this.setState({ induction_time: value })
-                        }
-                        error={errors.induction_time}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Induction Completed"
-                        name="induction_completed"
-                        value={this.state.induction_completed}
-                        onChange={value =>
-                          this.setState({ induction_completed: value })
-                        }
-                        error={errors.induction_completed}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Time OR Started"
-                        name="time_or_started"
-                        value={this.state.time_or_started}
-                        onChange={value =>
-                          this.setState({ time_or_started: value })
-                        }
-                        error={errors.time_or_started}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="OR Ended"
-                        name="or_ended"
-                        value={this.state.or_ended}
-                        onChange={value => this.setState({ or_ended: value })}
-                        error={errors.or_ended}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <DateTimePickerFieldGroup
-                        label="Trans out from OR"
-                        name="trans_out_from_or"
-                        value={this.state.trans_out_from_or}
-                        onChange={value =>
-                          this.setState({ trans_out_from_or: value })
-                        }
-                        error={errors.trans_out_from_or}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
-
-                      <CheckboxFieldGroup
-                        label="Surgical Safety Checklist"
-                        name="surgical_safety_checklist"
-                        checked={this.state.surgical_safety_checklist}
-                        onChange={this.onChange}
-                        error={errors.surgical_safety_checklist}
-                        formItemLayout={smallFormItemLayout}
-                      />
-
-                      <TextAreaGroup
-                        label="Remarks"
-                        name="remarks"
-                        value={this.state.remarks}
-                        error={errors.remarks}
-                        formItemLayout={smallFormItemLayout}
-                        onChange={this.onChange}
-                      />
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col span={12}>
-                      <Form.Item className="m-t-1" {...smallTailFormItemLayout}>
-                        <div className="field is-grouped">
-                          <div className="control">
-                            <button className="button is-small is-primary">
-                              Save
-                            </button>
+                            {is_admin && !isEmpty(this.state._id) && (
+                              <Popconfirm
+                                title="Are you sure to delete this item?"
+                                onConfirm={this.onDelete}
+                              >
+                                <a className="button is-danger is-outlined is-small">
+                                  <span>Delete</span>
+                                  <span className="icon is-small">
+                                    <i className="fas fa-times" />
+                                  </span>
+                                </a>
+                              </Popconfirm>
+                            )}
                           </div>
-                          {is_admin && !isEmpty(this.state._id) && (
-                            <Popconfirm
-                              title="Are you sure to delete this item?"
-                              onConfirm={this.onDelete}
-                            >
-                              <a className="button is-danger is-outlined is-small">
-                                <span>Delete</span>
-                                <span className="icon is-small">
-                                  <i className="fas fa-times" />
-                                </span>
-                              </a>
-                            </Popconfirm>
-                          )}
-                        </div>
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                </Form>
-              </TabPane>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </Form>
+                </TabPane>
+              ]}
             </Tabs>
           ) : (
             <div>

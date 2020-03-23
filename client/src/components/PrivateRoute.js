@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 
 import { Layout, Menu, Icon } from "antd";
 import Sider from "antd/lib/layout/Sider";
-import { USER_ADMIN } from "./../utils/constants";
+import { USER_ADMIN, USER_WARD } from "./../utils/constants";
 import { logoutUser } from "../actions/authActions";
 import companyLogo from "./../images/clmmrh.png";
 
@@ -48,108 +48,109 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
           </Link>
         </Menu.Item>
 
-        <SubMenu
-          key="sub1"
-          title={
-            <span>
-              <Icon type="container" />
-              Master Files
-            </span>
-          }
-        >
-          <Menu.Item key="20">
-            <Link to="/surgeons">
+        {auth.user.role !== USER_WARD && [
+          <SubMenu
+            key="sub1"
+            title={
               <span>
-                <Icon type="folder" />
-                Surgeons
+                <Icon type="container" />
+                Master Files
+              </span>
+            }
+          >
+            <Menu.Item key="20">
+              <Link to="/surgeons">
+                <span>
+                  <Icon type="folder" />
+                  Surgeons
+                </span>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="21">
+              <Link to="/anesthesiologists">
+                <span>
+                  <Icon type="folder" />
+                  Anesthesiologists
+                </span>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="22">
+              <Link to="/nurses">
+                <span>
+                  <Icon type="folder" />
+                  Nurses
+                </span>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="23">
+              <Link to="/relative-value-scales">
+                <span>
+                  <Icon type="folder" />
+                  RVS
+                </span>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="/optech-selections">
+              <Link to="/optech-selections">
+                <span>
+                  <Icon type="folder" />
+                  Optech Selections
+                </span>
+              </Link>
+            </Menu.Item>
+          </SubMenu>,
+          <SubMenu
+            key="sub2"
+            title={
+              <span>
+                <Icon type="profile" />
+                Reports
+              </span>
+            }
+          >
+            <Menu.Item key="31">
+              <Link to="/or-logs">
+                <span>
+                  <Icon type="folder" />
+                  OR Logs
+                </span>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="/room-statistics">
+              <Link to="/room-statistics">
+                <span>
+                  <Icon type="folder" />
+                  Room Statistics
+                </span>
+              </Link>
+            </Menu.Item>
+          </SubMenu>,
+          <Menu.Item key="/or-schedules">
+            <Link to="/or-schedules">
+              <span>
+                <Icon type="appstore" />
+                OR Schedule
               </span>
             </Link>
-          </Menu.Item>
-          <Menu.Item key="21">
-            <Link to="/anesthesiologists">
-              <span>
-                <Icon type="folder" />
-                Anesthesiologists
-              </span>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="22">
-            <Link to="/nurses">
-              <span>
-                <Icon type="folder" />
-                Nurses
-              </span>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="23">
-            <Link to="/relative-value-scales">
-              <span>
-                <Icon type="folder" />
-                RVS
-              </span>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="/optech-selections">
-            <Link to="/optech-selections">
-              <span>
-                <Icon type="folder" />
-                Optech Selections
-              </span>
-            </Link>
-          </Menu.Item>
-        </SubMenu>
+          </Menu.Item>,
 
-        <SubMenu
-          key="sub2"
-          title={
-            <span>
-              <Icon type="profile" />
-              Reports
-            </span>
-          }
-        >
-          <Menu.Item key="31">
-            <Link to="/or-logs">
+          <Menu.Item key="/main-display">
+            <Link to="/main-display">
               <span>
-                <Icon type="folder" />
-                OR Logs
+                <Icon type="appstore" />
+                Schedule Display
+              </span>
+            </Link>
+          </Menu.Item>,
+          <Menu.Item key="/or-elective-form">
+            <Link to="/or-elective-form">
+              <span>
+                <Icon type="appstore" />
+                OR Elective Op
               </span>
             </Link>
           </Menu.Item>
-          <Menu.Item key="/room-statistics">
-            <Link to="/room-statistics">
-              <span>
-                <Icon type="folder" />
-                Room Statistics
-              </span>
-            </Link>
-          </Menu.Item>
-        </SubMenu>
-        <Menu.Item key="/or-schedules">
-          <Link to="/or-schedules">
-            <span>
-              <Icon type="appstore" />
-              OR Schedule
-            </span>
-          </Link>
-        </Menu.Item>
-
-        <Menu.Item key="/main-display">
-          <Link to="/main-display">
-            <span>
-              <Icon type="appstore" />
-              Schedule Display
-            </span>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="/or-elective-form">
-          <Link to="/or-elective-form">
-            <span>
-              <Icon type="appstore" />
-              OR Elective Op
-            </span>
-          </Link>
-        </Menu.Item>
+        ]}
 
         {auth.user && auth.user.role === USER_ADMIN && (
           <Menu.Item key="5">

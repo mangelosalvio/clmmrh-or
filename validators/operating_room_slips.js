@@ -176,13 +176,13 @@ module.exports = function validateInput(data) {
       errors.time_or_started = "Time OR started required";
     }
 
-    if (isEmpty(data.or_ended)) {
+    /* if (isEmpty(data.or_ended)) {
       errors.or_ended = "OR ended required";
     }
 
     if (isEmpty(data.trans_out_from_or)) {
       errors.trans_out_from_or = "Trans out from OR required";
-    }
+    } */
   }
 
   return {
