@@ -169,3 +169,18 @@ export const anes_unit_options = ["ml", "mg", "mcg"];
 export const weight_unit_options = ["kg", "lbs"];
 
 export const job_status_options = ["REGULAR", "CONTRACTUAL"];
+
+export const special_equipment_needed_options = [
+  "LAPAROSCOPIC",
+  "EGD/COLONSOCOPY",
+  "MICROSCOPE",
+  "IMAGE-INTENSIFIER/C-ARM",
+  "OTHERS"
+];
+
+export const infectious_control_measures_options = [
+  "ICC REFERRAL",
+  "ISOLATION ROOM",
+  "POST OPERATIVE MISTING",
+  "OTHERS"
+];

@@ -51,7 +51,9 @@ import {
   anes_route_options,
   anes_method_options,
   classification_housecase,
-  classification_service
+  classification_service,
+  infectious_control_measures_options,
+  special_equipment_needed_options
 } from "../../utils/Options";
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
@@ -84,6 +86,7 @@ import CheckboxGroup from "antd/lib/checkbox/Group";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 import { Editor } from "@tinymce/tinymce-react";
 import { TextField } from "@material-ui/core";
+import CheckboxGroupFieldGroup from "../../commons/CheckboxGroupFieldGroup";
 
 const { Content } = Layout;
 const TabPane = Tabs.TabPane;
@@ -192,6 +195,8 @@ const form_data = {
   optech_content: "",
 
   optech_others: [],
+  special_equipment_needed: [],
+  infectious_control_measures: [],
 
   errors: {}
 };
@@ -2216,6 +2221,30 @@ class OperatingRoomSlipForm extends Component {
                         formItemLayout={smallFormItemLayout}
                         error={errors.case_order}
                         options={case_order_options}
+                      />
+
+                      <CheckboxGroupFieldGroup
+                        label="Special Equipment Needed"
+                        name="special_equipment_needed"
+                        value={this.state.special_equipment_needed}
+                        onChange={value => {
+                          this.setState({ special_equipment_needed: value });
+                        }}
+                        error={errors.special_equipment_needed}
+                        formItemLayout={smallFormItemLayout}
+                        options={special_equipment_needed_options}
+                      />
+
+                      <CheckboxGroupFieldGroup
+                        label="Infectious Control Measures"
+                        name="infectious_control_measures"
+                        value={this.state.infectious_control_measures}
+                        onChange={value => {
+                          this.setState({ infectious_control_measures: value });
+                        }}
+                        error={errors.infectious_control_measures}
+                        formItemLayout={smallFormItemLayout}
+                        options={infectious_control_measures_options}
                       />
 
                       <SelectFieldGroup
