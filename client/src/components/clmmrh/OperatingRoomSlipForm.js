@@ -79,7 +79,8 @@ import {
   CLASSIFICATION_SERVICE,
   USER_ADMIN,
   CANCEL,
-  USER_WARD
+  USER_WARD,
+  OTHERS
 } from "./../../utils/constants";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
@@ -196,7 +197,9 @@ const form_data = {
 
   optech_others: [],
   special_equipment_needed: [],
+  other_special_equipment_needed: "",
   infectious_control_measures: [],
+  other_infectious_control_measures: "",
 
   errors: {}
 };
@@ -2223,30 +2226,6 @@ class OperatingRoomSlipForm extends Component {
                         options={case_order_options}
                       />
 
-                      <CheckboxGroupFieldGroup
-                        label="Special Equipment Needed"
-                        name="special_equipment_needed"
-                        value={this.state.special_equipment_needed}
-                        onChange={value => {
-                          this.setState({ special_equipment_needed: value });
-                        }}
-                        error={errors.special_equipment_needed}
-                        formItemLayout={smallFormItemLayout}
-                        options={special_equipment_needed_options}
-                      />
-
-                      <CheckboxGroupFieldGroup
-                        label="Infectious Control Measures"
-                        name="infectious_control_measures"
-                        value={this.state.infectious_control_measures}
-                        onChange={value => {
-                          this.setState({ infectious_control_measures: value });
-                        }}
-                        error={errors.infectious_control_measures}
-                        formItemLayout={smallFormItemLayout}
-                        options={infectious_control_measures_options}
-                      />
-
                       <SelectFieldGroup
                         label="Received By"
                         name="received_by"
@@ -2263,6 +2242,54 @@ class OperatingRoomSlipForm extends Component {
                         data={this.state.options.nurses}
                         column="full_name"
                       />
+
+                      <CheckboxGroupFieldGroup
+                        label="Special Equipment Needed"
+                        name="special_equipment_needed"
+                        value={this.state.special_equipment_needed}
+                        onChange={value => {
+                          this.setState({ special_equipment_needed: value });
+                        }}
+                        error={errors.special_equipment_needed}
+                        formItemLayout={smallFormItemLayout}
+                        options={special_equipment_needed_options}
+                      />
+
+                      {this.state.special_equipment_needed.includes(OTHERS) && (
+                        <TextFieldGroup
+                          label="Other Special Equipment Needed"
+                          name="other_special_equipment_needed"
+                          value={this.state.other_special_equipment_needed}
+                          error={errors.other_special_equipment_needed}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
+                      )}
+
+                      <CheckboxGroupFieldGroup
+                        label="Infectious Control Measures"
+                        name="infectious_control_measures"
+                        value={this.state.infectious_control_measures}
+                        onChange={value => {
+                          this.setState({ infectious_control_measures: value });
+                        }}
+                        error={errors.infectious_control_measures}
+                        formItemLayout={smallFormItemLayout}
+                        options={infectious_control_measures_options}
+                      />
+
+                      {this.state.infectious_control_measures.includes(
+                        OTHERS
+                      ) && (
+                        <TextFieldGroup
+                          label="Other Infectious Control Measures"
+                          name="other_infectious_control_measures"
+                          value={this.state.other_infectious_control_measures}
+                          error={errors.other_infectious_control_measures}
+                          formItemLayout={smallFormItemLayout}
+                          onChange={this.onChange}
+                        />
+                      )}
                     </Col>
                   </Row>
                   <Row gutter={12}>

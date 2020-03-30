@@ -39,7 +39,9 @@ const OperatingRoomSlipSchema = new Schema({
   operating_room_number: String,
   bed_number: String,
   special_equipment_needed: [String],
+  other_special_equipment_needed: String,
   infectious_control_measures: [String],
+  other_infectious_control_measures: String,
 
   /**
    * POST OPERATION
