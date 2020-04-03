@@ -43,7 +43,8 @@ class OperativeTechinqueReport extends Component {
         const {
           date_of_birth,
           registration_date,
-          date_time_of_surgery
+          date_time_of_surgery,
+          operation_started
         } = response.data;
         this.setState(
           prevState => {
@@ -55,6 +56,9 @@ class OperativeTechinqueReport extends Component {
                 : null,
               date_time_of_surgery: date_time_of_surgery
                 ? moment(date_time_of_surgery)
+                : null,
+              operation_started: operation_started
+                ? moment(operation_started)
                 : null,
               errors: {}
             };
@@ -119,8 +123,8 @@ class OperativeTechinqueReport extends Component {
           </Col>
           <Col span={3}>Date of OR</Col>
           <Col span={5} className="b-b-1">
-            {this.state.date_time_of_surgery &&
-              this.state.date_time_of_surgery.format("MM-DD-YY")}{" "}
+            {this.state.operation_started &&
+              this.state.operation_started.format("MM-DD-YY")}{" "}
             &nbsp;
           </Col>
         </Row>
