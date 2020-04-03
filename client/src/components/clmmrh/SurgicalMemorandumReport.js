@@ -354,8 +354,8 @@ class SurgicalMemorandumReport extends Component {
         <Row>
           <Col span={3}>Date of OR</Col>
           <Col span={3} className="b-b-1">
-            {this.state.date_time_of_surgery &&
-              this.state.date_time_of_surgery.format("MM-DD-YY")}
+            {this.state.operation_started &&
+              this.state.operation_started.format("MM-DD-YY")}
           </Col>
           <Col span={3}>Surgeon</Col>
           <Col span={6} className="b-b-1">
