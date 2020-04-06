@@ -1,6 +1,7 @@
 module.exports = {
-  USER_ADMIN: "ADMIN",
-  USER_STAFF: "STAFF",
+  USER_ADMIN: "Administrator",
+  USER_STAFF: "Staff",
+  USER_WARD: "Ward",
   DIMINISHING_FIXED_EQUAL_AMORTIZATION: "DIMINISHING_FIXED_EQUAL_AMORTIZATION",
   STRAIGHT_LINE_AMORTIZATION: "STRAIGHT_LINE_AMORTIZATION",
   PURGING_MONTHS_RECORDING: "purging_months_recording",
@@ -41,7 +42,7 @@ module.exports = {
     WT1: "West OR 1",
     WT2: "West OR 2",
     EC: "Eye Center",
-    OB: "OB"
+    OB: "OB",
   },
   RECEIVING_MODULE: "RECEIVING MODULE",
   PRE_OPERATION_MODULE: "PRE OPERATION MODULE",
@@ -52,5 +53,5 @@ module.exports = {
   NBB_PHIC: "NBB-PHIC", // housecase
   PHILHEALTH: "PHILHEALTH", // housecase
   PHIC: "PHIC", // housecase
-  PDAF: "PDAF"
+  PDAF: "PDAF",
 };

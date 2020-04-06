@@ -69,7 +69,11 @@ module.exports = function validateInput(data) {
       errors.date_time_received = "Date/Time Received is required";
     }
 
-    if (isEmpty(data.received_by)) {
+    /**
+     * Do not require recieved by for WARD roles
+     */
+
+    if (isEmpty(data.received_by) && data.user.role !== constants.USER_WARD) {
       errors.received_by = "Received by is required";
     }
 
@@ -187,6 +191,6 @@ module.exports = function validateInput(data) {
 
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: isEmpty(errors),
   };
 };

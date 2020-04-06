@@ -24,13 +24,14 @@ import {
   Modal,
   PageHeader,
   Collapse,
-  Popconfirm
+  Popconfirm,
+  notification,
 } from "antd";
 import {
   formItemLayout,
   tailFormItemLayout,
   smallFormItemLayout,
-  smallTailFormItemLayout
+  smallTailFormItemLayout,
 } from "./../../utils/Layouts";
 import DatePickerFieldGroup from "../../commons/DatePickerFieldGroup";
 import TextAreaGroup from "../../commons/TextAreaGroup";
@@ -53,7 +54,7 @@ import {
   classification_housecase,
   classification_service,
   infectious_control_measures_options,
-  special_equipment_needed_options
+  special_equipment_needed_options,
 } from "../../utils/Options";
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
@@ -80,8 +81,10 @@ import {
   USER_ADMIN,
   CANCEL,
   USER_WARD,
-  OTHERS
+  OTHERS,
+  SOCKET_ENDPOINT,
 } from "./../../utils/constants";
+import socketIoClient from "socket.io-client";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 import CheckboxGroup from "antd/lib/checkbox/Group";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
@@ -201,7 +204,7 @@ const form_data = {
   infectious_control_measures: [],
   other_infectious_control_measures: "",
 
-  errors: {}
+  errors: {},
 };
 
 class OperatingRoomSlipForm extends Component {
@@ -216,7 +219,7 @@ class OperatingRoomSlipForm extends Component {
       nurses: [],
       rvs: [],
       patients: [],
-      optech: []
+      optech: [],
     },
     current_page: 1,
     selected_row_keys: [],
@@ -227,7 +230,7 @@ class OperatingRoomSlipForm extends Component {
     search_main_anes: "",
     search_surgeon: "",
     search_classification: "",
-    search_service: ""
+    search_service: "",
   };
 
   constructor(props) {
@@ -241,10 +244,39 @@ class OperatingRoomSlipForm extends Component {
   }
 
   componentDidMount() {
-    this.searchRecords();
+    const socket = socketIoClient(SOCKET_ENDPOINT);
+    socket.on("new-or", (data) => {
+      notification.open({
+        message: `Patient Added`,
+        description: `${data.name} was added.`,
+        duration: 0,
+      });
+
+      /**
+       * if OR is in search mode, refresh OR
+       */
+      if (
+        this.props.auth.user &&
+        this.props.auth.user.role !== USER_WARD &&
+        this.state[collection_name].length > 0
+      ) {
+        this.searchRecords();
+      }
+    });
+
+    if (this.props.auth.user && this.props.auth.user.role !== USER_WARD) {
+      this.searchRecords();
+    } else {
+      /**
+       * set operation status to null if ward
+       */
+      this.setState({
+        operation_status: null,
+      });
+    }
   }
 
-  onChange = e => {
+  onChange = (e) => {
     const value =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
 
@@ -255,8 +287,8 @@ class OperatingRoomSlipForm extends Component {
     this.setState({
       [object]: {
         ...this.state[object],
-        [e.target.name]: e.target.value
-      }
+        [e.target.name]: e.target.value,
+      },
     });
   };
 
@@ -264,13 +296,13 @@ class OperatingRoomSlipForm extends Component {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     };
 
     this.setState({ surgical_memos });
   };
 
-  onChangeCase = e => {
+  onChangeCase = (e) => {
     const value =
       e.target.type === "checkbox" ? e.target.checked : e.target.value;
 
@@ -291,194 +323,50 @@ class OperatingRoomSlipForm extends Component {
     const form_data = {
       ...this.state,
       form,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
 
     delete form_data.options;
 
-    const loading = message.loading("Processing...");
-    if (isEmpty(this.state._id)) {
-      axios
-        .put(this.state.url, form_data)
-        .then(({ data }) => {
-          const {
-            registration_date,
-            date_time_ordered,
-            date_time_of_surgery,
-            date_time_received,
-            anes_start,
-            operation_started,
-            operation_finished,
-            time_ward_informed,
-            arrival_time,
-            room_is_ready,
-            equip_ready,
-            patient_placed_in_or_table,
-            time_anes_arrived,
-            time_surgeon_arrived,
-            induction_time,
-            induction_completed,
-            time_or_started,
-            or_ended,
-            trans_out_from_or,
-            surgical_safety_checklist,
-            date_of_birth
-          } = data;
-
-          message.success("Transaction Saved");
-          this.searchRecords();
-
-          /* loading();
-          this.setState({
-            ...form_data,
-            ...data,
-            date_of_birth: date_of_birth ? moment(date_of_birth) : null,
-            registration_date: registration_date
-              ? moment(registration_date)
-              : null,
-            date_time_ordered: date_time_ordered
-              ? moment(date_time_ordered)
-              : null,
-            date_time_received: date_time_received
-              ? moment(date_time_received)
-              : null,
-            date_time_of_surgery: date_time_of_surgery
-              ? moment(date_time_of_surgery)
-              : null,
-            anes_start: anes_start ? moment(anes_start) : null,
-            operation_started: operation_started
-              ? moment(operation_started)
-              : null,
-            operation_finished: operation_finished
-              ? moment(operation_finished)
-              : null,
-
-            time_ward_informed: time_ward_informed
-              ? moment(time_ward_informed)
-              : null,
-            arrival_time: arrival_time ? moment(arrival_time) : null,
-            room_is_ready: room_is_ready ? moment(room_is_ready) : null,
-            equip_ready: equip_ready ? moment(equip_ready) : null,
-            patient_placed_in_or_table: patient_placed_in_or_table
-              ? moment(patient_placed_in_or_table)
-              : null,
-            time_anes_arrived: time_anes_arrived
-              ? moment(time_anes_arrived)
-              : null,
-            time_surgeon_arrived: time_surgeon_arrived
-              ? moment(time_surgeon_arrived)
-              : null,
-            induction_time: induction_time ? moment(induction_time) : null,
-            induction_completed: induction_completed
-              ? moment(induction_completed)
-              : null,
-            time_or_started: time_or_started ? moment(time_or_started) : null,
-            or_ended: or_ended ? moment(or_ended) : null,
-            trans_out_from_or: trans_out_from_or
-              ? moment(trans_out_from_or)
-              : null,
-            surgical_safety_checklist: surgical_safety_checklist
-              ? moment(surgical_safety_checklist)
-              : null,
-            errors: {}
-          }); */
-        })
-        .catch(err => {
-          loading();
-          message.error("You have an invalid input");
-          this.setState({ errors: err.response.data });
-        });
+    if (this.props.auth.user && this.props.auth.user.role === USER_WARD) {
+      confirm({
+        title: "Save Confirmation?",
+        content:
+          "Would you like to confirm that the information entered is accurate and complete and you have scanned the doctor's order and consent?",
+        onOk: () => {
+          this.saveTransaction({ form_data });
+        },
+      });
     } else {
-      axios
-        .post(this.state.url + this.state._id, form_data)
-        .then(({ data }) => {
-          const {
-            date_of_birth,
-            registration_date,
-            date_time_ordered,
-            date_time_received,
-            date_time_of_surgery,
-            anes_start,
-            operation_started,
-            operation_finished,
-
-            time_ward_informed,
-            arrival_time,
-            room_is_ready,
-            equip_ready,
-            patient_placed_in_or_table,
-            time_anes_arrived,
-            time_surgeon_arrived,
-            induction_time,
-            induction_completed,
-            time_or_started,
-            or_ended,
-            trans_out_from_or,
-            surgical_safety_checklist
-          } = data;
-
-          loading();
-          message.success("Transaction Updated");
-          this.searchRecords();
-          /* this.setState({
-            ...form_data,
-            ...data,
-            date_of_birth: date_of_birth ? moment(date_of_birth) : null,
-            registration_date: registration_date
-              ? moment(registration_date)
-              : null,
-            date_time_ordered: date_time_ordered
-              ? moment(date_time_ordered)
-              : null,
-            date_time_received: date_time_received
-              ? moment(date_time_received)
-              : null,
-            date_time_of_surgery: date_time_of_surgery
-              ? moment(date_time_of_surgery)
-              : null,
-            anes_start: anes_start ? moment(anes_start) : null,
-            operation_started: operation_started
-              ? moment(operation_started)
-              : null,
-            operation_finished: operation_finished
-              ? moment(operation_finished)
-              : null,
-            time_ward_informed: time_ward_informed
-              ? moment(time_ward_informed)
-              : null,
-            arrival_time: arrival_time ? moment(arrival_time) : null,
-            room_is_ready: room_is_ready ? moment(room_is_ready) : null,
-            equip_ready: equip_ready ? moment(equip_ready) : null,
-            patient_placed_in_or_table: patient_placed_in_or_table
-              ? moment(patient_placed_in_or_table)
-              : null,
-            time_anes_arrived: time_anes_arrived
-              ? moment(time_anes_arrived)
-              : null,
-            time_surgeon_arrived: time_surgeon_arrived
-              ? moment(time_surgeon_arrived)
-              : null,
-            induction_time: induction_time ? moment(induction_time) : null,
-            induction_completed: induction_completed
-              ? moment(induction_completed)
-              : null,
-            time_or_started: time_or_started ? moment(time_or_started) : null,
-            or_ended: or_ended ? moment(or_ended) : null,
-            trans_out_from_or: trans_out_from_or
-              ? moment(trans_out_from_or)
-              : null,
-            surgical_safety_checklist: surgical_safety_checklist
-              ? moment(surgical_safety_checklist)
-              : null,
-            errors: {}
-          }); */
-        })
-        .catch(err => {
-          loading();
-          message.error("You have an error");
-          this.setState({ errors: err.response.data });
-        });
+      this.saveTransaction({ form_data });
     }
+  };
+
+  saveTransaction = ({ form_data }) => {
+    let promise = null;
+    if (isEmpty(this.state._id)) {
+      promise = axios.put(this.state.url, form_data);
+    } else {
+      promise = axios.post(this.state.url + this.state._id, form_data);
+    }
+
+    const loading = message.loading("Processing...");
+    promise
+      .then(({ data }) => {
+        loading();
+        message.success("Transaction Saved");
+
+        if (this.props.auth.user && this.props.auth.user.role === USER_WARD) {
+          this.addNew();
+        } else {
+          this.searchRecords();
+        }
+      })
+      .catch((err) => {
+        loading();
+        message.error("You have an error");
+        this.setState({ errors: err.response.data });
+      });
   };
 
   onSearch = (value, e) => {
@@ -490,14 +378,14 @@ class OperatingRoomSlipForm extends Component {
     const loading = message.loading("Loading...");
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response => {
+      .then((response) => {
         loading();
         this.setState({
           [collection_name]: response.data,
-          message: isEmpty(response.data) ? "No rows found" : ""
+          message: isEmpty(response.data) ? "No rows found" : "",
         });
       })
-      .catch(err => {
+      .catch((err) => {
         loading();
         message.error("An error has occurred");
         console.log(err);
@@ -505,18 +393,21 @@ class OperatingRoomSlipForm extends Component {
   };
 
   addNew = () => {
+    const is_ward =
+      this.props.auth.user && this.props.auth.user.role === USER_WARD;
     this.setState({
       ...form_data,
+      operation_status: !is_ward ? OPERATION_STATUS_ON_GOING : null,
       errors: {},
-      message: ""
+      message: "",
     });
   };
 
-  edit = record => {
+  edit = (record) => {
     const loading = message.loading("Loading...");
     axios
       .get(this.state.url + record._id)
-      .then(response => {
+      .then((response) => {
         loading();
         const record = response.data;
         const {
@@ -540,9 +431,9 @@ class OperatingRoomSlipForm extends Component {
           time_or_started,
           or_ended,
           trans_out_from_or,
-          surgical_safety_checklist
+          surgical_safety_checklist,
         } = response.data;
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             ...form_data,
             [collection_name]: [],
@@ -595,11 +486,11 @@ class OperatingRoomSlipForm extends Component {
             surgical_safety_checklist: surgical_safety_checklist
               ? moment(surgical_safety_checklist)
               : null,
-            errors: {}
+            errors: {},
           };
         });
       })
-      .catch(err => {
+      .catch((err) => {
         loading();
         message.error("An error has occurred");
         console.log(err);
@@ -609,7 +500,7 @@ class OperatingRoomSlipForm extends Component {
   onDelete = () => {
     axios
       .delete(this.state.url + this.state._id)
-      .then(response => {
+      .then((response) => {
         message.success("Transaction Deleted");
         this.searchRecords();
         /* this.setState({
@@ -617,7 +508,7 @@ class OperatingRoomSlipForm extends Component {
           message: "Transaction Deleted"
         });*/
       })
-      .catch(err => {
+      .catch((err) => {
         message.error(err.response.data.message);
       });
   };
@@ -630,30 +521,30 @@ class OperatingRoomSlipForm extends Component {
    * SURGEONS
    */
 
-  onSurgeonSearch = value => {
+  onSurgeonSearch = (value) => {
     axios
       .get(`/api/surgeons/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            surgeons: response.data
-          }
+            surgeons: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onSurgeonChange = (index, name) => {
     if (!isEmpty(index)) {
-      this.setState(prevState => {
+      this.setState((prevState) => {
         return {
-          [name]: prevState.options.surgeons[index]
+          [name]: prevState.options.surgeons[index],
         };
       });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -664,7 +555,7 @@ class OperatingRoomSlipForm extends Component {
 
       surgical_memos[i] = {
         ...surgical_memos[i],
-        [name]: this.state.options.surgeons[index]
+        [name]: this.state.options.surgeons[index],
       };
 
       this.setState({ surgical_memos });
@@ -672,7 +563,7 @@ class OperatingRoomSlipForm extends Component {
       const surgical_memos = [...this.state.surgical_memos];
       surgical_memos[i] = {
         ...surgical_memos[i],
-        [name]: null
+        [name]: null,
       };
       this.setState({ surgical_memos });
     }
@@ -684,7 +575,7 @@ class OperatingRoomSlipForm extends Component {
 
       surgical_memos[i] = {
         ...surgical_memos[i],
-        [name]: this.state.options.anesthesiologists[index]
+        [name]: this.state.options.anesthesiologists[index],
       };
 
       this.setState({ surgical_memos });
@@ -692,7 +583,7 @@ class OperatingRoomSlipForm extends Component {
       const surgical_memos = [...this.state.surgical_memos];
       surgical_memos[i] = {
         ...surgical_memos[i],
-        [name]: null
+        [name]: null,
       };
       this.setState({ surgical_memos });
     }
@@ -702,17 +593,17 @@ class OperatingRoomSlipForm extends Component {
     if (!isEmpty(index)) {
       const other_inst_nurses = [
         ...this.state.other_inst_nurses,
-        this.state.options.nurses[index]
+        this.state.options.nurses[index],
       ];
-      this.setState(prevState => {
+      this.setState((prevState) => {
         return {
           other_inst_nurses,
-          [name]: ""
+          [name]: "",
         };
       });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -724,14 +615,14 @@ class OperatingRoomSlipForm extends Component {
         ...surgical_memos[i],
         other_inst_nurses: [
           ...(surgical_memos[i].other_inst_nurses || []),
-          this.state.options.nurses[index]
+          this.state.options.nurses[index],
         ],
-        [name]: ""
+        [name]: "",
       };
       this.setState({ surgical_memos });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -743,14 +634,14 @@ class OperatingRoomSlipForm extends Component {
         ...surgical_memos[i],
         other_anes: [
           ...(surgical_memos[i].other_anes || []),
-          this.state.options.anesthesiologists[index]
+          this.state.options.anesthesiologists[index],
         ],
-        [name]: ""
+        [name]: "",
       };
       this.setState({ surgical_memos });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -762,14 +653,14 @@ class OperatingRoomSlipForm extends Component {
         ...surgical_memos[i],
         other_sponge_nurses: [
           ...(surgical_memos[i].other_sponge_nurses || []),
-          this.state.options.nurses[index]
+          this.state.options.nurses[index],
         ],
-        [name]: ""
+        [name]: "",
       };
       this.setState({ surgical_memos });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -778,17 +669,17 @@ class OperatingRoomSlipForm extends Component {
     if (!isEmpty(index)) {
       const other_sponge_nurses = [
         ...this.state.other_sponge_nurses,
-        this.state.options.nurses[index]
+        this.state.options.nurses[index],
       ];
-      this.setState(prevState => {
+      this.setState((prevState) => {
         return {
           other_sponge_nurses,
-          [name]: ""
+          [name]: "",
         };
       });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -797,17 +688,17 @@ class OperatingRoomSlipForm extends Component {
     if (!isEmpty(index)) {
       const other_surgeons = [
         ...this.state.other_surgeons,
-        this.state.options.surgeons[index]
+        this.state.options.surgeons[index],
       ];
-      this.setState(prevState => {
+      this.setState((prevState) => {
         return {
           other_surgeons,
-          [name]: ""
+          [name]: "",
         };
       });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -819,14 +710,14 @@ class OperatingRoomSlipForm extends Component {
         ...surgical_memos[i],
         other_surgeons: [
           ...(surgical_memos[i].other_surgeons || []),
-          this.state.options.surgeons[index]
+          this.state.options.surgeons[index],
         ],
-        [name]: ""
+        [name]: "",
       };
       this.setState({ surgical_memos });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -835,17 +726,17 @@ class OperatingRoomSlipForm extends Component {
     if (!isEmpty(index)) {
       const other_anes = [
         ...this.state.other_anes,
-        this.state.options.anesthesiologists[index]
+        this.state.options.anesthesiologists[index],
       ];
-      this.setState(prevState => {
+      this.setState((prevState) => {
         return {
           other_anes,
-          [name]: ""
+          [name]: "",
         };
       });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -854,30 +745,30 @@ class OperatingRoomSlipForm extends Component {
    * NURSES
    */
 
-  onNurseSearch = value => {
+  onNurseSearch = (value) => {
     axios
       .get(`/api/nurses/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            nurses: response.data
-          }
+            nurses: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onNurseChange = (index, name) => {
     if (!isEmpty(index)) {
-      this.setState(prevState => {
+      this.setState((prevState) => {
         return {
-          [name]: prevState.options.nurses[index]
+          [name]: prevState.options.nurses[index],
         };
       });
     } else {
       this.setState({
-        [name]: null
+        [name]: null,
       });
     }
   };
@@ -888,7 +779,7 @@ class OperatingRoomSlipForm extends Component {
 
       surgical_memos[i] = {
         ...surgical_memos[i],
-        [name]: this.state.options.nurses[index]
+        [name]: this.state.options.nurses[index],
       };
 
       this.setState({ surgical_memos });
@@ -896,7 +787,7 @@ class OperatingRoomSlipForm extends Component {
       const surgical_memos = [...this.state.surgical_memos];
       surgical_memos[i] = {
         ...surgical_memos[i],
-        [name]: null
+        [name]: null,
       };
       this.setState({ surgical_memos });
     }
@@ -906,44 +797,44 @@ class OperatingRoomSlipForm extends Component {
    * ANESTHESIOLOGISTS
    */
 
-  onAnesSearch = value => {
+  onAnesSearch = (value) => {
     axios
       .get(`/api/anesthesiologists/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            anesthesiologists: response.data
-          }
+            anesthesiologists: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  onAnesChange = index => {
+  onAnesChange = (index) => {
     if (!isEmpty(index)) {
-      this.setState(prevState => {
+      this.setState((prevState) => {
         return {
-          main_anes: prevState.options.anesthesiologists[index]
+          main_anes: prevState.options.anesthesiologists[index],
         };
       });
     } else {
       this.setState({
-        main_anes: null
+        main_anes: null,
       });
     }
   };
 
-  onRvsCodeLookup = e => {
+  onRvsCodeLookup = (e) => {
     e.preventDefault();
     const loading = message.loading("Loading...");
     axios
       .get(`/api/relative-value-scales/${this.state.rvs_code}/code`)
-      .then(response => {
+      .then((response) => {
         loading();
         if (response.data) {
           this.setState({
-            rvs_description: response.data.description
+            rvs_description: response.data.description,
           });
           message.success("Operation Performed Found");
         } else {
@@ -956,47 +847,51 @@ class OperatingRoomSlipForm extends Component {
    * Operation Performed Desc
    */
 
-  onRvsSearch = value => {
+  onRvsSearch = (value) => {
     axios
       .get(`/api/relative-value-scales/listings/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            rvs: response.data
-          }
+            rvs: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  onRvsSelect = value => {
-    const index = this.state.options.rvs.map(o => o.description).indexOf(value);
+  onRvsSelect = (value) => {
+    const index = this.state.options.rvs
+      .map((o) => o.description)
+      .indexOf(value);
     const rvs_code = this.state.options.rvs[index].code;
 
     this.setState({
       rvs_code,
-      rvs_description: value
+      rvs_description: value,
     });
   };
 
   onRvsSelectSurgMemo = (value, i) => {
-    const index = this.state.options.rvs.map(o => o.description).indexOf(value);
+    const index = this.state.options.rvs
+      .map((o) => o.description)
+      .indexOf(value);
     const rvs_code = this.state.options.rvs[index].code;
 
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
       rvs_code,
-      rvs_description: value
+      rvs_description: value,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
-  onAddRvsSurgMemo = i => {
+  onAddRvsSurgMemo = (i) => {
     const surgical_memos = [...this.state.surgical_memos];
 
     const surgical_memo = surgical_memos[i];
@@ -1008,12 +903,12 @@ class OperatingRoomSlipForm extends Component {
         {
           rvs_code: surgical_memo.rvs_code,
           rvs_description: surgical_memo.rvs_description,
-          rvs_laterality: surgical_memo.rvs_laterality
-        }
+          rvs_laterality: surgical_memo.rvs_laterality,
+        },
       ],
       rvs_code: "",
       rvs_description: "",
-      rvs_laterality: ""
+      rvs_laterality: "",
     };
 
     this.setState({ surgical_memos });
@@ -1025,23 +920,23 @@ class OperatingRoomSlipForm extends Component {
       {
         rvs_code: this.state.rvs_code,
         rvs_description: this.state.rvs_description,
-        rvs_laterality: this.state.rvs_laterality
-      }
+        rvs_laterality: this.state.rvs_laterality,
+      },
     ];
 
     this.setState({
       rvs,
       rvs_code: "",
       rvs_description: "",
-      rvs_laterality: ""
+      rvs_laterality: "",
     });
   };
 
-  onDeleteRvs = index => {
+  onDeleteRvs = (index) => {
     const rvs = [...this.state.rvs];
     rvs.splice(index, 1);
     this.setState({
-      rvs
+      rvs,
     });
   };
 
@@ -1052,11 +947,11 @@ class OperatingRoomSlipForm extends Component {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      rvs
+      rvs,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
@@ -1067,8 +962,8 @@ class OperatingRoomSlipForm extends Component {
         anes_used: this.state.anes_used,
         anes_quantity: this.state.anes_quantity,
         anes_quantity_unit: this.state.anes_quantity_unit,
-        anes_route: this.state.anes_route
-      }
+        anes_route: this.state.anes_route,
+      },
     ];
 
     this.setState({
@@ -1076,11 +971,11 @@ class OperatingRoomSlipForm extends Component {
       anes_used: "",
       anes_quantity: "",
       anes_quantity_unit: "",
-      anes_route: ""
+      anes_route: "",
     });
   };
 
-  onAddAnestheticSurgMemo = i => {
+  onAddAnestheticSurgMemo = (i) => {
     const surgical_memos = [...this.state.surgical_memos];
 
     const surgical_memo = surgical_memos[i];
@@ -1093,31 +988,31 @@ class OperatingRoomSlipForm extends Component {
           anes_used: surgical_memo.anes_used,
           anes_quantity: surgical_memo.anes_quantity,
           anes_quantity_unit: surgical_memo.anes_quantity_unit,
-          anes_route: surgical_memo.anes_route
-        }
+          anes_route: surgical_memo.anes_route,
+        },
       ],
       anes_used: "",
       anes_quantity: "",
       anes_quantity_unit: "",
-      anes_route: ""
+      anes_route: "",
     };
 
     this.setState({ surgical_memos });
   };
 
-  onDeleteAnesthetics = index => {
+  onDeleteAnesthetics = (index) => {
     const anesthetics = [...this.state.anesthetics];
     anesthetics.splice(index, 1);
     this.setState({
-      anesthetics
+      anesthetics,
     });
   };
 
-  onDeleteOtherSurgeon = index => {
+  onDeleteOtherSurgeon = (index) => {
     const other_surgeons = [...this.state.other_surgeons];
     other_surgeons.splice(index, 1);
     this.setState({
-      other_surgeons
+      other_surgeons,
     });
   };
 
@@ -1128,11 +1023,11 @@ class OperatingRoomSlipForm extends Component {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      other_surgeons
+      other_surgeons,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
@@ -1143,11 +1038,11 @@ class OperatingRoomSlipForm extends Component {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      anesthetics
+      anesthetics,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
@@ -1158,61 +1053,61 @@ class OperatingRoomSlipForm extends Component {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      anesthetics
+      anesthetics,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
-  onDeleteOtherAnes = index => {
+  onDeleteOtherAnes = (index) => {
     const other_anes = [...this.state.other_anes];
     other_anes.splice(index, 1);
     this.setState({
-      other_anes
+      other_anes,
     });
   };
 
-  onDeleteOtherInstNurse = index => {
+  onDeleteOtherInstNurse = (index) => {
     const other_inst_nurses = [...this.state.other_inst_nurses];
     other_inst_nurses.splice(index, 1);
     this.setState({
-      other_inst_nurses
+      other_inst_nurses,
     });
   };
 
   onDeleteOtherInstNurseSurgMemo = (index, i) => {
     const other_inst_nurses = [
-      ...this.state.surgical_memos[i].other_inst_nurses
+      ...this.state.surgical_memos[i].other_inst_nurses,
     ];
     other_inst_nurses.splice(index, 1);
 
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      other_inst_nurses
+      other_inst_nurses,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
   onDeleteOtherSpongeNurseSurgMemo = (index, i) => {
     const other_sponge_nurses = [
-      ...this.state.surgical_memos[i].other_sponge_nurses
+      ...this.state.surgical_memos[i].other_sponge_nurses,
     ];
     other_sponge_nurses.splice(index, 1);
 
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      other_sponge_nurses
+      other_sponge_nurses,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
@@ -1223,27 +1118,27 @@ class OperatingRoomSlipForm extends Component {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      other_anes
+      other_anes,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
-  onDeleteOtherSpongeNurse = index => {
+  onDeleteOtherSpongeNurse = (index) => {
     const other_sponge_nurses = [...this.state.other_sponge_nurses];
     other_sponge_nurses.splice(index, 1);
     this.setState({
-      other_sponge_nurses
+      other_sponge_nurses,
     });
   };
 
-  onDeleteAnesMethod = index => {
+  onDeleteAnesMethod = (index) => {
     const anes_methods = [...this.state.anes_methods];
     anes_methods.splice(index, 1);
     this.setState({
-      anes_methods
+      anes_methods,
     });
   };
 
@@ -1254,15 +1149,15 @@ class OperatingRoomSlipForm extends Component {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos[i] = {
       ...surgical_memos[i],
-      anes_methods
+      anes_methods,
     };
 
     this.setState({
-      surgical_memos
+      surgical_memos,
     });
   };
 
-  onChangeDateOfBirth = date_of_birth => {
+  onChangeDateOfBirth = (date_of_birth) => {
     let now = moment();
 
     const dob = date_of_birth.clone();
@@ -1278,30 +1173,32 @@ class OperatingRoomSlipForm extends Component {
 
     this.setState({
       age,
-      date_of_birth
+      date_of_birth,
     });
   };
 
-  onSearchPatient = search_text => {
+  onSearchPatient = (search_text) => {
     const form_data = {
-      search_text
+      search_text,
     };
 
     axios
       .post("/api/operating-room-slips/patients", form_data)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            patients: response.data
-          }
+            patients: response.data,
+          },
         })
       )
-      .catch(err => message.error("There was an error connecting to Bizbox"));
+      .catch((err) => message.error("There was an error connecting to Bizbox"));
   };
 
-  onSelectPatient = name => {
-    const patient = this.state.options.patients.find(o => o.fullname === name);
+  onSelectPatient = (name) => {
+    const patient = this.state.options.patients.find(
+      (o) => o.fullname === name
+    );
 
     if (patient) {
       const hospital_number = patient.abbrev;
@@ -1345,14 +1242,14 @@ class OperatingRoomSlipForm extends Component {
         /* weight_unit, */
         age,
         date_of_birth: moment(patient.birthdate),
-        classification
+        classification,
       });
     }
   };
 
-  onChangePage = current_page => {
+  onChangePage = (current_page) => {
     this.setState({
-      current_page
+      current_page,
     });
   };
 
@@ -1363,23 +1260,23 @@ class OperatingRoomSlipForm extends Component {
       onOk: () => {
         const form_data = {
           items: this.state.selected_row_keys,
-          search_keyword: this.state.search_keyword
+          search_keyword: this.state.search_keyword,
         };
 
         const loading = message.loading("Processing...");
         axios
           .delete(`/api/operating-room-slips/selection`, {
-            data: form_data
+            data: form_data,
           })
-          .then(response => {
+          .then((response) => {
             loading();
             message.success("Items Deleted");
             this.searchRecords();
             this.setState({
-              selected_row_keys: []
+              selected_row_keys: [],
             });
           })
-          .catch(err => {
+          .catch((err) => {
             loading();
             message.error("There was an error processing your request.");
           });
@@ -1388,7 +1285,7 @@ class OperatingRoomSlipForm extends Component {
         console.log("Cancel");
       },
       okText: "Delete",
-      okType: "danger"
+      okType: "danger",
     });
   };
 
@@ -1400,7 +1297,7 @@ class OperatingRoomSlipForm extends Component {
       search_procedure,
       search_classification,
       search_main_anes,
-      search_service
+      search_service,
     } = this.state;
 
     const form_data = {
@@ -1410,15 +1307,15 @@ class OperatingRoomSlipForm extends Component {
       search_procedure,
       search_classification,
       search_main_anes,
-      search_service
+      search_service,
     };
 
     axios
       .post("/api/operating-room-slips/advanced-search", form_data)
-      .then(response => {
+      .then((response) => {
         if (response.data.length > 0) {
           this.setState({
-            [collection_name]: response.data
+            [collection_name]: response.data,
           });
         } else {
           message.info("No records were found");
@@ -1432,31 +1329,31 @@ class OperatingRoomSlipForm extends Component {
     this.setState({ surgical_memos });
   };
 
-  onDeleteSurgicalMemo = i => {
+  onDeleteSurgicalMemo = (i) => {
     const surgical_memos = [...this.state.surgical_memos];
     surgical_memos.splice(i, 1);
     this.setState({ surgical_memos });
   };
 
-  onOptechSelectionSearch = value => {
+  onOptechSelectionSearch = (value) => {
     const form_data = {
       service: this.state.service,
-      keyword: value
+      keyword: value,
     };
 
     axios
       .post(`/api/optech-selections/selections`, form_data)
-      .then(response => {
+      .then((response) => {
         if (response.data) {
           this.setState({
             options: {
               ...this.state.options,
-              optech: [...response.data]
-            }
+              optech: [...response.data],
+            },
           });
         }
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onAddOptech = () => {
@@ -1464,8 +1361,8 @@ class OperatingRoomSlipForm extends Component {
       ...this.state.optech_others,
       {
         optech: null,
-        optech_content: null
-      }
+        optech_content: null,
+      },
     ];
 
     this.setState({ optech_others });
@@ -1475,24 +1372,27 @@ class OperatingRoomSlipForm extends Component {
     const is_admin =
       this.props.auth.user && this.props.auth.user.role === USER_ADMIN;
 
+    const is_ward =
+      this.props.auth.user && this.props.auth.user.role === USER_WARD;
+
     const rowSelection = {
       onChange: (selected_row_keys, selected_rows) => {
         this.setState({ selected_row_keys });
-      }
+      },
     };
 
     const rvs_column = [
       {
         title: "Operation Performed Code",
-        dataIndex: "rvs_code"
+        dataIndex: "rvs_code",
       },
       {
         title: "Operation Performed Description",
-        dataIndex: "rvs_description"
+        dataIndex: "rvs_description",
       },
       {
         title: "Laterality",
-        dataIndex: "rvs_laterality"
+        dataIndex: "rvs_laterality",
       },
       {
         title: "",
@@ -1507,26 +1407,26 @@ class OperatingRoomSlipForm extends Component {
               onClick={() => this.onDeleteRvs(index)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const anesthetics_column = [
       {
         title: "Used",
-        dataIndex: "anes_used"
+        dataIndex: "anes_used",
       },
       {
         title: "Qty",
-        dataIndex: "anes_quantity"
+        dataIndex: "anes_quantity",
       },
       {
         title: "Unit",
-        dataIndex: "anes_quantity_unit"
+        dataIndex: "anes_quantity_unit",
       },
       {
         title: "Route",
-        dataIndex: "anes_route"
+        dataIndex: "anes_route",
       },
       {
         title: "",
@@ -1541,14 +1441,14 @@ class OperatingRoomSlipForm extends Component {
               onClick={() => this.onDeleteAnesthetics(index)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const anes_methods_column = [
       {
         title: "Method",
-        dataIndex: "method"
+        dataIndex: "method",
       },
       {
         title: "",
@@ -1563,14 +1463,14 @@ class OperatingRoomSlipForm extends Component {
               onClick={() => this.onDeleteAnesMethod(index)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const other_inst_nurses_column = [
       {
         title: "Other Inst Nurse",
-        dataIndex: "full_name"
+        dataIndex: "full_name",
       },
       {
         title: "",
@@ -1585,14 +1485,14 @@ class OperatingRoomSlipForm extends Component {
               onClick={() => this.onDeleteOtherInstNurse(index)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const other_sponge_nurses_column = [
       {
         title: "Other Sponge Nurse",
-        dataIndex: "full_name"
+        dataIndex: "full_name",
       },
       {
         title: "",
@@ -1607,14 +1507,14 @@ class OperatingRoomSlipForm extends Component {
               onClick={() => this.onDeleteOtherSpongeNurse(index)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const other_surgeons_column = [
       {
         title: "Other Surgeon",
-        dataIndex: "full_name"
+        dataIndex: "full_name",
       },
       {
         title: "",
@@ -1629,14 +1529,14 @@ class OperatingRoomSlipForm extends Component {
               onClick={() => this.onDeleteOtherSurgeon(index)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const other_anes_column = [
       {
         title: "Other Anesthesiologist",
-        dataIndex: "full_name"
+        dataIndex: "full_name",
       },
       {
         title: "",
@@ -1651,76 +1551,76 @@ class OperatingRoomSlipForm extends Component {
               onClick={() => this.onDeleteOtherAnes(index)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const records_column = [
       {
         title: "Hospital #",
-        dataIndex: "hospital_number"
+        dataIndex: "hospital_number",
       },
       {
         title: "Ward",
-        dataIndex: "ward"
+        dataIndex: "ward",
       },
       {
         title: "Patient Name",
-        dataIndex: "name"
+        dataIndex: "name",
       },
       {
         title: "Age",
-        dataIndex: "age"
+        dataIndex: "age",
       },
       {
         title: "Sex",
-        dataIndex: "sex"
+        dataIndex: "sex",
       },
       {
         title: "Diagnosis",
-        dataIndex: "diagnosis"
+        dataIndex: "diagnosis",
       },
       {
         title: "Procedure",
-        dataIndex: "procedure"
+        dataIndex: "procedure",
       },
       {
         title: "Surgeon",
-        dataIndex: "surgeon.full_name"
+        dataIndex: "surgeon.full_name",
       },
       {
         title: "Anesthesiologist",
-        dataIndex: "main_anes.full_name"
+        dataIndex: "main_anes.full_name",
       },
       {
         title: "OR Room",
-        dataIndex: "operating_room_number"
+        dataIndex: "operating_room_number",
       },
       {
         title: "Service",
-        dataIndex: "service"
+        dataIndex: "service",
       },
       {
         title: "Surgery Date",
         dataIndex: "date_time_of_surgery",
-        render: value => (
+        render: (value) => (
           <span>{value && moment(value).format("MM/DD/YYYY")}</span>
-        )
+        ),
       },
       {
         title: "OR Ended",
         dataIndex: "or_ended",
-        render: value => (
+        render: (value) => (
           <span>{value && moment(value).format("MM/DD/YYYY hh:mm A")}</span>
-        )
+        ),
       },
       {
         title: "Classification",
-        dataIndex: "classification"
+        dataIndex: "classification",
       },
       {
         title: "Status",
-        dataIndex: "operation_status"
+        dataIndex: "operation_status",
       },
       {
         title: "Case",
@@ -1745,18 +1645,18 @@ class OperatingRoomSlipForm extends Component {
                 height: "100%",
                 padding: "3px",
                 textAlign: "center",
-                fontWeight: "bold"
+                fontWeight: "bold",
               }}
               className={classnames("case", {
                 "is-emergency": value === EMERGENCY_PROCEDURE,
                 elective: value === ELECTIVE_SURGERY,
-                "is-backlog": is_backlog && record.operation_status !== CANCEL
+                "is-backlog": is_backlog && record.operation_status !== CANCEL,
               })}
             >
               {value}
             </div>
           );
-        }
+        },
       },
       {
         title: "",
@@ -1771,15 +1671,17 @@ class OperatingRoomSlipForm extends Component {
               onClick={() => this.edit(record)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const { errors } = this.state;
 
-    const rvs_desc_data_source = this.state.options.rvs.map(o => o.description);
+    const rvs_desc_data_source = this.state.options.rvs.map(
+      (o) => o.description
+    );
 
-    const patients = this.state.options.patients.map(o => o.fullname);
+    const patients = this.state.options.patients.map((o) => o.fullname);
 
     return (
       <Content className="content">
@@ -1790,6 +1692,7 @@ class OperatingRoomSlipForm extends Component {
               <Breadcrumb.Item>Operating Room Slip</Breadcrumb.Item>
             </Breadcrumb>
           </div>
+
           <div className="column">
             <Searchbar
               name="search_keyword"
@@ -1797,158 +1700,163 @@ class OperatingRoomSlipForm extends Component {
               onChange={this.onChange}
               value={this.state.search_keyword}
               onNew={this.addNew}
+              searchBarVisibility={!is_ward}
             />
           </div>
         </div>
 
-        <Row>
-          <Col span={24} className="m-b-1">
-            <Collapse>
-              <Panel header="Advance Search">
-                <PageHeader
-                  backIcon={false}
-                  style={{
-                    border: "1px solid rgb(235, 237, 240)"
-                  }}
-                  onBack={() => null}
-                  title="Advance Filter"
-                  subTitle="Enter appropriate data to filter records"
-                >
-                  <div className="or-slip-form">
-                    <Row>
-                      <Col span={8}>
-                        <RangeDatePickerFieldGroup
-                          label="Date of Surgery"
-                          name="period_covered"
-                          value={this.state.search_period_covered}
-                          onChange={dates =>
-                            this.setState({ search_period_covered: dates })
-                          }
-                          error={errors.period_covered}
-                          formItemLayout={smallFormItemLayout}
-                        />
-                      </Col>
-                      <Col span={8}>
-                        <SimpleSelectFieldGroup
-                          label="OR Number"
-                          name="search_operating_room_number"
-                          value={this.state.search_operating_room_number}
-                          onChange={value =>
-                            this.setState({
-                              search_operating_room_number: value
-                            })
-                          }
-                          formItemLayout={smallFormItemLayout}
-                          error={errors.operating_room_number}
-                          options={operating_room_number_options}
-                        />
-                      </Col>
-                      <Col span={8}>
-                        <SelectFieldGroup
-                          label="Surgeon"
-                          name="search_surgeon"
-                          value={
-                            this.state.search_surgeon &&
-                            this.state.search_surgeon.full_name
-                          }
-                          onChange={index =>
-                            this.setState({
-                              search_surgeon: this.state.options.surgeons[index]
-                            })
-                          }
-                          onSearch={this.onSurgeonSearch}
-                          error={errors.search_surgeon}
-                          formItemLayout={smallFormItemLayout}
-                          data={this.state.options.surgeons}
-                          column="full_name"
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col span={8}>
-                        <TextFieldGroup
-                          label="Procedure"
-                          name="search_procedure"
-                          value={this.state.search_procedure}
-                          error={errors.search_procedure}
-                          formItemLayout={smallFormItemLayout}
-                          onChange={this.onChange}
-                        />
-                      </Col>
-                      <Col span={8}>
-                        <RadioGroupFieldGroup
-                          label="Classification"
-                          name="search_classification"
-                          value={this.state.search_classification}
-                          onChange={this.onChange}
-                          error={errors.search_classification}
-                          formItemLayout={smallFormItemLayout}
-                          options={["All", ...classification_options]}
-                        />
-                      </Col>
-                      <Col span={8}>
-                        <SelectFieldGroup
-                          label="Main Anes"
-                          name="search_main_anes"
-                          value={
-                            this.state.search_main_anes &&
-                            this.state.search_main_anes.full_name
-                          }
-                          onChange={index =>
-                            this.setState({
-                              search_main_anes: this.state.options
-                                .anesthesiologists[index]
-                            })
-                          }
-                          onSearch={this.onAnesSearch}
-                          error={errors.search_main_anes}
-                          formItemLayout={smallFormItemLayout}
-                          data={this.state.options.anesthesiologists}
-                          column="full_name"
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col span={8}>
-                        <SimpleSelectFieldGroup
-                          label="Service"
-                          name="search_service"
-                          value={this.state.search_service}
-                          onChange={value =>
-                            this.setState({ search_service: value })
-                          }
-                          formItemLayout={smallFormItemLayout}
-                          error={errors.search_service}
-                          options={service_options}
-                        />
-                      </Col>
-                      <Col span={8} />
-                      <Col span={8} />
-                    </Row>
-                    <Row>
-                      <Col span={8}>
-                        <Row>
-                          <Col offset={8} span={12}>
-                            <Button
-                              type="info"
-                              size="small"
-                              icon="search"
-                              onClick={() => this.onAdvancedSearch()}
-                            >
-                              Search
-                            </Button>
-                          </Col>
-                        </Row>
-                      </Col>
-                      <Col span={8}></Col>
-                      <Col span={8}></Col>
-                    </Row>
-                  </div>
-                </PageHeader>
-              </Panel>
-            </Collapse>
-          </Col>
-        </Row>
+        {!is_ward && (
+          <Row>
+            <Col span={24} className="m-b-1">
+              <Collapse>
+                <Panel header="Advance Search">
+                  <PageHeader
+                    backIcon={false}
+                    style={{
+                      border: "1px solid rgb(235, 237, 240)",
+                    }}
+                    onBack={() => null}
+                    title="Advance Filter"
+                    subTitle="Enter appropriate data to filter records"
+                  >
+                    <div className="or-slip-form">
+                      <Row>
+                        <Col span={8}>
+                          <RangeDatePickerFieldGroup
+                            label="Date of Surgery"
+                            name="period_covered"
+                            value={this.state.search_period_covered}
+                            onChange={(dates) =>
+                              this.setState({ search_period_covered: dates })
+                            }
+                            error={errors.period_covered}
+                            formItemLayout={smallFormItemLayout}
+                          />
+                        </Col>
+                        <Col span={8}>
+                          <SimpleSelectFieldGroup
+                            label="OR Number"
+                            name="search_operating_room_number"
+                            value={this.state.search_operating_room_number}
+                            onChange={(value) =>
+                              this.setState({
+                                search_operating_room_number: value,
+                              })
+                            }
+                            formItemLayout={smallFormItemLayout}
+                            error={errors.operating_room_number}
+                            options={operating_room_number_options}
+                          />
+                        </Col>
+                        <Col span={8}>
+                          <SelectFieldGroup
+                            label="Surgeon"
+                            name="search_surgeon"
+                            value={
+                              this.state.search_surgeon &&
+                              this.state.search_surgeon.full_name
+                            }
+                            onChange={(index) =>
+                              this.setState({
+                                search_surgeon: this.state.options.surgeons[
+                                  index
+                                ],
+                              })
+                            }
+                            onSearch={this.onSurgeonSearch}
+                            error={errors.search_surgeon}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.surgeons}
+                            column="full_name"
+                          />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={8}>
+                          <TextFieldGroup
+                            label="Procedure"
+                            name="search_procedure"
+                            value={this.state.search_procedure}
+                            error={errors.search_procedure}
+                            formItemLayout={smallFormItemLayout}
+                            onChange={this.onChange}
+                          />
+                        </Col>
+                        <Col span={8}>
+                          <RadioGroupFieldGroup
+                            label="Classification"
+                            name="search_classification"
+                            value={this.state.search_classification}
+                            onChange={this.onChange}
+                            error={errors.search_classification}
+                            formItemLayout={smallFormItemLayout}
+                            options={["All", ...classification_options]}
+                          />
+                        </Col>
+                        <Col span={8}>
+                          <SelectFieldGroup
+                            label="Main Anes"
+                            name="search_main_anes"
+                            value={
+                              this.state.search_main_anes &&
+                              this.state.search_main_anes.full_name
+                            }
+                            onChange={(index) =>
+                              this.setState({
+                                search_main_anes: this.state.options
+                                  .anesthesiologists[index],
+                              })
+                            }
+                            onSearch={this.onAnesSearch}
+                            error={errors.search_main_anes}
+                            formItemLayout={smallFormItemLayout}
+                            data={this.state.options.anesthesiologists}
+                            column="full_name"
+                          />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={8}>
+                          <SimpleSelectFieldGroup
+                            label="Service"
+                            name="search_service"
+                            value={this.state.search_service}
+                            onChange={(value) =>
+                              this.setState({ search_service: value })
+                            }
+                            formItemLayout={smallFormItemLayout}
+                            error={errors.search_service}
+                            options={service_options}
+                          />
+                        </Col>
+                        <Col span={8} />
+                        <Col span={8} />
+                      </Row>
+                      <Row>
+                        <Col span={8}>
+                          <Row>
+                            <Col offset={8} span={12}>
+                              <Button
+                                type="info"
+                                size="small"
+                                icon="search"
+                                onClick={() => this.onAdvancedSearch()}
+                              >
+                                Search
+                              </Button>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col span={8}></Col>
+                        <Col span={8}></Col>
+                      </Row>
+                    </div>
+                  </PageHeader>
+                </Panel>
+              </Collapse>
+            </Col>
+          </Row>
+        )}
 
         <div style={{ background: "#fff", padding: 24, minHeight: 280 }}>
           <span className="is-size-6">{this.state.title}</span> <hr />
@@ -1957,19 +1865,19 @@ class OperatingRoomSlipForm extends Component {
             <Tabs type="card">
               <TabPane tab="Operating Complex Receiving" key="1">
                 <Form
-                  onSubmit={e => this.onSubmit(e, { form: RECEIVING_MODULE })}
+                  onSubmit={(e) => this.onSubmit(e, { form: RECEIVING_MODULE })}
                   className="tab-content or-slip-form"
                 >
                   <Divider orientation="left">Patient Information</Divider>
 
-                  <Row className>
+                  <Row>
                     <Col span={12}>
                       <TextFieldAutocompleteGroup
                         label="Name"
                         value={this.state.name}
                         dataSource={patients}
                         onSelect={this.onSelectPatient}
-                        onChange={value => this.setState({ name: value })}
+                        onChange={(value) => this.setState({ name: value })}
                         onSearch={this.onSearchPatient}
                         formItemLayout={smallFormItemLayout}
                         error={errors.name}
@@ -2031,7 +1939,7 @@ class OperatingRoomSlipForm extends Component {
                             <Select
                               value={this.state.weight_unit}
                               name="weight_unit"
-                              onChange={value =>
+                              onChange={(value) =>
                                 this.setState({ weight_unit: value })
                               }
                             >
@@ -2059,7 +1967,7 @@ class OperatingRoomSlipForm extends Component {
                         label="Registration Date"
                         name="registration_date"
                         value={this.state.registration_date}
-                        onChange={value =>
+                        onChange={(value) =>
                           this.setState({ registration_date: value })
                         }
                         error={errors.registration_date}
@@ -2088,7 +1996,7 @@ class OperatingRoomSlipForm extends Component {
                         label="Service"
                         name="service"
                         value={this.state.service}
-                        onChange={value => this.setState({ service: value })}
+                        onChange={(value) => this.setState({ service: value })}
                         formItemLayout={smallFormItemLayout}
                         error={errors.service}
                         options={service_options}
@@ -2146,7 +2054,7 @@ class OperatingRoomSlipForm extends Component {
                         value={
                           this.state.surgeon && this.state.surgeon.full_name
                         }
-                        onChange={index =>
+                        onChange={(index) =>
                           this.onSurgeonChange(index, "surgeon")
                         }
                         onSearch={this.onSurgeonSearch}
@@ -2160,7 +2068,7 @@ class OperatingRoomSlipForm extends Component {
                         label="Date/Time Ordered"
                         name="date_time_ordered"
                         value={this.state.date_time_ordered}
-                        onChange={value =>
+                        onChange={(value) =>
                           this.setState({ date_time_ordered: value })
                         }
                         error={errors.date_time_ordered}
@@ -2174,7 +2082,7 @@ class OperatingRoomSlipForm extends Component {
                         label="Date/Time Received"
                         name="date_time_received"
                         value={this.state.date_time_received}
-                        onChange={value =>
+                        onChange={(value) =>
                           this.setState({ date_time_received: value })
                         }
                         error={errors.date_time_received}
@@ -2196,7 +2104,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Date/Time of Surgery"
                           name="date_time_of_surgery"
                           value={this.state.date_time_of_surgery}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ date_time_of_surgery: value })
                           }
                           error={errors.date_time_of_surgery}
@@ -2207,7 +2115,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Date/Time of Surgery"
                           name="date_time_of_surgery"
                           value={this.state.date_time_of_surgery}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ date_time_of_surgery: value })
                           }
                           error={errors.date_time_of_surgery}
@@ -2220,7 +2128,9 @@ class OperatingRoomSlipForm extends Component {
                         label="Case Order"
                         name="case_order"
                         value={this.state.case_order}
-                        onChange={value => this.setState({ case_order: value })}
+                        onChange={(value) =>
+                          this.setState({ case_order: value })
+                        }
                         formItemLayout={smallFormItemLayout}
                         error={errors.case_order}
                         options={case_order_options}
@@ -2233,7 +2143,7 @@ class OperatingRoomSlipForm extends Component {
                           this.state.received_by &&
                           this.state.received_by.full_name
                         }
-                        onChange={index =>
+                        onChange={(index) =>
                           this.onNurseChange(index, "received_by")
                         }
                         onSearch={this.onNurseSearch}
@@ -2247,7 +2157,7 @@ class OperatingRoomSlipForm extends Component {
                         label="Special Equipment Needed"
                         name="special_equipment_needed"
                         value={this.state.special_equipment_needed}
-                        onChange={value => {
+                        onChange={(value) => {
                           this.setState({ special_equipment_needed: value });
                         }}
                         error={errors.special_equipment_needed}
@@ -2270,7 +2180,7 @@ class OperatingRoomSlipForm extends Component {
                         label="Infectious Control Measures"
                         name="infectious_control_measures"
                         value={this.state.infectious_control_measures}
-                        onChange={value => {
+                        onChange={(value) => {
                           this.setState({ infectious_control_measures: value });
                         }}
                         error={errors.infectious_control_measures}
@@ -2322,7 +2232,7 @@ class OperatingRoomSlipForm extends Component {
               {this.props.auth.user.role !== USER_WARD && [
                 <TabPane tab="Pre Operation" key="2">
                   <Form
-                    onSubmit={e =>
+                    onSubmit={(e) =>
                       this.onSubmit(e, { form: PRE_OPERATION_MODULE })
                     }
                     className="tab-content or-slip-form"
@@ -2343,7 +2253,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Date of Birth"
                           name="date_of_birth"
                           value={this.state.date_of_birth}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ date_of_birth: value })
                           }
                           error={errors.date_of_birth}
@@ -2390,7 +2300,7 @@ class OperatingRoomSlipForm extends Component {
                             <Select
                               value={this.state.weight_unit}
                               name="weight_unit"
-                              onChange={value =>
+                              onChange={(value) =>
                                 this.setState({ weight_unit: value })
                               }
                               disabled
@@ -2419,7 +2329,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Registration Date"
                           name="registration_date"
                           value={this.state.registration_date}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ registration_date: value })
                           }
                           error={errors.registration_date}
@@ -2451,7 +2361,9 @@ class OperatingRoomSlipForm extends Component {
                           label="Service"
                           name="service"
                           value={this.state.service}
-                          onChange={value => this.setState({ service: value })}
+                          onChange={(value) =>
+                            this.setState({ service: value })
+                          }
                           formItemLayout={smallFormItemLayout}
                           error={errors.service}
                           options={service_options}
@@ -2500,7 +2412,7 @@ class OperatingRoomSlipForm extends Component {
                           value={
                             this.state.surgeon && this.state.surgeon.full_name
                           }
-                          onChange={index =>
+                          onChange={(index) =>
                             this.onSurgeonChange(index, "surgeon")
                           }
                           onSearch={this.onSurgeonSearch}
@@ -2525,7 +2437,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Status"
                           name="operation_status"
                           value={this.state.operation_status}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ operation_status: value })
                           }
                           formItemLayout={smallFormItemLayout}
@@ -2537,7 +2449,7 @@ class OperatingRoomSlipForm extends Component {
                           label="OR Number"
                           name="operating_room_number"
                           value={this.state.operating_room_number}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ operating_room_number: value })
                           }
                           formItemLayout={smallFormItemLayout}
@@ -2550,7 +2462,7 @@ class OperatingRoomSlipForm extends Component {
                             label="Bed No."
                             name="bed_number"
                             value={this.state.bed_number}
-                            onChange={value =>
+                            onChange={(value) =>
                               this.setState({ bed_number: value })
                             }
                             formItemLayout={smallFormItemLayout}
@@ -2610,7 +2522,7 @@ class OperatingRoomSlipForm extends Component {
                 </TabPane>,
                 <TabPane tab="Post Operation" key="3">
                   <Form
-                    onSubmit={e =>
+                    onSubmit={(e) =>
                       this.onSubmit(e, { form: POST_OPERATION_MODULE })
                     }
                     className="tab-content or-slip-form"
@@ -2632,7 +2544,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Date of Birth"
                           name="date_of_birth"
                           value={this.state.date_of_birth}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ date_of_birth: value })
                           }
                           error={errors.date_of_birth}
@@ -2680,7 +2592,7 @@ class OperatingRoomSlipForm extends Component {
                             <Select
                               value={this.state.weight_unit}
                               name="weight_unit"
-                              onChange={value =>
+                              onChange={(value) =>
                                 this.setState({ weight_unit: value })
                               }
                               disabled
@@ -2709,7 +2621,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Registration Date"
                           name="registration_date"
                           value={this.state.registration_date}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ registration_date: value })
                           }
                           error={errors.registration_date}
@@ -2741,7 +2653,9 @@ class OperatingRoomSlipForm extends Component {
                           label="Service"
                           name="service"
                           value={this.state.service}
-                          onChange={value => this.setState({ service: value })}
+                          onChange={(value) =>
+                            this.setState({ service: value })
+                          }
                           formItemLayout={smallFormItemLayout}
                           error={errors.service}
                           options={service_options}
@@ -2760,7 +2674,7 @@ class OperatingRoomSlipForm extends Component {
                           value={
                             this.state.surgeon && this.state.surgeon.full_name
                           }
-                          onChange={index =>
+                          onChange={(index) =>
                             this.onSurgeonChange(index, "surgeon")
                           }
                           onSearch={this.onSurgeonSearch}
@@ -2777,7 +2691,7 @@ class OperatingRoomSlipForm extends Component {
                             this.state.assistant_surgeon &&
                             this.state.assistant_surgeon.full_name
                           }
-                          onChange={index =>
+                          onChange={(index) =>
                             this.onSurgeonChange(index, "assistant_surgeon")
                           }
                           onSearch={this.onSurgeonSearch}
@@ -2797,7 +2711,7 @@ class OperatingRoomSlipForm extends Component {
                             this.state.other_surgeon &&
                             this.state.other_surgeon.full_name
                           }
-                          onChange={index =>
+                          onChange={(index) =>
                             this.onOtherSurgeonChange(index, "other_surgeon")
                           }
                           onSearch={this.onSurgeonSearch}
@@ -2813,7 +2727,7 @@ class OperatingRoomSlipForm extends Component {
                             this.state.instrument_nurse &&
                             this.state.instrument_nurse.full_name
                           }
-                          onChange={index =>
+                          onChange={(index) =>
                             this.onNurseChange(index, "instrument_nurse")
                           }
                           onSearch={this.onNurseSearch}
@@ -2827,7 +2741,7 @@ class OperatingRoomSlipForm extends Component {
                         <Table
                           dataSource={this.state.other_surgeons}
                           columns={other_surgeons_column}
-                          rowKey={record => record._id}
+                          rowKey={(record) => record._id}
                           locale={{ emptyText: "No Records Found" }}
                           pagination={false}
                         />
@@ -2842,7 +2756,7 @@ class OperatingRoomSlipForm extends Component {
                             this.state.other_inst_nurse &&
                             this.state.other_inst_nurse.full_name
                           }
-                          onChange={index =>
+                          onChange={(index) =>
                             this.onOtherInstNurseChange(
                               index,
                               "other_inst_nurse"
@@ -2859,7 +2773,7 @@ class OperatingRoomSlipForm extends Component {
                         <Table
                           dataSource={this.state.other_inst_nurses}
                           columns={other_inst_nurses_column}
-                          rowKey={record => record._id}
+                          rowKey={(record) => record._id}
                           locale={{ emptyText: "No Records Found" }}
                           pagination={false}
                         />
@@ -2874,7 +2788,7 @@ class OperatingRoomSlipForm extends Component {
                             this.state.sponge_nurse &&
                             this.state.sponge_nurse.full_name
                           }
-                          onChange={index =>
+                          onChange={(index) =>
                             this.onNurseChange(index, "sponge_nurse")
                           }
                           onSearch={this.onNurseSearch}
@@ -2894,7 +2808,7 @@ class OperatingRoomSlipForm extends Component {
                             this.state.other_sponge_nurse &&
                             this.state.other_sponge_nurse.full_name
                           }
-                          onChange={index =>
+                          onChange={(index) =>
                             this.onOtherSpongeNurseChange(
                               index,
                               "other_inst_nurse"
@@ -2911,7 +2825,7 @@ class OperatingRoomSlipForm extends Component {
                         <Table
                           dataSource={this.state.other_sponge_nurses}
                           columns={other_sponge_nurses_column}
-                          rowKey={record => record._id}
+                          rowKey={(record) => record._id}
                           locale={{ emptyText: "No Records Found" }}
                           pagination={false}
                         />
@@ -2964,7 +2878,7 @@ class OperatingRoomSlipForm extends Component {
                         <Table
                           dataSource={this.state.other_anes}
                           columns={other_anes_column}
-                          rowKey={record => record._id}
+                          rowKey={(record) => record._id}
                           locale={{ emptyText: "No Records Found" }}
                           pagination={false}
                         />
@@ -2976,19 +2890,19 @@ class OperatingRoomSlipForm extends Component {
                           label="Method"
                           name="anes_method"
                           value={this.state.anes_method}
-                          onChange={value => {
+                          onChange={(value) => {
                             if (value !== "Others") {
                               this.setState({
                                 anes_methods: [
                                   ...this.state.anes_methods,
                                   {
-                                    method: value
-                                  }
-                                ]
+                                    method: value,
+                                  },
+                                ],
                               });
                             } else {
                               this.setState({
-                                anes_method: value
+                                anes_method: value,
                               });
                             }
                           }}
@@ -3006,17 +2920,17 @@ class OperatingRoomSlipForm extends Component {
                             formItemLayout={smallFormItemLayout}
                             onChange={this.onChange}
                             extra="Press Enter to Add"
-                            onPressEnter={e => {
+                            onPressEnter={(e) => {
                               e.preventDefault();
                               this.setState({
                                 anes_methods: [
                                   ...this.state.anes_methods,
                                   {
-                                    method: this.state.anes_method_others
-                                  }
+                                    method: this.state.anes_method_others,
+                                  },
                                 ],
                                 anes_method_others: "",
-                                anes_method: ""
+                                anes_method: "",
                               });
                             }}
                           />
@@ -3026,7 +2940,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Anesthesia Started"
                           name="anes_start"
                           value={this.state.anes_start}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ anes_start: value })
                           }
                           error={errors.anes_start}
@@ -3038,10 +2952,10 @@ class OperatingRoomSlipForm extends Component {
                           label="Operation Started"
                           name="operation_started"
                           value={this.state.operation_started}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({
                               operation_started: value,
-                              time_or_started: value
+                              time_or_started: value,
                             })
                           }
                           error={errors.operation_started}
@@ -3053,10 +2967,10 @@ class OperatingRoomSlipForm extends Component {
                           label="Operation Finished"
                           name="operation_finished"
                           value={this.state.operation_finished}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({
                               operation_finished: value,
-                              or_ended: value
+                              or_ended: value,
                             })
                           }
                           error={errors.operation_finished}
@@ -3086,7 +3000,7 @@ class OperatingRoomSlipForm extends Component {
                         <Table
                           dataSource={this.state.anes_methods}
                           columns={anes_methods_column}
-                          rowKey={record => record._id}
+                          rowKey={(record) => record._id}
                           locale={{ emptyText: "No Records Found" }}
                           pagination={false}
                         />
@@ -3104,7 +3018,7 @@ class OperatingRoomSlipForm extends Component {
                           formItemLayout={smallFormItemLayout}
                           onChange={this.onChange}
                           inputRef={this.anes_used_input}
-                          onPressEnter={e => {
+                          onPressEnter={(e) => {
                             e.preventDefault();
                             this.anes_quantity_input.current.focus();
                           }}
@@ -3117,7 +3031,7 @@ class OperatingRoomSlipForm extends Component {
                           formItemLayout={smallFormItemLayout}
                           onChange={this.onChange}
                           inputRef={this.anes_quantity_input}
-                          onPressEnter={e => {
+                          onPressEnter={(e) => {
                             e.preventDefault();
                             this.anes_quantity_unit_input.current.focus();
                           }}
@@ -3127,7 +3041,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Unit"
                           name="anes_quantity_unit"
                           value={this.state.anes_quantity_unit}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ anes_quantity_unit: value })
                           }
                           formItemLayout={smallFormItemLayout}
@@ -3140,7 +3054,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Route"
                           name="anes_route"
                           value={this.state.anes_route}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ anes_route: value })
                           }
                           formItemLayout={smallFormItemLayout}
@@ -3168,7 +3082,7 @@ class OperatingRoomSlipForm extends Component {
                         <Table
                           dataSource={this.state.anesthetics}
                           columns={anesthetics_column}
-                          rowKey={record => record._id}
+                          rowKey={(record) => record._id}
                           locale={{ emptyText: "No Records Found" }}
                           pagination={false}
                         />
@@ -3195,7 +3109,7 @@ class OperatingRoomSlipForm extends Component {
                           error={errors.rvs_description}
                           formItemLayout={smallFormItemLayout}
                           rows="4"
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ rvs_description: value })
                           }
                           dataSource={rvs_desc_data_source}
@@ -3233,7 +3147,7 @@ class OperatingRoomSlipForm extends Component {
                         <Table
                           dataSource={this.state.rvs}
                           columns={rvs_column}
-                          rowKey={record => record._id}
+                          rowKey={(record) => record._id}
                           locale={{ emptyText: "No Records Found" }}
                           pagination={false}
                         />
@@ -3363,11 +3277,11 @@ class OperatingRoomSlipForm extends Component {
                           value={
                             this.state.optech && this.state.optech.description
                           }
-                          onChange={index => {
+                          onChange={(index) => {
                             if (index === undefined) {
                               this.setState({
                                 optech: null,
-                                optech_content: ""
+                                optech_content: "",
                               });
                             } else {
                               const optech_selection = this.state.options
@@ -3375,7 +3289,7 @@ class OperatingRoomSlipForm extends Component {
                               console.log(optech_selection.content);
                               this.setState({
                                 optech: this.state.options.optech[index],
-                                optech_content: optech_selection.content
+                                optech_content: optech_selection.content,
                               });
                             }
                           }}
@@ -3419,16 +3333,16 @@ class OperatingRoomSlipForm extends Component {
                             plugins: [
                               "advlist autolink lists link image charmap print preview anchor",
                               "searchreplace visualblocks code fullscreen",
-                              "insertdatetime media table paste code help wordcount"
+                              "insertdatetime media table paste code help wordcount",
                             ],
                             toolbar:
                               "undo redo | formatselect | bold italic backcolor | \
              alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help"
+             bullist numlist outdent indent | removeformat | help",
                           }}
                           onEditorChange={(content, editor) => {
                             this.setState({
-                              optech_content: content
+                              optech_content: content,
                             });
                           }}
                           value={this.state.optech_content}
@@ -3444,37 +3358,37 @@ class OperatingRoomSlipForm extends Component {
                             label="Operative Technique"
                             name="optech"
                             value={o.optech && o.optech.description}
-                            onChange={index => {
+                            onChange={(index) => {
                               if (index === undefined) {
                                 const optech_others = [
-                                  ...this.state.optech_others
+                                  ...this.state.optech_others,
                                 ];
 
                                 optech_others[optech_index] = {
                                   ...optech_others[optech_index],
                                   optech: null,
-                                  optech_content: ""
+                                  optech_content: "",
                                 };
 
                                 this.setState({
-                                  optech_others
+                                  optech_others,
                                 });
                               } else {
                                 const optech_selection = this.state.options
                                   .optech[index];
 
                                 const optech_others = [
-                                  ...this.state.optech_others
+                                  ...this.state.optech_others,
                                 ];
 
                                 optech_others[optech_index] = {
                                   ...optech_others[optech_index],
                                   optech: this.state.options.optech[index],
-                                  optech_content: optech_selection.content
+                                  optech_content: optech_selection.content,
                                 };
 
                                 this.setState({
-                                  optech_others
+                                  optech_others,
                                 });
                               }
                             }}
@@ -3509,7 +3423,7 @@ class OperatingRoomSlipForm extends Component {
                                   title="Are you sure to delete this item?"
                                   onConfirm={() => {
                                     const optech_others = [
-                                      ...this.state.optech_others
+                                      ...this.state.optech_others,
                                     ];
                                     optech_others.splice(optech_index, 1);
                                     this.setState({ optech_others });
@@ -3522,7 +3436,7 @@ class OperatingRoomSlipForm extends Component {
                                     </span>
                                   </a>
                                 </Popconfirm>
-                              </div>
+                              </div>,
                             ]}
                         </Col>
                       </Row>,
@@ -3538,27 +3452,27 @@ class OperatingRoomSlipForm extends Component {
                               plugins: [
                                 "advlist autolink lists link image charmap print preview anchor",
                                 "searchreplace visualblocks code fullscreen",
-                                "insertdatetime media table paste code help wordcount"
+                                "insertdatetime media table paste code help wordcount",
                               ],
                               toolbar:
                                 "undo redo | formatselect | bold italic backcolor | \
              alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help"
+             bullist numlist outdent indent | removeformat | help",
                             }}
                             onEditorChange={(content, editor) => {
                               const optech_others = [
-                                ...this.state.optech_others
+                                ...this.state.optech_others,
                               ];
 
                               optech_others[optech_index] = {
                                 ...optech_others[optech_index],
-                                optech_content: content
+                                optech_content: content,
                               };
                             }}
                             value={o.optech_content}
                           />
                         </Col>
-                      </Row>
+                      </Row>,
                     ])}
 
                     <Row>
@@ -3633,7 +3547,7 @@ class OperatingRoomSlipForm extends Component {
                                     <i className="fas fa-times" />
                                   </span>
                                 </Popconfirm>
-                              )
+                              ),
                             ]}
                           </div>
                         </Form.Item>
@@ -3646,7 +3560,7 @@ class OperatingRoomSlipForm extends Component {
                   const other_surgeons_column = [
                     {
                       title: "Other Surgeon",
-                      dataIndex: "full_name"
+                      dataIndex: "full_name",
                     },
                     {
                       title: "",
@@ -3666,14 +3580,14 @@ class OperatingRoomSlipForm extends Component {
                             }
                           />
                         </span>
-                      )
-                    }
+                      ),
+                    },
                   ];
 
                   const other_inst_nurses_column = [
                     {
                       title: "Other Inst Nurse",
-                      dataIndex: "full_name"
+                      dataIndex: "full_name",
                     },
                     {
                       title: "",
@@ -3693,14 +3607,14 @@ class OperatingRoomSlipForm extends Component {
                             }
                           />
                         </span>
-                      )
-                    }
+                      ),
+                    },
                   ];
 
                   const other_sponge_nurses_column = [
                     {
                       title: "Other Sponge Nurse",
-                      dataIndex: "full_name"
+                      dataIndex: "full_name",
                     },
                     {
                       title: "",
@@ -3720,14 +3634,14 @@ class OperatingRoomSlipForm extends Component {
                             }
                           />
                         </span>
-                      )
-                    }
+                      ),
+                    },
                   ];
 
                   const other_anes_column = [
                     {
                       title: "Other Anesthesiologist",
-                      dataIndex: "full_name"
+                      dataIndex: "full_name",
                     },
                     {
                       title: "",
@@ -3747,14 +3661,14 @@ class OperatingRoomSlipForm extends Component {
                             }
                           />
                         </span>
-                      )
-                    }
+                      ),
+                    },
                   ];
 
                   const anes_methods_column = [
                     {
                       title: "Method",
-                      dataIndex: "method"
+                      dataIndex: "method",
                     },
                     {
                       title: "",
@@ -3774,26 +3688,26 @@ class OperatingRoomSlipForm extends Component {
                             }
                           />
                         </span>
-                      )
-                    }
+                      ),
+                    },
                   ];
 
                   const anesthetics_column = [
                     {
                       title: "Used",
-                      dataIndex: "anes_used"
+                      dataIndex: "anes_used",
                     },
                     {
                       title: "Qty",
-                      dataIndex: "anes_quantity"
+                      dataIndex: "anes_quantity",
                     },
                     {
                       title: "Unit",
-                      dataIndex: "anes_quantity_unit"
+                      dataIndex: "anes_quantity_unit",
                     },
                     {
                       title: "Route",
-                      dataIndex: "anes_route"
+                      dataIndex: "anes_route",
                     },
                     {
                       title: "",
@@ -3813,22 +3727,22 @@ class OperatingRoomSlipForm extends Component {
                             }
                           />
                         </span>
-                      )
-                    }
+                      ),
+                    },
                   ];
 
                   const rvs_column = [
                     {
                       title: "Operation Performed Code",
-                      dataIndex: "rvs_code"
+                      dataIndex: "rvs_code",
                     },
                     {
                       title: "Operation Performed Description",
-                      dataIndex: "rvs_description"
+                      dataIndex: "rvs_description",
                     },
                     {
                       title: "Laterality",
-                      dataIndex: "rvs_laterality"
+                      dataIndex: "rvs_laterality",
                     },
                     {
                       title: "",
@@ -3845,8 +3759,8 @@ class OperatingRoomSlipForm extends Component {
                             }
                           />
                         </span>
-                      )
-                    }
+                      ),
+                    },
                   ];
 
                   return (
@@ -3855,7 +3769,7 @@ class OperatingRoomSlipForm extends Component {
                       key={`p${surg_memo_index}`}
                     >
                       <Form
-                        onSubmit={e =>
+                        onSubmit={(e) =>
                           this.onSubmit(e, { form: POST_OPERATION_MODULE })
                         }
                         className="tab-content or-slip-form"
@@ -3879,7 +3793,7 @@ class OperatingRoomSlipForm extends Component {
                               label="Date of Birth"
                               name="date_of_birth"
                               value={this.state.date_of_birth}
-                              onChange={value =>
+                              onChange={(value) =>
                                 this.setState({ date_of_birth: value })
                               }
                               error={errors.date_of_birth}
@@ -3927,7 +3841,7 @@ class OperatingRoomSlipForm extends Component {
                                 <Select
                                   value={this.state.weight_unit}
                                   name="weight_unit"
-                                  onChange={value =>
+                                  onChange={(value) =>
                                     this.setState({ weight_unit: value })
                                   }
                                   disabled
@@ -3956,7 +3870,7 @@ class OperatingRoomSlipForm extends Component {
                               label="Registration Date"
                               name="registration_date"
                               value={this.state.registration_date}
-                              onChange={value =>
+                              onChange={(value) =>
                                 this.setState({ registration_date: value })
                               }
                               error={errors.registration_date}
@@ -3988,13 +3902,13 @@ class OperatingRoomSlipForm extends Component {
                               label="Service"
                               name="service"
                               value={o.service}
-                              onChange={value => {
+                              onChange={(value) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
                                 surgical_memos[surg_memo_index] = {
                                   ...this.state.surgical_memos[surg_memo_index],
-                                  service: value
+                                  service: value,
                                 };
                                 this.setState({ surgical_memos });
                               }}
@@ -4014,7 +3928,7 @@ class OperatingRoomSlipForm extends Component {
                               label="Main Surgeon"
                               name="surgeon"
                               value={o.surgeon && o.surgeon.full_name}
-                              onChange={index =>
+                              onChange={(index) =>
                                 this.onSurgeonChangeSurgMemo(
                                   index,
                                   "surgeon",
@@ -4035,7 +3949,7 @@ class OperatingRoomSlipForm extends Component {
                                 o.assistant_surgeon &&
                                 o.assistant_surgeon.full_name
                               }
-                              onChange={index => {
+                              onChange={(index) => {
                                 this.onSurgeonChangeSurgMemo(
                                   index,
                                   "assistant_surgeon",
@@ -4058,7 +3972,7 @@ class OperatingRoomSlipForm extends Component {
                               value={
                                 o.other_surgeon && o.other_surgeon.full_name
                               }
-                              onChange={index =>
+                              onChange={(index) =>
                                 this.onOtherSurgeonChangeSurgMemo(
                                   index,
                                   "other_surgeon",
@@ -4078,7 +3992,7 @@ class OperatingRoomSlipForm extends Component {
                                 o.instrument_nurse &&
                                 o.instrument_nurse.full_name
                               }
-                              onChange={index =>
+                              onChange={(index) =>
                                 this.onNurseChangeSurgMemo(
                                   index,
                                   "instrument_nurse",
@@ -4096,7 +4010,7 @@ class OperatingRoomSlipForm extends Component {
                             <Table
                               dataSource={o.other_surgeons}
                               columns={other_surgeons_column}
-                              rowKey={record => record._id}
+                              rowKey={(record) => record._id}
                               locale={{ emptyText: "No Records Found" }}
                               pagination={false}
                             />
@@ -4111,7 +4025,7 @@ class OperatingRoomSlipForm extends Component {
                                 o.other_inst_nurse &&
                                 o.other_inst_nurse.full_name
                               }
-                              onChange={index =>
+                              onChange={(index) =>
                                 this.onOtherInstNurseChangeSurgMemo(
                                   index,
                                   "other_inst_nurse",
@@ -4128,7 +4042,7 @@ class OperatingRoomSlipForm extends Component {
                             <Table
                               dataSource={o.other_inst_nurses}
                               columns={other_inst_nurses_column}
-                              rowKey={record => record._id}
+                              rowKey={(record) => record._id}
                               locale={{ emptyText: "No Records Found" }}
                               pagination={false}
                             />
@@ -4140,7 +4054,7 @@ class OperatingRoomSlipForm extends Component {
                               label="Sponge Nurse"
                               name="sponge_nurse"
                               value={o.sponge_nurse && o.sponge_nurse.full_name}
-                              onChange={index =>
+                              onChange={(index) =>
                                 this.onNurseChangeSurgMemo(
                                   index,
                                   "sponge_nurse",
@@ -4164,7 +4078,7 @@ class OperatingRoomSlipForm extends Component {
                                 o.other_sponge_nurse &&
                                 o.other_sponge_nurse.full_name
                               }
-                              onChange={index =>
+                              onChange={(index) =>
                                 this.onOtherSpongeNurseChangeSurgMemo(
                                   index,
                                   "other_sponge_nurse",
@@ -4181,7 +4095,7 @@ class OperatingRoomSlipForm extends Component {
                             <Table
                               dataSource={o.other_sponge_nurses}
                               columns={other_sponge_nurses_column}
-                              rowKey={record => record._id}
+                              rowKey={(record) => record._id}
                               locale={{ emptyText: "No Records Found" }}
                               pagination={false}
                             />
@@ -4193,7 +4107,7 @@ class OperatingRoomSlipForm extends Component {
                               label="Main Anes"
                               name="main_anes"
                               value={o.main_anes && o.main_anes.full_name}
-                              onChange={index => {
+                              onChange={(index) => {
                                 this.onAnesChangeSurgMemo(
                                   index,
                                   "main_anes",
@@ -4216,7 +4130,7 @@ class OperatingRoomSlipForm extends Component {
                                 o.other_anes_input &&
                                 o.other_anes_input.full_name
                               }
-                              onChange={index =>
+                              onChange={(index) =>
                                 this.onOtherAnesSurgMemo(
                                   index,
                                   "other_anes_input",
@@ -4233,7 +4147,7 @@ class OperatingRoomSlipForm extends Component {
                               name="asa"
                               value={o.asa}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4242,7 +4156,7 @@ class OperatingRoomSlipForm extends Component {
                             <Table
                               dataSource={o.other_anes}
                               columns={other_anes_column}
-                              rowKey={record => record._id}
+                              rowKey={(record) => record._id}
                               locale={{ emptyText: "No Records Found" }}
                               pagination={false}
                             />
@@ -4254,10 +4168,10 @@ class OperatingRoomSlipForm extends Component {
                               label="Method"
                               name="anes_method"
                               value={o.anes_method}
-                              onChange={value => {
+                              onChange={(value) => {
                                 if (value !== "Others") {
                                   const surgical_memos = [
-                                    ...this.state.surgical_memos
+                                    ...this.state.surgical_memos,
                                   ];
 
                                   surgical_memos[surg_memo_index] = {
@@ -4265,22 +4179,22 @@ class OperatingRoomSlipForm extends Component {
                                     anes_methods: [
                                       ...(o.anes_methods || []),
                                       {
-                                        method: value
-                                      }
-                                    ]
+                                        method: value,
+                                      },
+                                    ],
                                   };
 
                                   this.setState({
-                                    surgical_memos
+                                    surgical_memos,
                                   });
                                 } else {
                                   const surgical_memos = [
-                                    ...this.state.surgical_memos
+                                    ...this.state.surgical_memos,
                                   ];
 
                                   surgical_memos[surg_memo_index] = {
                                     ...surgical_memos[surg_memo_index],
-                                    anes_method: value
+                                    anes_method: value,
                                   };
                                   this.setState({ surgical_memos });
                                 }
@@ -4297,24 +4211,24 @@ class OperatingRoomSlipForm extends Component {
                                 value={o.anes_method_others}
                                 error={errors.anes_method_others}
                                 formItemLayout={smallFormItemLayout}
-                                onChange={e => {
+                                onChange={(e) => {
                                   const surgical_memos = [
-                                    ...this.state.surgical_memos
+                                    ...this.state.surgical_memos,
                                   ];
 
                                   surgical_memos[surg_memo_index] = {
                                     ...surgical_memos[surg_memo_index],
-                                    anes_method_others: e.target.value
+                                    anes_method_others: e.target.value,
                                   };
 
                                   this.setState({ surgical_memos });
                                 }}
                                 extra="Press Enter to Add"
-                                onPressEnter={e => {
+                                onPressEnter={(e) => {
                                   e.preventDefault();
 
                                   const surgical_memos = [
-                                    ...this.state.surgical_memos
+                                    ...this.state.surgical_memos,
                                   ];
 
                                   surgical_memos[surg_memo_index] = {
@@ -4322,14 +4236,14 @@ class OperatingRoomSlipForm extends Component {
                                     anes_methods: [
                                       ...(o.anes_methods || []),
                                       {
-                                        method: o.anes_method_others
-                                      }
+                                        method: o.anes_method_others,
+                                      },
                                     ],
-                                    anes_method_others: ""
+                                    anes_method_others: "",
                                   };
 
                                   this.setState({
-                                    surgical_memos
+                                    surgical_memos,
                                   });
                                 }}
                               />
@@ -4339,14 +4253,14 @@ class OperatingRoomSlipForm extends Component {
                               label="Anesthesia Started"
                               name="anes_start"
                               value={o.anes_start || null}
-                              onChange={value => {
+                              onChange={(value) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
 
                                 surgical_memos[surg_memo_index] = {
                                   ...surgical_memos[surg_memo_index],
-                                  anes_start: value
+                                  anes_start: value,
                                 };
 
                                 this.setState({ surgical_memos });
@@ -4360,14 +4274,14 @@ class OperatingRoomSlipForm extends Component {
                               label="Operation Started"
                               name="operation_started"
                               value={o.operation_started || null}
-                              onChange={value => {
+                              onChange={(value) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
 
                                 surgical_memos[surg_memo_index] = {
                                   ...surgical_memos[surg_memo_index],
-                                  operation_started: value
+                                  operation_started: value,
                                 };
 
                                 this.setState({ surgical_memos });
@@ -4380,14 +4294,14 @@ class OperatingRoomSlipForm extends Component {
                               label="Operation Finished"
                               name="operation_finished"
                               value={o.operation_finished || null}
-                              onChange={value => {
+                              onChange={(value) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
 
                                 surgical_memos[surg_memo_index] = {
                                   ...surgical_memos[surg_memo_index],
-                                  operation_finished: value
+                                  operation_finished: value,
                                 };
 
                                 this.setState({ surgical_memos });
@@ -4402,7 +4316,7 @@ class OperatingRoomSlipForm extends Component {
                               value={o.tentative_diagnosis}
                               error={errors.tentative_diagnosis}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4413,7 +4327,7 @@ class OperatingRoomSlipForm extends Component {
                               value={o.final_diagnosis}
                               error={errors.final_diagnosis}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4422,7 +4336,7 @@ class OperatingRoomSlipForm extends Component {
                             <Table
                               dataSource={o.anes_methods}
                               columns={anes_methods_column}
-                              rowKey={record => record._id}
+                              rowKey={(record) => record._id}
                               locale={{ emptyText: "No Records Found" }}
                               pagination={false}
                             />
@@ -4437,10 +4351,10 @@ class OperatingRoomSlipForm extends Component {
                               name="anes_used"
                               value={o.anes_used}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
-                              onPressEnter={e => {
+                              onPressEnter={(e) => {
                                 e.preventDefault();
                               }}
                             />
@@ -4449,10 +4363,10 @@ class OperatingRoomSlipForm extends Component {
                               name="anes_quantity"
                               value={o.anes_quantity}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
-                              onPressEnter={e => {
+                              onPressEnter={(e) => {
                                 e.preventDefault();
                               }}
                             />
@@ -4461,14 +4375,14 @@ class OperatingRoomSlipForm extends Component {
                               label="Unit"
                               name="anes_quantity_unit"
                               value={o.anes_quantity_unit}
-                              onChange={value => {
+                              onChange={(value) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
 
                                 surgical_memos[surg_memo_index] = {
                                   ...surgical_memos[surg_memo_index],
-                                  anes_quantity_unit: value
+                                  anes_quantity_unit: value,
                                 };
                                 this.setState({ surgical_memos });
                               }}
@@ -4480,14 +4394,14 @@ class OperatingRoomSlipForm extends Component {
                               label="Route"
                               name="anes_route"
                               value={o.anes_route}
-                              onChange={value => {
+                              onChange={(value) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
 
                                 surgical_memos[surg_memo_index] = {
                                   ...surgical_memos[surg_memo_index],
-                                  anes_route: value
+                                  anes_route: value,
                                 };
                                 this.setState({ surgical_memos });
                               }}
@@ -4520,7 +4434,7 @@ class OperatingRoomSlipForm extends Component {
                             <Table
                               dataSource={o.anesthetics}
                               columns={anesthetics_column}
-                              rowKey={record => record._id}
+                              rowKey={(record) => record._id}
                               locale={{ emptyText: "No Records Found" }}
                               pagination={false}
                             />
@@ -4537,7 +4451,7 @@ class OperatingRoomSlipForm extends Component {
                               name="rvs_code"
                               value={o.rvs_code}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4548,19 +4462,19 @@ class OperatingRoomSlipForm extends Component {
                               value={o.rvs_description}
                               formItemLayout={smallFormItemLayout}
                               rows="4"
-                              onChange={value => {
+                              onChange={(value) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
 
                                 surgical_memos[surg_memo_index] = {
                                   ...surgical_memos[surg_memo_index],
-                                  rvs_description: value
+                                  rvs_description: value,
                                 };
                                 this.setState({ surgical_memos });
                               }}
                               dataSource={rvs_desc_data_source}
-                              onSelect={value =>
+                              onSelect={(value) =>
                                 this.onRvsSelectSurgMemo(value, surg_memo_index)
                               }
                               onSearch={this.onRvsSearch}
@@ -4570,7 +4484,7 @@ class OperatingRoomSlipForm extends Component {
                               label="Laterality"
                               name="rvs_laterality"
                               value={o.rvs_laterality}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                               formItemLayout={smallFormItemLayout}
@@ -4599,7 +4513,7 @@ class OperatingRoomSlipForm extends Component {
                             <Table
                               dataSource={o.rvs}
                               columns={rvs_column}
-                              rowKey={record => record._id}
+                              rowKey={(record) => record._id}
                               locale={{ emptyText: "No Records Found" }}
                               pagination={false}
                             />
@@ -4617,7 +4531,7 @@ class OperatingRoomSlipForm extends Component {
                               name="before_operation"
                               value={o.before_operation}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4627,7 +4541,7 @@ class OperatingRoomSlipForm extends Component {
                               name="during_operation"
                               value={o.during_operation}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4637,7 +4551,7 @@ class OperatingRoomSlipForm extends Component {
                               name="after_operation"
                               value={o.after_operation}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4648,7 +4562,7 @@ class OperatingRoomSlipForm extends Component {
                               value={o.complications_during_operation}
                               error={errors.complications_during_operation}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4658,7 +4572,7 @@ class OperatingRoomSlipForm extends Component {
                               name="complications_after_operation"
                               value={o.complications_after_operation}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4684,7 +4598,7 @@ class OperatingRoomSlipForm extends Component {
                               name="position_in_bed"
                               value={o.position_in_bed}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4694,7 +4608,7 @@ class OperatingRoomSlipForm extends Component {
                               name="proctoclysis"
                               value={o.proctoclysis}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4704,7 +4618,7 @@ class OperatingRoomSlipForm extends Component {
                               name="hypodermoclysis"
                               value={o.hypodermoclysis}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4714,7 +4628,7 @@ class OperatingRoomSlipForm extends Component {
                               name="nutrition"
                               value={o.nutrition}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4724,7 +4638,7 @@ class OperatingRoomSlipForm extends Component {
                               name="stimulant"
                               value={o.stimulant}
                               formItemLayout={smallFormItemLayout}
-                              onChange={e =>
+                              onChange={(e) =>
                                 this.onSurgMemoChange(e, surg_memo_index)
                               }
                             />
@@ -4739,16 +4653,16 @@ class OperatingRoomSlipForm extends Component {
                               label="Operative Technique"
                               name="optech"
                               value={o.optech && o.optech.description}
-                              onChange={index => {
+                              onChange={(index) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
 
                                 if (index === undefined) {
                                   surgical_memos[surg_memo_index] = {
                                     ...surgical_memos[surg_memo_index],
                                     optech: null,
-                                    optech_content: ""
+                                    optech_content: "",
                                   };
                                 } else {
                                   const optech_selection = this.state.options
@@ -4757,11 +4671,11 @@ class OperatingRoomSlipForm extends Component {
                                   surgical_memos[surg_memo_index] = {
                                     ...surgical_memos[surg_memo_index],
                                     optech: optech_selection,
-                                    optech_content: optech_selection.content
+                                    optech_content: optech_selection.content,
                                   };
                                 }
                                 this.setState({
-                                  surgical_memos
+                                  surgical_memos,
                                 });
                               }}
                               onSearch={this.onOptechSelectionSearch}
@@ -4803,25 +4717,25 @@ class OperatingRoomSlipForm extends Component {
                                 plugins: [
                                   "advlist autolink lists link image charmap print preview anchor",
                                   "searchreplace visualblocks code fullscreen",
-                                  "insertdatetime media table paste code help wordcount"
+                                  "insertdatetime media table paste code help wordcount",
                                 ],
                                 toolbar:
                                   "undo redo | formatselect | bold italic backcolor | \
              alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help"
+             bullist numlist outdent indent | removeformat | help",
                               }}
                               onEditorChange={(content, editor) => {
                                 const surgical_memos = [
-                                  ...this.state.surgical_memos
+                                  ...this.state.surgical_memos,
                                 ];
 
                                 surgical_memos[surg_memo_index] = {
                                   ...surgical_memos[surg_memo_index],
-                                  optech_content: content
+                                  optech_content: content,
                                 };
 
                                 this.setState({
-                                  surgical_memos
+                                  surgical_memos,
                                 });
                               }}
                               value={o.optech_content}
@@ -4897,7 +4811,7 @@ class OperatingRoomSlipForm extends Component {
                                         </Button>
                                       </Link>
                                     </div>
-                                  )
+                                  ),
                                 ]}
                               </div>
                             </Form.Item>
@@ -4909,7 +4823,9 @@ class OperatingRoomSlipForm extends Component {
                 }),
                 <TabPane tab="Time Logs" key="4">
                   <Form
-                    onSubmit={e => this.onSubmit(e, { form: TIME_LOGS_MODULE })}
+                    onSubmit={(e) =>
+                      this.onSubmit(e, { form: TIME_LOGS_MODULE })
+                    }
                     className="tab-content or-slip-form"
                   >
                     <Row>
@@ -4918,7 +4834,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Time Ward Informed"
                           name="time_ward_informed"
                           value={this.state.time_ward_informed}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ time_ward_informed: value })
                           }
                           error={errors.time_ward_informed}
@@ -4930,7 +4846,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Arrival Time"
                           name="arrival_time"
                           value={this.state.arrival_time}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ arrival_time: value })
                           }
                           error={errors.arrival_time}
@@ -4942,7 +4858,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Room is Ready"
                           name="room_is_ready"
                           value={this.state.room_is_ready}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ room_is_ready: value })
                           }
                           error={errors.room_is_ready}
@@ -4954,7 +4870,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Equip/Inst ready"
                           name="equip_ready"
                           value={this.state.equip_ready}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ equip_ready: value })
                           }
                           error={errors.equip_ready}
@@ -4966,7 +4882,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Patient Placed in OR Table"
                           name="patient_placed_in_or_table"
                           value={this.state.patient_placed_in_or_table}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ patient_placed_in_or_table: value })
                           }
                           error={errors.patient_placed_in_or_table}
@@ -4978,7 +4894,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Time Anes Arrived"
                           name="time_anes_arrived"
                           value={this.state.time_anes_arrived}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ time_anes_arrived: value })
                           }
                           error={errors.time_anes_arrived}
@@ -4991,7 +4907,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Time Surgeon Arrived"
                           name="time_surgeon_arrived"
                           value={this.state.time_surgeon_arrived}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ time_surgeon_arrived: value })
                           }
                           error={errors.time_surgeon_arrived}
@@ -5003,7 +4919,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Induction Time"
                           name="induction_time"
                           value={this.state.induction_time}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ induction_time: value })
                           }
                           error={errors.induction_time}
@@ -5015,7 +4931,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Induction Completed"
                           name="induction_completed"
                           value={this.state.induction_completed}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ induction_completed: value })
                           }
                           error={errors.induction_completed}
@@ -5027,7 +4943,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Time OR Started"
                           name="time_or_started"
                           value={this.state.time_or_started}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ time_or_started: value })
                           }
                           error={errors.time_or_started}
@@ -5039,7 +4955,9 @@ class OperatingRoomSlipForm extends Component {
                           label="OR Ended"
                           name="or_ended"
                           value={this.state.or_ended}
-                          onChange={value => this.setState({ or_ended: value })}
+                          onChange={(value) =>
+                            this.setState({ or_ended: value })
+                          }
                           error={errors.or_ended}
                           formItemLayout={smallFormItemLayout}
                           showTime={true}
@@ -5049,7 +4967,7 @@ class OperatingRoomSlipForm extends Component {
                           label="Trans out from OR"
                           name="trans_out_from_or"
                           value={this.state.trans_out_from_or}
-                          onChange={value =>
+                          onChange={(value) =>
                             this.setState({ trans_out_from_or: value })
                           }
                           error={errors.trans_out_from_or}
@@ -5106,7 +5024,7 @@ class OperatingRoomSlipForm extends Component {
                       </Col>
                     </Row>
                   </Form>
-                </TabPane>
+                </TabPane>,
               ]}
             </Tabs>
           ) : (
@@ -5128,11 +5046,11 @@ class OperatingRoomSlipForm extends Component {
                 className="or-slip-table"
                 dataSource={this.state[collection_name]}
                 columns={records_column}
-                rowKey={record => record._id}
+                rowKey={(record) => record._id}
                 pagination={{
                   current: this.state.current_page,
                   defaultCurrent: this.state.current_page,
-                  onChange: this.onChangePage
+                  onChange: this.onChangePage,
                 }}
                 rowSelection={rowSelection}
               />
@@ -5144,10 +5062,10 @@ class OperatingRoomSlipForm extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
     auth: state.auth,
-    map: state.map
+    map: state.map,
   };
 };
 

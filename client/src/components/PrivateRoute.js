@@ -19,7 +19,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
         height: "100vh",
         position: "fixed",
         left: 0,
-        marginTop: "0px"
+        marginTop: "0px",
       }}
     >
       <div className="logo">
@@ -31,7 +31,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
           <Icon type="user" style={{ fontSize: "10px" }} />{" "}
           <span
             style={{
-              fontSize: "10px"
+              fontSize: "10px",
             }}
           >
             {auth.user.name}
@@ -58,7 +58,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
               </span>
             }
           >
-            <Menu.Item key="20">
+            <Menu.Item key="/surgeons">
               <Link to="/surgeons">
                 <span>
                   <Icon type="folder" />
@@ -66,7 +66,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
                 </span>
               </Link>
             </Menu.Item>
-            <Menu.Item key="21">
+            <Menu.Item key="/anesthesiologists">
               <Link to="/anesthesiologists">
                 <span>
                   <Icon type="folder" />
@@ -74,7 +74,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
                 </span>
               </Link>
             </Menu.Item>
-            <Menu.Item key="22">
+            <Menu.Item key="/nurses">
               <Link to="/nurses">
                 <span>
                   <Icon type="folder" />
@@ -82,7 +82,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
                 </span>
               </Link>
             </Menu.Item>
-            <Menu.Item key="23">
+            <Menu.Item key="/relative-value-scales">
               <Link to="/relative-value-scales">
                 <span>
                   <Icon type="folder" />
@@ -108,7 +108,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
               </span>
             }
           >
-            <Menu.Item key="31">
+            <Menu.Item key="/or-logs">
               <Link to="/or-logs">
                 <span>
                   <Icon type="folder" />
@@ -134,14 +134,6 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
             </Link>
           </Menu.Item>,
 
-          <Menu.Item key="/main-display">
-            <Link to="/main-display">
-              <span>
-                <Icon type="appstore" />
-                Schedule Display
-              </span>
-            </Link>
-          </Menu.Item>,
           <Menu.Item key="/or-elective-form">
             <Link to="/or-elective-form">
               <span>
@@ -149,8 +141,17 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
                 OR Elective Op
               </span>
             </Link>
-          </Menu.Item>
+          </Menu.Item>,
         ]}
+
+        <Menu.Item key="/main-display">
+          <Link to="/main-display">
+            <span>
+              <Icon type="appstore" />
+              Schedule Display
+            </span>
+          </Link>
+        </Menu.Item>
 
         {auth.user && auth.user.role === USER_ADMIN && (
           <Menu.Item key="5">
@@ -184,7 +185,7 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
       <Content style={{ overflow: "auto" }} className="is-full-height">
         <Route
           {...rest}
-          render={props =>
+          render={(props) =>
             auth.isAuthenticated === true ? (
               <Component {...props} />
             ) : (
@@ -197,8 +198,8 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
   </Layout>
 );
 
-const mapStateToProps = state => ({
-  auth: state.auth
+const mapStateToProps = (state) => ({
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, { logoutUser })(PrivateRoute);
