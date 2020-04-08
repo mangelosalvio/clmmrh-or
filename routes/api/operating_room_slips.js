@@ -185,7 +185,6 @@ router.put("/", (req, res) => {
       io.emit("new-or", {
         name: record.name,
       });
-      console.log("new or");
       return res.json(record);
     })
     .catch((err) => console.log(err));

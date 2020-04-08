@@ -55,7 +55,7 @@ class MainDisplay extends Component {
       notification.open({
         message: `Patient Added`,
         description: `${data.name} was added.`,
-        duration: 0,
+        duration: 5,
       });
     });
 

@@ -131,7 +131,7 @@ const form_data = {
   received_by: "",
 
   operation_type: "",
-  operation_status: OPERATION_STATUS_ON_SCHEDULE,
+  operation_status: null /* OPERATION_STATUS_ON_SCHEDULE */,
   main_anes: "",
   other_anes_input: "",
   other_anes: [],
@@ -397,7 +397,7 @@ class OperatingRoomSlipForm extends Component {
       this.props.auth.user && this.props.auth.user.role === USER_WARD;
     this.setState({
       ...form_data,
-      operation_status: !is_ward ? OPERATION_STATUS_ON_GOING : null,
+      operation_status: is_ward ? OPERATION_STATUS_ON_GOING : null,
       errors: {},
       message: "",
     });
@@ -1972,6 +1972,7 @@ class OperatingRoomSlipForm extends Component {
                         }
                         error={errors.registration_date}
                         formItemLayout={smallFormItemLayout}
+                        help="Please check Admission Date"
                       />
 
                       <TextFieldGroup

@@ -11,12 +11,13 @@ const DatePickerFieldGroup = ({
   inputRef,
   formItemLayout,
   onChange,
-  showTime
+  showTime,
+  help,
 }) => (
   <Form.Item
     label={label}
     validateStatus={error ? "error" : ""}
-    help={error}
+    help={help ? help : error}
     {...formItemLayout}
   >
     <DatePicker
@@ -38,12 +39,12 @@ DatePickerFieldGroup.propTypes = {
   onChange: PropTypes.func.isRequired,
   inputRef: PropTypes.func,
   disabled: PropTypes.bool,
-  showTime: PropTypes.bool
+  showTime: PropTypes.bool,
 };
 
 DatePickerFieldGroup.defaultProps = {
   disabled: false,
-  showTime: false
+  showTime: false,
 };
 
 export default DatePickerFieldGroup;
