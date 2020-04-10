@@ -14,7 +14,7 @@ const { Content } = Layout;
 const collection_name = "slips";
 
 const form_data = {
-  [collection_name]: []
+  [collection_name]: [],
 };
 
 class ORElectiveOperations extends Component {
@@ -27,7 +27,7 @@ class ORElectiveOperations extends Component {
       surgeons: [],
       anesthesiologists: [],
       nurses: [],
-      rvs: []
+      rvs: [],
     },
     electives: [],
     waiting_electives: [],
@@ -35,7 +35,7 @@ class ORElectiveOperations extends Component {
     pacu_anes: [],
     team_captain_anes: [],
     or_date: null,
-    room_schedule: []
+    room_schedule: [],
   };
 
   componentDidMount() {
@@ -46,20 +46,18 @@ class ORElectiveOperations extends Component {
   }
 
   getRecord = () => {
-    const id = this.props.match.params.id;
-
     const form_data = {
-      or_date: this.state.or_date
+      or_date: this.state.or_date,
     };
 
     axios
       .post("/api/operating-room-slips/or-elective-operations", form_data)
-      .then(response => {
+      .then((response) => {
         this.setState({ ...response.data }, () => {
           //window.print();
         });
       })
-      .catch(err => {
+      .catch((err) => {
         message.error("An error has occurred");
         console.log(err);
       });
@@ -67,13 +65,13 @@ class ORElectiveOperations extends Component {
 
   render() {
     const on_duty_anes = this.state.on_duty_anes
-      .map(o => o.last_name)
+      .map((o) => o.last_name)
       .join("/");
 
-    const pacu_anes = this.state.pacu_anes.map(o => o.last_name).join("/");
+    const pacu_anes = this.state.pacu_anes.map((o) => o.last_name).join("/");
 
     const team_captain_anes = this.state.team_captain_anes
-      .map(o => o.last_name)
+      .map((o) => o.last_name)
       .join("/");
 
     return (
@@ -94,7 +92,7 @@ class ORElectiveOperations extends Component {
                     className="has-text-centered"
                     style={{
                       backgroundColor: "#BFBFBF",
-                      border: "1px solid #000"
+                      border: "1px solid #000",
                     }}
                   >
                     OR SCHEDULE OF ELECTIVE OPERATIONS
@@ -134,7 +132,7 @@ class ORElectiveOperations extends Component {
               <tr className="or-report-heading">
                 <td
                   style={{
-                    width: "90px"
+                    width: "90px",
                   }}
                 >
                   Hospital #
@@ -150,13 +148,13 @@ class ORElectiveOperations extends Component {
                 <td style={{ width: "85px" }}>Classification</td>
               </tr>
 
-              {this.state.electives.map(record => [
+              {this.state.electives.map((record) => [
                 <tr>
                   <td colSpan="10" className="or-room">
                     {record._id}
                   </td>
                 </tr>,
-                record.items.map(item => (
+                record.items.map((item) => (
                   <tr>
                     <td>{item.hospital_number}</td>
                     <td>{item.ward}</td>
@@ -173,7 +171,7 @@ class ORElectiveOperations extends Component {
                     <td>{item.main_anes && item.main_anes.last_name}</td>
                     <td>{item.classification}</td>
                   </tr>
-                ))
+                )),
               ])}
             </tbody>
             <tfoot>
@@ -219,7 +217,7 @@ class ORElectiveOperations extends Component {
                       <img
                         src={clmmrh_footer_logo}
                         style={{
-                          width: "1.41in"
+                          width: "1.41in",
                         }}
                         alt="footer"
                       />
@@ -250,7 +248,7 @@ class ORElectiveOperations extends Component {
                         className="has-text-centered"
                         style={{
                           backgroundColor: "#BFBFBF",
-                          border: "1px solid #000"
+                          border: "1px solid #000",
                         }}
                       >
                         OR SCHEDULE OF ELECTIVE OPERATIONS
@@ -292,7 +290,7 @@ class ORElectiveOperations extends Component {
                   <tr className="or-report-heading">
                     <td
                       style={{
-                        width: "90px"
+                        width: "90px",
                       }}
                     >
                       Hospital #
@@ -314,7 +312,7 @@ class ORElectiveOperations extends Component {
                       on or before <u>6PM</u> ):
                     </td>
                   </tr>
-                  {this.state.waiting_electives.map(item => (
+                  {this.state.waiting_electives.map((item) => (
                     <tr>
                       <td>{item.hospital_number}</td>
                       <td>{item.ward}</td>
@@ -372,7 +370,7 @@ class ORElectiveOperations extends Component {
                           <img
                             src={clmmrh_footer_logo}
                             style={{
-                              width: "1.41in"
+                              width: "1.41in",
                             }}
                             alt="footer"
                           />
@@ -389,10 +387,10 @@ class ORElectiveOperations extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
     auth: state.auth,
-    map: state.map
+    map: state.map,
   };
 };
 

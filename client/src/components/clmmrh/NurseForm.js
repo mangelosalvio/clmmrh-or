@@ -7,13 +7,13 @@ import MessageBoxInfo from "../../commons/MessageBoxInfo";
 import Searchbar from "../../commons/Searchbar";
 import "../../styles/Autosuggest.css";
 
-import { Layout, Breadcrumb, Form, Table, Icon, message, Button } from "antd";
+import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
 
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import {
   gender_options,
   job_status_options,
-  nurse_assignment_options
+  nurse_assignment_options,
 } from "../../utils/Options";
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
@@ -35,7 +35,7 @@ const form_data = {
   assignment: "",
   job_status: "",
 
-  errors: {}
+  errors: {},
 };
 
 class NurseForm extends Component {
@@ -43,23 +43,30 @@ class NurseForm extends Component {
     title: "Nurse Form",
     url: "/api/nurses/",
     search_keyword: "",
-    ...form_data
+    ...form_data,
+
+    /**
+     * PAGINATION VARIABLES
+     */
+
+    current_page: 1,
+    total_records: 0,
   };
 
   componentDidMount() {
-    this.searchRecords();
+    this.onSearch();
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
 
     const form_data = {
       ...this.state,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
 
     if (isEmpty(this.state._id)) {
@@ -70,10 +77,10 @@ class NurseForm extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Saved"
+            message: "Transaction Saved",
           });
         })
-        .catch(err => {
+        .catch((err) => {
           message.error("You have an invalid input");
           this.setState({ errors: err.response.data });
         });
@@ -85,66 +92,77 @@ class NurseForm extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Updated"
+            message: "Transaction Updated",
           });
         })
-        .catch(err => this.setState({ errors: err.response.data }));
+        .catch((err) => this.setState({ errors: err.response.data }));
     }
   };
 
-  onSearch = (value, e) => {
-    e.preventDefault();
-    this.searchRecords();
-  };
+  onSearch = ({ page = 1 } = { page: 1 }) => {
+    const loading = message.loading("Loading...", 0);
 
-  searchRecords = () => {
+    const form_data = {
+      page,
+      s: this.state.search_keyword,
+    };
+
     axios
-      .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response =>
+      .post(this.state.url + "paginate", form_data)
+      .then((response) => {
+        loading();
         this.setState({
-          [collection_name]: response.data,
-          message: isEmpty(response.data) ? "No rows found" : ""
-        })
-      )
-      .catch(err => console.log(err));
+          [collection_name]: [...response.data.docs],
+          total_records: response.data.total,
+          current_page: page,
+        });
+
+        if (response.data.total <= 0) {
+          message.success("No records found");
+        }
+      })
+      .catch((err) => {
+        loading();
+        message.error("There was an error processing your request");
+      });
   };
 
   addNew = () => {
     this.setState({
       ...form_data,
       errors: {},
-      message: ""
+      message: "",
     });
   };
 
-  edit = record => {
+  edit = (record) => {
     axios
       .get(this.state.url + record._id)
-      .then(response => {
+      .then((response) => {
         const record = response.data;
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             ...form_data,
             [collection_name]: [],
             ...record,
-            errors: {}
+            errors: {},
           };
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onDelete = () => {
     axios
       .delete(this.state.url + this.state._id)
-      .then(response => {
+      .then((response) => {
         message.success("Transaction Deleted");
         this.setState({
           ...form_data,
-          message: "Transaction Deleted"
+          message: "Transaction Deleted",
         });
       })
-      .catch(err => {
+      .catch((err) => {
         message.error(err.response.data.message);
       });
   };
@@ -156,20 +174,20 @@ class NurseForm extends Component {
   updateOnDuty = (record, index) => {
     const on_duty = record.on_duty ? !record.on_duty : true;
     const form_data = {
-      on_duty
+      on_duty,
     };
     const loading = message.loading("Processing...");
     axios
       .post(`/api/nurses/${record._id}/on-duty`, form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         const records = [...this.state[collection_name]];
         records[index] = { ...response.data };
         this.setState({
-          [collection_name]: records
+          [collection_name]: records,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         loading();
         message.error("An error has occurred");
       });
@@ -178,26 +196,37 @@ class NurseForm extends Component {
   onChangeAssignment = (value, record, index) => {
     const form_data = {
       assignment: value,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
     const loading = message.loading("Processing...");
     axios
       .post(`/api/nurses/${record._id}/assignment`, form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         const records = [...this.state[collection_name]];
         records[index] = { ...response.data };
         this.setState({
-          [collection_name]: records
+          [collection_name]: records,
         });
       });
+  };
+
+  onChangePage = (current_page) => {
+    this.setState(
+      {
+        current_page,
+      },
+      () => {
+        this.onSearch({ page: current_page });
+      }
+    );
   };
 
   render() {
     const records_column = [
       {
         title: "Name",
-        dataIndex: "full_name"
+        dataIndex: "full_name",
       },
       {
         title: "Assignment",
@@ -205,11 +234,11 @@ class NurseForm extends Component {
         render: (value, record, index) => (
           <SimpleSelect
             value={value}
-            onChange={value => this.onChangeAssignment(value, record, index)}
+            onChange={(value) => this.onChangeAssignment(value, record, index)}
             options={nurse_assignment_options}
             style={{ width: 200 }}
           />
-        )
+        ),
       },
       {
         title: "",
@@ -224,8 +253,8 @@ class NurseForm extends Component {
               onClick={() => this.edit(record)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const { errors } = this.state;
@@ -242,7 +271,10 @@ class NurseForm extends Component {
           <div className="column">
             <Searchbar
               name="search_keyword"
-              onSearch={this.onSearch}
+              onSearch={(value, e) => {
+                e.preventDefault();
+                this.onSearch();
+              }}
               onChange={this.onChange}
               value={this.state.search_keyword}
               onNew={this.addNew}
@@ -305,7 +337,7 @@ class NurseForm extends Component {
                 label="Assignment"
                 name="assignment"
                 value={this.state.assignment}
-                onChange={value => this.setState({ assignment: value })}
+                onChange={(value) => this.setState({ assignment: value })}
                 error={errors.assignment}
                 formItemLayout={formItemLayout}
                 options={nurse_assignment_options}
@@ -315,7 +347,7 @@ class NurseForm extends Component {
                 label="Job Status"
                 name="job_status"
                 value={this.state.job_status}
-                onChange={value => this.setState({ job_status: value })}
+                onChange={(value) => this.setState({ job_status: value })}
                 error={errors.job_status}
                 formItemLayout={formItemLayout}
                 options={job_status_options}
@@ -344,7 +376,14 @@ class NurseForm extends Component {
             <Table
               dataSource={this.state[collection_name]}
               columns={records_column}
-              rowKey={record => record._id}
+              rowKey={(record) => record._id}
+              pagination={{
+                current: this.state.current_page,
+                defaultCurrent: this.state.current_page,
+                onChange: this.onChangePage,
+                total: this.state.total_records,
+                pageSize: 10,
+              }}
             />
           )}
         </div>
@@ -353,9 +392,9 @@ class NurseForm extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 

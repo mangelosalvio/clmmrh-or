@@ -7,17 +7,16 @@ import MessageBoxInfo from "../../commons/MessageBoxInfo";
 import Searchbar from "../../commons/Searchbar";
 import "../../styles/Autosuggest.css";
 
-import { Layout, Breadcrumb, Form, Table, Icon, message, Button } from "antd";
+import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
 
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import {
   gender_options,
   assignment_options,
-  year_level_options
+  year_level_options,
 } from "../../utils/Options";
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
-import SimpleSelect from "../../commons/SimpleSelect";
 import CheckboxGroup from "antd/lib/checkbox/Group";
 import CheckboxGroupFieldGroup from "../../commons/CheckboxGroupFieldGroup";
 
@@ -38,7 +37,7 @@ const form_data = {
   year_level: "",
   license_number: "",
 
-  errors: {}
+  errors: {},
 };
 
 class AnesForm extends Component {
@@ -46,23 +45,30 @@ class AnesForm extends Component {
     title: "Anesthesiologist Form",
     url: "/api/anesthesiologists/",
     search_keyword: "",
-    ...form_data
+    ...form_data,
+
+    /**
+     * PAGINATION VARIABLES
+     */
+
+    current_page: 1,
+    total_records: 0,
   };
 
   componentDidMount() {
-    this.searchRecords();
+    this.onSearch();
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
 
     const form_data = {
       ...this.state,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
 
     if (isEmpty(this.state._id)) {
@@ -73,10 +79,10 @@ class AnesForm extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Saved"
+            message: "Transaction Saved",
           });
         })
-        .catch(err => {
+        .catch((err) => {
           message.error("You have an invalid input");
           this.setState({ errors: err.response.data });
         });
@@ -88,66 +94,77 @@ class AnesForm extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Updated"
+            message: "Transaction Updated",
           });
         })
-        .catch(err => this.setState({ errors: err.response.data }));
+        .catch((err) => this.setState({ errors: err.response.data }));
     }
   };
 
-  onSearch = (value, e) => {
-    e.preventDefault();
-    this.searchRecords();
-  };
+  onSearch = ({ page = 1 } = { page: 1 }) => {
+    const loading = message.loading("Loading...", 0);
 
-  searchRecords = () => {
+    const form_data = {
+      page,
+      s: this.state.search_keyword,
+    };
+
     axios
-      .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response =>
+      .post(this.state.url + "paginate", form_data)
+      .then((response) => {
+        loading();
         this.setState({
-          [collection_name]: response.data,
-          message: isEmpty(response.data) ? "No rows found" : ""
-        })
-      )
-      .catch(err => console.log(err));
+          [collection_name]: [...response.data.docs],
+          total_records: response.data.total,
+          current_page: page,
+        });
+
+        if (response.data.total <= 0) {
+          message.success("No records found");
+        }
+      })
+      .catch((err) => {
+        loading();
+        message.error("There was an error processing your request");
+      });
   };
 
   addNew = () => {
     this.setState({
       ...form_data,
       errors: {},
-      message: ""
+      message: "",
     });
   };
 
-  edit = record => {
+  edit = (record) => {
     axios
       .get(this.state.url + record._id)
-      .then(response => {
+      .then((response) => {
         const record = response.data;
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             ...form_data,
             [collection_name]: [],
             ...record,
-            errors: {}
+            errors: {},
           };
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onDelete = () => {
     axios
       .delete(this.state.url + this.state._id)
-      .then(response => {
+      .then((response) => {
         message.success("Transaction Deleted");
         this.setState({
           ...form_data,
-          message: "Transaction Deleted"
+          message: "Transaction Deleted",
         });
       })
-      .catch(err => {
+      .catch((err) => {
         message.error(err.response.data.message);
       });
   };
@@ -158,17 +175,17 @@ class AnesForm extends Component {
 
   onChangeAssignment = (value, record, index) => {
     const form_data = {
-      assignments: value
+      assignments: value,
     };
     const loading = message.loading("Processing...");
     axios
       .post(`/api/anesthesiologists/${record._id}/assignments`, form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         const records = [...this.state[collection_name]];
         records[index] = { ...response.data };
         this.setState({
-          [collection_name]: records
+          [collection_name]: records,
         });
       });
   };
@@ -176,30 +193,41 @@ class AnesForm extends Component {
   updateOnDuty = (record, index) => {
     const on_duty = record.on_duty ? !record.on_duty : true;
     const form_data = {
-      on_duty
+      on_duty,
     };
     const loading = message.loading("Processing...");
     axios
       .post(`/api/anesthesiologists/${record._id}/on-duty`, form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         const records = [...this.state[collection_name]];
         records[index] = { ...response.data };
         this.setState({
-          [collection_name]: records
+          [collection_name]: records,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         loading();
         message.error("An error has occurred");
       });
+  };
+
+  onChangePage = (current_page) => {
+    this.setState(
+      {
+        current_page,
+      },
+      () => {
+        this.onSearch({ page: current_page });
+      }
+    );
   };
 
   render() {
     const records_column = [
       {
         title: "Name",
-        dataIndex: "full_name"
+        dataIndex: "full_name",
       },
       {
         title: "Assignments",
@@ -208,10 +236,10 @@ class AnesForm extends Component {
           <CheckboxGroup
             size
             value={value}
-            onChange={value => this.onChangeAssignment(value, record, index)}
+            onChange={(value) => this.onChangeAssignment(value, record, index)}
             options={assignment_options}
           />
-        )
+        ),
       },
       {
         title: "",
@@ -226,8 +254,8 @@ class AnesForm extends Component {
               onClick={() => this.edit(record)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const { errors } = this.state;
@@ -244,7 +272,10 @@ class AnesForm extends Component {
           <div className="column">
             <Searchbar
               name="search_keyword"
-              onSearch={this.onSearch}
+              onSearch={(value, e) => {
+                e.preventDefault();
+                this.onSearch();
+              }}
               onChange={this.onChange}
               value={this.state.search_keyword}
               onNew={this.addNew}
@@ -307,7 +338,7 @@ class AnesForm extends Component {
                 label="Assignments"
                 name="assignments"
                 value={this.state.assignments}
-                onChange={value => this.setState({ assignments: value })}
+                onChange={(value) => this.setState({ assignments: value })}
                 error={errors.assignment}
                 formItemLayout={formItemLayout}
                 options={assignment_options}
@@ -317,7 +348,7 @@ class AnesForm extends Component {
                 label="Year Level"
                 name="year_level"
                 value={this.state.year_level}
-                onChange={value => this.setState({ year_level: value })}
+                onChange={(value) => this.setState({ year_level: value })}
                 error={errors.year_level}
                 formItemLayout={formItemLayout}
                 options={year_level_options}
@@ -355,7 +386,14 @@ class AnesForm extends Component {
             <Table
               dataSource={this.state[collection_name]}
               columns={records_column}
-              rowKey={record => record._id}
+              rowKey={(record) => record._id}
+              pagination={{
+                current: this.state.current_page,
+                defaultCurrent: this.state.current_page,
+                onChange: this.onChangePage,
+                total: this.state.total_records,
+                pageSize: 10,
+              }}
             />
           )}
         </div>
@@ -364,9 +402,9 @@ class AnesForm extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 

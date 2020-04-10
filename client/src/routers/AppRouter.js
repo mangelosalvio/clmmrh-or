@@ -19,7 +19,6 @@ import RelativeValueScaleForm from "../components/clmmrh/RelativeValueScaleForm"
 import SurgicalMemorandumReport from "../components/clmmrh/SurgicalMemorandumReport";
 import ORElectiveOperations from "../components/clmmrh/ORElectiveOperations";
 import ORScheduleForm from "../components/clmmrh/ORScheduleForm";
-import Optech from "../components/clmmrh/Optech";
 import OptechSelectionForm from "../components/clmmrh/OptechSelectionForm";
 import OptechReport from "../components/clmmrh/OptechReport";
 import RoomStatistics from "../components/clmmrh/RoomStatistics";

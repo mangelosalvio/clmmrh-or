@@ -2,16 +2,11 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
-import { Layout, message, Col, Row, Input } from "antd";
-import { debounce } from "lodash";
+import { message, Col, Row } from "antd";
 
 import moment from "moment";
 import { NOT_APPLICABLE } from "../../utils/constants";
 import isEmpty from "../../validation/is-empty";
-
-const { Content } = Layout;
-
-const collection_name = "slips";
 
 class OperativeTechinqueReport extends Component {
   state = {
@@ -19,12 +14,8 @@ class OperativeTechinqueReport extends Component {
     url: "/api/operating-room-slips/",
     search_keyword: "",
     values: [],
-    rvs: []
+    rvs: [],
   };
-
-  constructor(props) {
-    super(props);
-  }
 
   componentDidMount() {
     this.getRecord();
@@ -38,16 +29,16 @@ class OperativeTechinqueReport extends Component {
      */
     axios
       .get(this.state.url + id)
-      .then(response => {
+      .then((response) => {
         const record = response.data;
         const {
           date_of_birth,
           registration_date,
           date_time_of_surgery,
-          operation_started
+          operation_started,
         } = response.data;
         this.setState(
-          prevState => {
+          (prevState) => {
             return {
               ...record,
               date_of_birth: date_of_birth ? moment(date_of_birth) : null,
@@ -60,7 +51,7 @@ class OperativeTechinqueReport extends Component {
               operation_started: operation_started
                 ? moment(operation_started)
                 : null,
-              errors: {}
+              errors: {},
             };
           },
           () => {
@@ -68,7 +59,7 @@ class OperativeTechinqueReport extends Component {
           }
         );
       })
-      .catch(err => {
+      .catch((err) => {
         message.error("An error has occurred");
         console.log(err);
       });
@@ -134,10 +125,10 @@ class OperativeTechinqueReport extends Component {
           </span>
           <div
             style={{
-              margin: "1rem 0rem"
+              margin: "1rem 0rem",
             }}
           >
-            {this.state.rvs.map(r => (
+            {this.state.rvs.map((r) => (
               <div>
                 {r.rvs_description}{" "}
                 {!isEmpty(r.rvs_laterality) &&
@@ -153,10 +144,10 @@ class OperativeTechinqueReport extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
     auth: state.auth,
-    map: state.map
+    map: state.map,
   };
 };
 

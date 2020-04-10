@@ -7,8 +7,7 @@ import MessageBoxInfo from "../../commons/MessageBoxInfo";
 import Searchbar from "../../commons/Searchbar";
 import "../../styles/Autosuggest.css";
 import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
-import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
-import TextAreaGroup from "../../commons/TextAreaGroup";
+import { formItemLayout } from "./../../utils/Layouts";
 import { service_options } from "../../utils/Options";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 import { Editor } from "@tinymce/tinymce-react";
@@ -25,7 +24,7 @@ const form_data = {
   description: "",
   content: null,
 
-  errors: {}
+  errors: {},
 };
 
 class OptechSelectionForm extends Component {
@@ -34,7 +33,7 @@ class OptechSelectionForm extends Component {
     url: "/api/optech-selections/",
     search_keyword: "",
     ...form_data,
-    service_options: []
+    service_options: [],
   };
   constructor(props) {
     super(props);
@@ -45,16 +44,16 @@ class OptechSelectionForm extends Component {
     this.searchRecords();
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
 
     const form_data = {
       ...this.state,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
 
     if (isEmpty(this.state._id)) {
@@ -65,10 +64,10 @@ class OptechSelectionForm extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Saved"
+            message: "Transaction Saved",
           });
         })
-        .catch(err => {
+        .catch((err) => {
           message.error("You have an invalid input");
           this.setState({ errors: err.response.data });
         });
@@ -80,10 +79,10 @@ class OptechSelectionForm extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Updated"
+            message: "Transaction Updated",
           });
         })
-        .catch(err => this.setState({ errors: err.response.data }));
+        .catch((err) => this.setState({ errors: err.response.data }));
     }
   };
 
@@ -95,13 +94,13 @@ class OptechSelectionForm extends Component {
   searchRecords = () => {
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response =>
+      .then((response) =>
         this.setState({
           [collection_name]: response.data,
-          message: isEmpty(response.data) ? "No rows found" : ""
+          message: isEmpty(response.data) ? "No rows found" : "",
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   addNew = () => {
@@ -109,38 +108,38 @@ class OptechSelectionForm extends Component {
       ...form_data,
       content: "",
       errors: {},
-      message: ""
+      message: "",
     });
   };
 
-  edit = record => {
+  edit = (record) => {
     axios
       .get(this.state.url + record._id)
-      .then(response => {
+      .then((response) => {
         const record = response.data;
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             ...form_data,
             [collection_name]: [],
             ...record,
-            errors: {}
+            errors: {},
           };
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onDelete = () => {
     axios
       .delete(this.state.url + this.state._id)
-      .then(response => {
+      .then((response) => {
         message.success("Transaction Deleted");
         this.setState({
           ...form_data,
-          message: "Transaction Deleted"
+          message: "Transaction Deleted",
         });
       })
-      .catch(err => {
+      .catch((err) => {
         message.error(err.response.data.message);
       });
   };
@@ -152,20 +151,20 @@ class OptechSelectionForm extends Component {
   updateOnDuty = (record, index) => {
     const on_duty = record.on_duty ? !record.on_duty : true;
     const form_data = {
-      on_duty
+      on_duty,
     };
     const loading = message.loading("Processing...");
     axios
       .post(`/api/nurses/${record._id}/on-duty`, form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         const records = [...this.state[collection_name]];
         records[index] = { ...response.data };
         this.setState({
-          [collection_name]: records
+          [collection_name]: records,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         loading();
         message.error("An error has occurred");
       });
@@ -174,24 +173,24 @@ class OptechSelectionForm extends Component {
   onChangeAssignment = (value, record, index) => {
     const form_data = {
       assignment: value,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
     const loading = message.loading("Processing...");
     axios
       .post(`/api/nurses/${record._id}/assignment`, form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         const records = [...this.state[collection_name]];
         records[index] = { ...response.data };
         this.setState({
-          [collection_name]: records
+          [collection_name]: records,
         });
       });
   };
 
   handleEditorChange = (content, editor) => {
     this.setState({
-      content
+      content,
     });
   };
 
@@ -199,11 +198,11 @@ class OptechSelectionForm extends Component {
     const records_column = [
       {
         title: "Service",
-        dataIndex: "service"
+        dataIndex: "service",
       },
       {
         title: "Description",
-        dataIndex: "description"
+        dataIndex: "description",
       },
       {
         title: "",
@@ -218,8 +217,8 @@ class OptechSelectionForm extends Component {
               onClick={() => this.edit(record)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const { errors } = this.state;
@@ -253,7 +252,7 @@ class OptechSelectionForm extends Component {
                 label="Service"
                 name="service"
                 value={this.state.service}
-                onChange={value => this.setState({ service: value })}
+                onChange={(value) => this.setState({ service: value })}
                 formItemLayout={formItemLayout}
                 error={errors.service}
                 options={service_options}
@@ -280,12 +279,9 @@ class OptechSelectionForm extends Component {
                   plugins: [
                     "advlist autolink lists link image charmap print preview anchor",
                     "searchreplace visualblocks code fullscreen",
-                    "insertdatetime media table paste code help wordcount"
+                    "insertdatetime media table paste code help wordcount",
                   ],
-                  toolbar:
-                    "undo redo | formatselect | bold italic backcolor | \
-             alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help"
+                  toolbar: `undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help`,
                 }}
                 onEditorChange={this.handleEditorChange}
               />
@@ -313,7 +309,7 @@ class OptechSelectionForm extends Component {
             <Table
               dataSource={this.state[collection_name]}
               columns={records_column}
-              rowKey={record => record._id}
+              rowKey={(record) => record._id}
             />
           )}
         </div>
@@ -322,9 +318,9 @@ class OptechSelectionForm extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 

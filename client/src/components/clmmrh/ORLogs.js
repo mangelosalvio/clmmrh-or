@@ -10,9 +10,9 @@ import {
   Col,
   Button,
   PageHeader,
-  message
+  message,
 } from "antd";
-import { formItemLayout, smallFormItemLayout } from "./../../utils/Layouts";
+import { smallFormItemLayout } from "./../../utils/Layouts";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 import moment from "moment";
 import SelectFieldGroup from "../../commons/SelectFieldGroup";
@@ -21,7 +21,7 @@ import TextFieldGroup from "../../commons/TextFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 import {
   operating_room_number_options,
-  classification_options
+  classification_options,
 } from "../../utils/Options";
 
 const { Content } = Layout;
@@ -33,7 +33,7 @@ const form_data = {
   _id: "",
   records: [],
   period_covered: [],
-  errors: {}
+  errors: {},
 };
 
 class ORLogs extends Component {
@@ -47,7 +47,7 @@ class ORLogs extends Component {
       anesthesiologists: [],
       nurses: [],
       rvs: [],
-      patients: []
+      patients: [],
     },
 
     search_period_covered: [null, null],
@@ -55,14 +55,14 @@ class ORLogs extends Component {
     search_operating_room_number: "",
     search_main_anes: "",
     search_surgeon: "",
-    search_classification: ""
+    search_classification: "",
   };
 
   componentDidMount() {
     this.getRecords();
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
@@ -77,7 +77,7 @@ class ORLogs extends Component {
       search_surgeon,
       search_procedure,
       search_classification,
-      search_main_anes
+      search_main_anes,
     } = this.state;
 
     const form_data = {
@@ -86,50 +86,50 @@ class ORLogs extends Component {
       search_surgeon,
       search_procedure,
       search_classification,
-      search_main_anes
+      search_main_anes,
     };
     const loading = message.loading("Loading...");
 
     axios
       .post("/api/operating-room-slips/logs", form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         this.setState({
-          records: response.data
+          records: response.data,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         loading();
         message.error("There was an error processing your request");
       });
   };
 
-  onAnesSearch = value => {
+  onAnesSearch = (value) => {
     axios
       .get(`/api/anesthesiologists/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            anesthesiologists: response.data
-          }
+            anesthesiologists: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  onSurgeonSearch = value => {
+  onSurgeonSearch = (value) => {
     axios
       .get(`/api/surgeons/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            surgeons: response.data
-          }
+            surgeons: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   render() {
@@ -144,7 +144,7 @@ class ORLogs extends Component {
             {record.classification} <br />
             {record.operating_room_number}
           </div>
-        )
+        ),
       },
       {
         title: "Name of Patient/Age/Sex/Birthday/Address",
@@ -156,101 +156,101 @@ class ORLogs extends Component {
             <br />
             {record.address}
           </div>
-        )
+        ),
       },
       {
         title: "Operation Performed",
-        dataIndex: "operation_performed"
+        dataIndex: "operation_performed",
       },
       {
         title: "Tentative Diagnosis",
-        dataIndex: "tentative_diagnosis"
+        dataIndex: "tentative_diagnosis",
       },
       {
         title: "Final Diagnosis",
-        dataIndex: "final_diagnosis"
+        dataIndex: "final_diagnosis",
       },
       {
         title: "Surgeon",
-        dataIndex: "surgeon.full_name"
+        dataIndex: "surgeon.full_name",
       },
       {
         title: "Asst.",
-        dataIndex: "assistant_surgeon.full_name"
+        dataIndex: "assistant_surgeon.full_name",
       },
       {
         title: "Anaesth",
-        dataIndex: "main_anes.full_name"
+        dataIndex: "main_anes.full_name",
       },
       {
         title: "Scrub",
-        dataIndex: "sponge_nurse.full_name"
+        dataIndex: "sponge_nurse.full_name",
       },
       {
         title: "Circulating",
-        dataIndex: "instrument_nurse.full_name"
+        dataIndex: "instrument_nurse.full_name",
       },
       {
         title: "Time Ward Informed",
         dataIndex: "time_ward_informed",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Arrival Time",
         dataIndex: "arrival_time",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Room is Ready",
         dataIndex: "room_is_ready",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Equip/Inst Ready",
         dataIndex: "equip_ready",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Patient Placed in OR Table",
         dataIndex: "patient_placed_in_or_table",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Time Anes Arrived",
         dataIndex: "time_anes_arrived",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Induction Time",
         dataIndex: "induction_time",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
 
       {
         title: "Induction Completed",
         dataIndex: "induction_completed",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Time OR Started",
         dataIndex: "time_or_started",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "OR Ended",
         dataIndex: "or_ended",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Trans Out from OR",
         dataIndex: "trans_out_from_or",
-        render: value => <span>{value && moment(value).format("lll")}</span>
+        render: (value) => <span>{value && moment(value).format("lll")}</span>,
       },
       {
         title: "Surgical Safety Checklist",
         dataIndex: "surgical_safety_checklist",
-        render: value => <span>{value ? <Icon type="check" /> : ""}</span>
-      }
+        render: (value) => <span>{value ? <Icon type="check" /> : ""}</span>,
+      },
     ];
 
     const { errors } = this.state;
@@ -273,7 +273,7 @@ class ORLogs extends Component {
               <PageHeader
                 backIcon={false}
                 style={{
-                  border: "1px solid rgb(235, 237, 240)"
+                  border: "1px solid rgb(235, 237, 240)",
                 }}
                 onBack={() => null}
                 title="Advance Filter"
@@ -286,7 +286,7 @@ class ORLogs extends Component {
                         label="Date of Surgery"
                         name="period_covered"
                         value={this.state.search_period_covered}
-                        onChange={dates =>
+                        onChange={(dates) =>
                           this.setState({ search_period_covered: dates })
                         }
                         error={errors.period_covered}
@@ -298,7 +298,7 @@ class ORLogs extends Component {
                         label="OR Number"
                         name="search_operating_room_number"
                         value={this.state.search_operating_room_number}
-                        onChange={value =>
+                        onChange={(value) =>
                           this.setState({ search_operating_room_number: value })
                         }
                         formItemLayout={smallFormItemLayout}
@@ -314,9 +314,9 @@ class ORLogs extends Component {
                           this.state.search_surgeon &&
                           this.state.search_surgeon.full_name
                         }
-                        onChange={index =>
+                        onChange={(index) =>
                           this.setState({
-                            search_surgeon: this.state.options.surgeons[index]
+                            search_surgeon: this.state.options.surgeons[index],
                           })
                         }
                         onSearch={this.onSurgeonSearch}
@@ -357,10 +357,10 @@ class ORLogs extends Component {
                           this.state.search_main_anes &&
                           this.state.search_main_anes.full_name
                         }
-                        onChange={index =>
+                        onChange={(index) =>
                           this.setState({
                             search_main_anes: this.state.options
-                              .anesthesiologists[index]
+                              .anesthesiologists[index],
                           })
                         }
                         onSearch={this.onAnesSearch}
@@ -398,7 +398,7 @@ class ORLogs extends Component {
               className="is-scrollable small-table or-slip-table"
               dataSource={this.state.records}
               columns={records_column}
-              rowKey={record => record._id}
+              rowKey={(record) => record._id}
               pagination={false}
             />
           </div>
@@ -408,9 +408,9 @@ class ORLogs extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 

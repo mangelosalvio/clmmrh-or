@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoose_paginate = require("mongoose-paginate");
 const Schema = mongoose.Schema;
 
 const NurseSchema = new Schema({
@@ -11,26 +12,28 @@ const NurseSchema = new Schema({
   job_status: String,
   on_duty: {
     type: Boolean,
-    default: false
+    default: false,
   },
   logs: [
     {
       user: Object,
       datetime: Date,
-      log: String
-    }
-  ]
+      log: String,
+    },
+  ],
 });
 
 NurseSchema.set("toObject", {
-  virtuals: true
+  virtuals: true,
 });
 NurseSchema.set("toJSON", {
-  virtuals: true
+  virtuals: true,
 });
 
-NurseSchema.virtual("full_name").get(function() {
+NurseSchema.virtual("full_name").get(function () {
   return `${this.last_name}, ${this.first_name} ${this.middle_name}`;
 });
+
+NurseSchema.plugin(mongoose_paginate);
 
 module.exports = mongoose.model("nurses", NurseSchema);

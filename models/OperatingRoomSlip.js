@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoose_paginate = require("mongoose-paginate");
 const Schema = mongoose.Schema;
 
 const OperatingRoomSlipSchema = new Schema({
@@ -54,8 +55,8 @@ const OperatingRoomSlipSchema = new Schema({
   other_sponge_nurses: [Object],
   anes_methods: [
     {
-      method: String
-    }
+      method: String,
+    },
   ],
   anes_used: String,
   anes_quantity: String,
@@ -67,8 +68,8 @@ const OperatingRoomSlipSchema = new Schema({
       anes_used: String,
       anes_quantity: String,
       anes_quantity_unit: String,
-      anes_route: String
-    }
+      anes_route: String,
+    },
   ],
 
   anes_start: Date,
@@ -108,8 +109,8 @@ const OperatingRoomSlipSchema = new Schema({
     {
       rvs_code: String,
       rvs_description: String,
-      rvs_laterality: String
-    }
+      rvs_laterality: String,
+    },
   ],
 
   surgical_memos: [
@@ -126,8 +127,8 @@ const OperatingRoomSlipSchema = new Schema({
       other_anes: [Object],
       anes_methods: [
         {
-          method: String
-        }
+          method: String,
+        },
       ],
       anes_used: String,
       anes_quantity: String,
@@ -139,8 +140,8 @@ const OperatingRoomSlipSchema = new Schema({
           anes_used: String,
           anes_quantity: String,
           anes_quantity_unit: String,
-          anes_route: String
-        }
+          anes_route: String,
+        },
       ],
 
       anes_start: Date,
@@ -164,20 +165,20 @@ const OperatingRoomSlipSchema = new Schema({
         {
           rvs_code: String,
           rvs_description: String,
-          rvs_laterality: String
-        }
+          rvs_laterality: String,
+        },
       ],
       optech: Object,
-      optech_content: String
-    }
+      optech_content: String,
+    },
   ],
 
   logs: [
     {
       user: Object,
       datetime: Date,
-      log: String
-    }
+      log: String,
+    },
   ],
 
   ob_operative_technique: {
@@ -186,18 +187,19 @@ const OperatingRoomSlipSchema = new Schema({
     uterus: String,
     adnexae: String,
     discharges: String,
-    ligation_equipment: String
+    ligation_equipment: String,
   },
   optech: Object,
   optech_content: String,
   optech_others: [
     {
       optech: Object,
-      optech_content: String
-    }
-  ]
+      optech_content: String,
+    },
+  ],
 });
 
+OperatingRoomSlipSchema.plugin(mongoose_paginate);
 module.exports = mongoose.model(
   "operating_room_slips",
   OperatingRoomSlipSchema

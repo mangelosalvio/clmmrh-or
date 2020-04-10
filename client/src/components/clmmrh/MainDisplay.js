@@ -9,7 +9,6 @@ import { sortBy } from "lodash";
 import {
   EMERGENCY_PROCEDURE,
   SOCKET_ENDPOINT,
-  CASE_EMERGENCY_PROCEDURE,
   CANCEL,
 } from "./../../utils/constants";
 import socketIoClient from "socket.io-client";

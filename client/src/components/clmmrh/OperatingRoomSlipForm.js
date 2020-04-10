@@ -28,8 +28,6 @@ import {
   notification,
 } from "antd";
 import {
-  formItemLayout,
-  tailFormItemLayout,
   smallFormItemLayout,
   smallTailFormItemLayout,
 } from "./../../utils/Layouts";
@@ -64,9 +62,7 @@ import CheckboxFieldGroup from "../../commons/CheckboxFieldGroup";
 import TextAreaAutocompleteGroup from "../../commons/TextAreaAutocompleteGroup";
 import { debounce } from "lodash";
 import {
-  OPERATION_STATUS_ON_SCHEDULE,
   OPERATION_STATUS_ON_GOING,
-  IN_HOLDING_ROOM,
   ON_RECOVERY,
   EMERGENCY_PROCEDURE,
   ELECTIVE_SURGERY,
@@ -75,7 +71,6 @@ import {
   POST_OPERATION_MODULE,
   TIME_LOGS_MODULE,
   CASE_EMERGENCY_PROCEDURE,
-  CLASSIFICATION_PRIVATE,
   CLASSIFICATION_HOUSECASE,
   CLASSIFICATION_SERVICE,
   USER_ADMIN,
@@ -86,10 +81,8 @@ import {
 } from "./../../utils/constants";
 import socketIoClient from "socket.io-client";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
-import CheckboxGroup from "antd/lib/checkbox/Group";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 import { Editor } from "@tinymce/tinymce-react";
-import { TextField } from "@material-ui/core";
 import CheckboxGroupFieldGroup from "../../commons/CheckboxGroupFieldGroup";
 
 const { Content } = Layout;
@@ -207,6 +200,8 @@ const form_data = {
   errors: {},
 };
 
+let is_processing = false;
+
 class OperatingRoomSlipForm extends Component {
   state = {
     title: "Operating Room Form",
@@ -260,12 +255,12 @@ class OperatingRoomSlipForm extends Component {
         this.props.auth.user.role !== USER_WARD &&
         this.state[collection_name].length > 0
       ) {
-        this.searchRecords();
+        this.onSearch();
       }
     });
 
     if (this.props.auth.user && this.props.auth.user.role !== USER_WARD) {
-      this.searchRecords();
+      this.onSearch();
     } else {
       /**
        * set operation status to null if ward
@@ -320,6 +315,8 @@ class OperatingRoomSlipForm extends Component {
   onSubmit = (e, { form }) => {
     e.preventDefault();
 
+    if (is_processing) return;
+
     const form_data = {
       ...this.state,
       form,
@@ -351,44 +348,52 @@ class OperatingRoomSlipForm extends Component {
     }
 
     const loading = message.loading("Processing...");
+    is_processing = true;
     promise
       .then(({ data }) => {
+        is_processing = false;
         loading();
         message.success("Transaction Saved");
 
         if (this.props.auth.user && this.props.auth.user.role === USER_WARD) {
           this.addNew();
         } else {
-          this.searchRecords();
+          this.onSearch();
         }
       })
       .catch((err) => {
+        is_processing = false;
         loading();
         message.error("You have an error");
         this.setState({ errors: err.response.data });
       });
   };
 
-  onSearch = (value, e) => {
-    e.preventDefault();
-    this.searchRecords();
-  };
+  onSearch = ({ page = 1 } = { page: 1 }) => {
+    const loading = message.loading("Loading...", 0);
 
-  searchRecords = () => {
-    const loading = message.loading("Loading...");
+    const form_data = {
+      page,
+      s: this.state.search_keyword,
+    };
+
     axios
-      .get(this.state.url + "?s=" + this.state.search_keyword)
+      .post(this.state.url + "paginate", form_data)
       .then((response) => {
         loading();
         this.setState({
-          [collection_name]: response.data,
-          message: isEmpty(response.data) ? "No rows found" : "",
+          [collection_name]: [...response.data.docs],
+          total_records: response.data.total,
+          current_page: page,
         });
+
+        if (response.data.total <= 0) {
+          message.success("No records found");
+        }
       })
       .catch((err) => {
         loading();
-        message.error("An error has occurred");
-        console.log(err);
+        message.error("There was an error processing your request");
       });
   };
 
@@ -502,7 +507,7 @@ class OperatingRoomSlipForm extends Component {
       .delete(this.state.url + this.state._id)
       .then((response) => {
         message.success("Transaction Deleted");
-        this.searchRecords();
+        this.onSearch();
         /* this.setState({
           ...form_data,
           message: "Transaction Deleted"
@@ -1248,9 +1253,14 @@ class OperatingRoomSlipForm extends Component {
   };
 
   onChangePage = (current_page) => {
-    this.setState({
-      current_page,
-    });
+    this.setState(
+      {
+        current_page,
+      },
+      () => {
+        this.onSearch({ page: current_page });
+      }
+    );
   };
 
   onDeleteSelection = () => {
@@ -1271,7 +1281,7 @@ class OperatingRoomSlipForm extends Component {
           .then((response) => {
             loading();
             message.success("Items Deleted");
-            this.searchRecords();
+            this.onSearch();
             this.setState({
               selected_row_keys: [],
             });
@@ -1696,7 +1706,10 @@ class OperatingRoomSlipForm extends Component {
           <div className="column">
             <Searchbar
               name="search_keyword"
-              onSearch={this.onSearch}
+              onSearch={(value, e) => {
+                e.preventDefault();
+                this.onSearch({ page: this.state.current_page });
+              }}
               onChange={this.onChange}
               value={this.state.search_keyword}
               onNew={this.addNew}
@@ -3336,10 +3349,7 @@ class OperatingRoomSlipForm extends Component {
                               "searchreplace visualblocks code fullscreen",
                               "insertdatetime media table paste code help wordcount",
                             ],
-                            toolbar:
-                              "undo redo | formatselect | bold italic backcolor | \
-             alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help",
+                            toolbar: `undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help`,
                           }}
                           onEditorChange={(content, editor) => {
                             this.setState({
@@ -3455,10 +3465,7 @@ class OperatingRoomSlipForm extends Component {
                                 "searchreplace visualblocks code fullscreen",
                                 "insertdatetime media table paste code help wordcount",
                               ],
-                              toolbar:
-                                "undo redo | formatselect | bold italic backcolor | \
-             alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help",
+                              toolbar: `undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help`,
                             }}
                             onEditorChange={(content, editor) => {
                               const optech_others = [
@@ -4720,10 +4727,7 @@ class OperatingRoomSlipForm extends Component {
                                   "searchreplace visualblocks code fullscreen",
                                   "insertdatetime media table paste code help wordcount",
                                 ],
-                                toolbar:
-                                  "undo redo | formatselect | bold italic backcolor | \
-             alignleft aligncenter alignright alignjustify | \
-             bullist numlist outdent indent | removeformat | help",
+                                toolbar: `undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help`,
                               }}
                               onEditorChange={(content, editor) => {
                                 const surgical_memos = [
@@ -5052,6 +5056,8 @@ class OperatingRoomSlipForm extends Component {
                   current: this.state.current_page,
                   defaultCurrent: this.state.current_page,
                   onChange: this.onChangePage,
+                  total: this.state.total_records,
+                  pageSize: 10,
                 }}
                 rowSelection={rowSelection}
               />

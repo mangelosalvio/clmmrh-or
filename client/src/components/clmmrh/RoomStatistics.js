@@ -4,16 +4,13 @@ import axios from "axios";
 import {
   Layout,
   Breadcrumb,
-  Table,
-  Icon,
   Row,
   Col,
   Button,
   PageHeader,
   message,
-  Divider
 } from "antd";
-import { formItemLayout, smallFormItemLayout } from "./../../utils/Layouts";
+import { smallFormItemLayout } from "./../../utils/Layouts";
 import round from "./../../utils/round";
 import RangeDatePickerFieldGroup from "../../commons/RangeDatePickerFieldGroup";
 import moment from "moment";
@@ -23,7 +20,7 @@ import TextFieldGroup from "../../commons/TextFieldGroup";
 import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 import {
   operating_room_number_options,
-  classification_options
+  classification_options,
 } from "../../utils/Options";
 import { sumBy } from "lodash";
 import numeral from "numeral";
@@ -37,7 +34,7 @@ const form_data = {
   _id: "",
   records: [],
   period_covered: [],
-  errors: {}
+  errors: {},
 };
 
 class RoomStatistics extends Component {
@@ -51,7 +48,7 @@ class RoomStatistics extends Component {
       anesthesiologists: [],
       nurses: [],
       rvs: [],
-      patients: []
+      patients: [],
     },
 
     search_period_covered: [null, null],
@@ -59,12 +56,12 @@ class RoomStatistics extends Component {
     search_operating_room_number: "",
     search_main_anes: "",
     search_surgeon: "",
-    search_classification: ""
+    search_classification: "",
   };
 
   componentDidMount() {}
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
@@ -79,7 +76,7 @@ class RoomStatistics extends Component {
       search_surgeon,
       search_procedure,
       search_classification,
-      search_main_anes
+      search_main_anes,
     } = this.state;
 
     const form_data = {
@@ -88,50 +85,50 @@ class RoomStatistics extends Component {
       search_surgeon,
       search_procedure,
       search_classification,
-      search_main_anes
+      search_main_anes,
     };
     const loading = message.loading("Loading...");
 
     axios
       .post("/api/operating-room-slips/room-statistics", form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         this.setState({
-          records: response.data
+          records: response.data,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         loading();
         message.error("There was an error processing your request");
       });
   };
 
-  onAnesSearch = value => {
+  onAnesSearch = (value) => {
     axios
       .get(`/api/anesthesiologists/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            anesthesiologists: response.data
-          }
+            anesthesiologists: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  onSurgeonSearch = value => {
+  onSurgeonSearch = (value) => {
     axios
       .get(`/api/surgeons/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            surgeons: response.data
-          }
+            surgeons: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   render() {
@@ -156,7 +153,7 @@ class RoomStatistics extends Component {
               <PageHeader
                 backIcon={false}
                 style={{
-                  border: "1px solid rgb(235, 237, 240)"
+                  border: "1px solid rgb(235, 237, 240)",
                 }}
                 onBack={() => null}
                 title="Advance Filter"
@@ -169,7 +166,7 @@ class RoomStatistics extends Component {
                         label="Date of Surgery"
                         name="period_covered"
                         value={this.state.search_period_covered}
-                        onChange={dates =>
+                        onChange={(dates) =>
                           this.setState({ search_period_covered: dates })
                         }
                         error={errors.period_covered}
@@ -181,7 +178,7 @@ class RoomStatistics extends Component {
                         label="OR Number"
                         name="search_operating_room_number"
                         value={this.state.search_operating_room_number}
-                        onChange={value =>
+                        onChange={(value) =>
                           this.setState({ search_operating_room_number: value })
                         }
                         formItemLayout={smallFormItemLayout}
@@ -197,9 +194,9 @@ class RoomStatistics extends Component {
                           this.state.search_surgeon &&
                           this.state.search_surgeon.full_name
                         }
-                        onChange={index =>
+                        onChange={(index) =>
                           this.setState({
-                            search_surgeon: this.state.options.surgeons[index]
+                            search_surgeon: this.state.options.surgeons[index],
                           })
                         }
                         onSearch={this.onSurgeonSearch}
@@ -240,10 +237,10 @@ class RoomStatistics extends Component {
                           this.state.search_main_anes &&
                           this.state.search_main_anes.full_name
                         }
-                        onChange={index =>
+                        onChange={(index) =>
                           this.setState({
                             search_main_anes: this.state.options
-                              .anesthesiologists[index]
+                              .anesthesiologists[index],
                           })
                         }
                         onSearch={this.onAnesSearch}
@@ -260,7 +257,7 @@ class RoomStatistics extends Component {
                         <Col offset={8} span={12}>
                           <Button
                             style={{
-                              marginRight: "8px"
+                              marginRight: "8px",
                             }}
                             type="primary"
                             size="small"
@@ -295,11 +292,11 @@ class RoomStatistics extends Component {
           <div
             className="room-statistics"
             style={{ overflow: "auto" }}
-            ref={el => (this.printableRef = el)}
+            ref={(el) => (this.printableRef = el)}
           >
             <Row>
               <Col span={1}></Col>
-              {operating_room_number_options.map(or_number => (
+              {operating_room_number_options.map((or_number) => (
                 <Col span={2} className="has-text-centered">
                   {or_number}
                 </Col>
@@ -307,7 +304,7 @@ class RoomStatistics extends Component {
             </Row>
             <Row>
               <Col span={1}>Date</Col>
-              {operating_room_number_options.map(or_number => [
+              {operating_room_number_options.map((or_number) => [
                 <Col span={2}>
                   <Row>
                     <Col span={8} className="has-text-right">
@@ -322,23 +319,23 @@ class RoomStatistics extends Component {
                       MINS
                     </Col>
                   </Row>
-                </Col>
+                </Col>,
               ])}
             </Row>
-            {this.state.records.map(record => {
+            {this.state.records.map((record) => {
               let total_room_mins = numeral(0);
               return [
                 <Row gutter={8}>
                   <Col span={1}>{moment(record.date).format("MM/DD/YYYY")}</Col>
-                  {operating_room_number_options.map(or_number => {
+                  {operating_room_number_options.map((or_number) => {
                     const item = record.items.find(
-                      o => o.operating_room_number === or_number
+                      (o) => o.operating_room_number === or_number
                     );
 
                     if (item && item.times && item.times.length > 0) {
                       return (
                         <Col span={2}>
-                          {item.times.map(time => {
+                          {item.times.map((time) => {
                             return (
                               <Row gutter={8}>
                                 <Col span={8} className="has-text-right">
@@ -365,14 +362,14 @@ class RoomStatistics extends Component {
                 </Row>,
                 <Row>
                   <Col span={1}></Col>
-                  {operating_room_number_options.map(or_number => {
+                  {operating_room_number_options.map((or_number) => {
                     let total_mins = 0;
                     const item = record.items.find(
-                      o => o.operating_room_number === or_number
+                      (o) => o.operating_room_number === or_number
                     );
 
                     if (item && item.times && item.times.length > 0) {
-                      total_mins = round(sumBy(item.times, o => o.mins));
+                      total_mins = round(sumBy(item.times, (o) => o.mins));
                       total_room_mins.add(total_mins);
                     }
                     return (
@@ -387,19 +384,19 @@ class RoomStatistics extends Component {
                 </Row>,
                 <Row>
                   <Col span={24}>&nbsp;</Col>
-                </Row>
+                </Row>,
               ];
             })}
             <Row>
               <Col span={1}></Col>
-              {operating_room_number_options.map(or_number => {
-                const total = sumBy(this.state.records || [], o => {
+              {operating_room_number_options.map((or_number) => {
+                const total = sumBy(this.state.records || [], (o) => {
                   return sumBy(
                     o.items.filter(
-                      or => or.operating_room_number === or_number
+                      (or) => or.operating_room_number === or_number
                     ) || [],
-                    item => {
-                      return sumBy(item.times || [], o => o.mins);
+                    (item) => {
+                      return sumBy(item.times || [], (o) => o.mins);
                     }
                   );
                 });
@@ -423,9 +420,9 @@ class RoomStatistics extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 

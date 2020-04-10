@@ -18,8 +18,8 @@ const Model = Nurse;
 
 router.get("/:id", (req, res) => {
   Model.findById(req.params.id)
-    .then(record => res.json(record))
-    .catch(err => console.log(err));
+    .then((record) => res.json(record))
+    .catch((err) => console.log(err));
 });
 
 router.get("/", (req, res) => {
@@ -27,16 +27,16 @@ router.get("/", (req, res) => {
     ? {}
     : {
         last_name: {
-          $regex: new RegExp(req.query.s, "i")
-        }
+          $regex: new RegExp(req.query.s, "i"),
+        },
       };
 
   Model.find(form_data)
     .sort({ last_name: 1, first_name: 1 })
-    .then(records => {
+    .then((records) => {
       return res.json(records);
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 });
 
 router.put("/", (req, res) => {
@@ -51,8 +51,8 @@ router.put("/", (req, res) => {
   Model.findOne({
     last_name: body.last_name,
     first_name: body.first_name,
-    middle_name: body.middle_name
-  }).then(record => {
+    middle_name: body.middle_name,
+  }).then((record) => {
     if (record) {
       errors["last_name"] = "Name already exists";
       return res.status(401).json(errors);
@@ -64,31 +64,56 @@ router.put("/", (req, res) => {
         {
           user,
           datetime,
-          log
-        }
+          log,
+        },
       ];
 
       const newRecord = new Model({
         ...body,
-        logs
+        logs,
       });
       newRecord
         .save()
-        .then(record => {
+        .then((record) => {
           const io = req.app.get("socketio");
           io.emit("refresh-display", true);
           return res.json(record);
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     }
   });
 });
 
+router.post("/paginate", (req, res) => {
+  let page = req.body.page || 1;
+
+  const form_data = {
+    ...(!isEmpty(req.body.s) && {
+      last_name: {
+        $regex: new RegExp(req.body.s, "i"),
+      },
+    }),
+  };
+
+  Model.paginate(form_data, {
+    sort: {
+      last_name: 1,
+      first_name: 1,
+    },
+    page,
+    limit: 10,
+  })
+    .then((records) => {
+      return res.json(records);
+    })
+    .catch((err) => console.log(err));
+});
+
 router.post("/:id/on-duty", (req, res) => {
-  Nurse.findById(req.params.id).then(nurse => {
+  Nurse.findById(req.params.id).then((nurse) => {
     if (nurse) {
       nurse.on_duty = req.body.on_duty;
-      nurse.save().then(nurse => {
+      nurse.save().then((nurse) => {
         const io = req.app.get("socketio");
         io.emit("refresh-display", true);
         return res.json(nurse);
@@ -98,10 +123,10 @@ router.post("/:id/on-duty", (req, res) => {
 });
 
 router.post("/:id/assignment", (req, res) => {
-  Nurse.findById(req.params.id).then(nurse => {
+  Nurse.findById(req.params.id).then((nurse) => {
     if (nurse) {
       nurse.assignment = req.body.assignment;
-      nurse.save().then(nurse => {
+      nurse.save().then((nurse) => {
         const io = req.app.get("socketio");
         io.emit("refresh-display", true);
         return res.json(nurse);
@@ -120,7 +145,7 @@ router.post("/:id", (req, res) => {
   const filtered_body = filterId(req);
   const user = req.body.user;
 
-  Model.findById(req.params.id).then(record => {
+  Model.findById(req.params.id).then((record) => {
     if (record) {
       const datetime = moment.tz(moment(), process.env.TIMEZONE);
       const log = `Modified by ${user.name} on ${datetime.format("LLL")}`;
@@ -130,27 +155,27 @@ router.post("/:id", (req, res) => {
         {
           user,
           datetime,
-          log
-        }
+          log,
+        },
       ];
 
       const body = {
         ...filtered_body,
-        logs
+        logs,
       };
 
       record.set({
-        ...body
+        ...body,
       });
 
       record
         .save()
-        .then(record => {
+        .then((record) => {
           const io = req.app.get("socketio");
           io.emit("refresh-display", true);
           return res.json(record);
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     } else {
       console.log("ID not found");
     }
@@ -159,12 +184,12 @@ router.post("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
   Model.findByIdAndRemove(req.params.id)
-    .then(response => {
+    .then((response) => {
       const io = req.app.get("socketio");
       io.emit("refresh-display", true);
       return res.json({ success: 1 });
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 });
 
 module.exports = router;

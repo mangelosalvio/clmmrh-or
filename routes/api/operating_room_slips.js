@@ -190,6 +190,61 @@ router.put("/", (req, res) => {
     .catch((err) => console.log(err));
 });
 
+router.post("/paginate", (req, res) => {
+  let page = req.body.page || 1;
+
+  const form_data = {
+    ...(!isEmpty(req.body.s) && {
+      $or: [
+        {
+          name: {
+            $regex: new RegExp(req.body.s, "i"),
+          },
+        },
+        {
+          procedure: {
+            $regex: new RegExp(req.body.s, "i"),
+          },
+        },
+      ],
+    }),
+  };
+
+  Model.paginate(form_data, {
+    select: {
+      hospital_number: 1,
+      ward: 1,
+      name: 1,
+      age: 1,
+      sex: 1,
+      diagnosis: 1,
+      procedure: 1,
+      surgeon: 1,
+      main_anes: 1,
+      operating_room_number: 1,
+      service: 1,
+      date_time_of_surgery: 1,
+      classification: 1,
+      operation_status: 1,
+      case: 1,
+      or_ended: 1,
+      date_time_ordered: 1,
+      operation_status: 1,
+      operation_finished: 1,
+    },
+    sort: {
+      _id: -1,
+      name: 1,
+    },
+    page,
+    limit: 10,
+  })
+    .then((records) => {
+      return res.json(records);
+    })
+    .catch((err) => console.log(err));
+});
+
 router.post("/advanced-search", (req, res) => {
   const {
     search_period_covered,

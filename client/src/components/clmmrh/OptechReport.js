@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
-import { Layout, message, Col, Row, Input } from "antd";
+import { Layout, message, Col, Row } from "antd";
 import { debounce } from "lodash";
 
 import moment from "moment";
@@ -98,7 +98,7 @@ const form_data = {
   rvs: [],
   optech_others: [],
 
-  errors: {}
+  errors: {},
 };
 
 class OptechReport extends Component {
@@ -108,7 +108,7 @@ class OptechReport extends Component {
     search_keyword: "",
     values: [],
     rvs: [],
-    optech_content: "<div></div>"
+    optech_content: "<div></div>",
   };
 
   constructor(props) {
@@ -140,7 +140,7 @@ class OptechReport extends Component {
     }
 
     promise
-      .then(response => {
+      .then((response) => {
         const record = response.data;
         const {
           date_of_birth,
@@ -163,10 +163,10 @@ class OptechReport extends Component {
           time_or_started,
           or_ended,
           trans_out_from_or,
-          surgical_safety_checklist
+          surgical_safety_checklist,
         } = response.data;
         this.setState(
-          prevState => {
+          (prevState) => {
             return {
               ...form_data,
               [collection_name]: [],
@@ -219,7 +219,7 @@ class OptechReport extends Component {
               surgical_safety_checklist: surgical_safety_checklist
                 ? moment(surgical_safety_checklist)
                 : null,
-              errors: {}
+              errors: {},
             };
           },
           () => {
@@ -227,7 +227,7 @@ class OptechReport extends Component {
           }
         );
       })
-      .catch(err => {
+      .catch((err) => {
         message.error("An error has occurred");
         console.log(err);
       });
@@ -252,46 +252,46 @@ class OptechReport extends Component {
     const form_data = {
       id,
       index,
-      values: this.state.values
+      values: this.state.values,
     };
 
     axios
       .post(`${this.state.url}${this.state._id}/operative-technique`, form_data)
-      .then(response => {})
-      .catch(err => {
+      .then((response) => {})
+      .catch((err) => {
         message.error("There was an error updating your transaction");
       });
   };
 
-  onSurgeonSearch = value => {
+  onSurgeonSearch = (value) => {
     axios
       .get(`/api/surgeons/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            surgeons: response.data
-          }
+            surgeons: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  onAnesSearch = value => {
+  onAnesSearch = (value) => {
     axios
       .get(`/api/anesthesiologists/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            anesthesiologists: response.data
-          }
+            anesthesiologists: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  renderHTML = content => (
+  renderHTML = (content) => (
     <div dangerouslySetInnerHTML={{ __html: content }}></div>
   );
 
@@ -325,18 +325,18 @@ class OptechReport extends Component {
             {this.state.surgeon &&
               this.state.surgeon.license_number && [
                 <br />,
-                `Lic. No.${this.state.surgeon.license_number}`
+                `Lic. No.${this.state.surgeon.license_number}`,
               ]}
             {this.state.surgeon &&
               this.state.surgeon.department && [
                 <br />,
-                this.state.surgeon.department
+                this.state.surgeon.department,
               ]}
           </Col>
           <Col span={1} className="is-flex" style={{ height: "48px" }}>
             <span
               style={{
-                alignSelf: "flex-end"
+                alignSelf: "flex-end",
               }}
             >
               M.D.
@@ -361,10 +361,10 @@ class OptechReport extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
     auth: state.auth,
-    map: state.map
+    map: state.map,
   };
 };
 

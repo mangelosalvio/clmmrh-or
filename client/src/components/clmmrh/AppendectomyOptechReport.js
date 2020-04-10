@@ -2,15 +2,10 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
-import { Layout, message, Col, Row, Input } from "antd";
+import { Layout, message } from "antd";
 import { debounce } from "lodash";
-
-import moment from "moment";
 import OptechHeader from "./OptechHeader";
-
 const { Content } = Layout;
-
-const collection_name = "slips";
 
 class AppendectomyOptechReport extends Component {
   state = {
@@ -18,7 +13,7 @@ class AppendectomyOptechReport extends Component {
     url: "/api/operating-room-slips/",
     search_keyword: "",
     values: [],
-    rvs: []
+    rvs: [],
   };
 
   constructor(props) {
@@ -31,16 +26,14 @@ class AppendectomyOptechReport extends Component {
   }
 
   getRecord = () => {
-    const id = this.props.match.params.id;
-
     axios
       .get(
         `${this.state.url}${this.props.match.params.id}/operative-technique/${this.props.match.params.index}`
       )
-      .then(response => {
+      .then((response) => {
         if (response.data && response.data.values) {
           this.setState({
-            values: response.data.values
+            values: response.data.values,
           });
         }
       });
@@ -65,43 +58,43 @@ class AppendectomyOptechReport extends Component {
     const form_data = {
       id,
       index,
-      values: this.state.values
+      values: this.state.values,
     };
 
     axios
       .post(`${this.state.url}${this.state._id}/operative-technique`, form_data)
-      .then(response => {})
-      .catch(err => {
+      .then((response) => {})
+      .catch((err) => {
         message.error("There was an error updating your transaction");
       });
   };
 
-  onSurgeonSearch = value => {
+  onSurgeonSearch = (value) => {
     axios
       .get(`/api/surgeons/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            surgeons: response.data
-          }
+            surgeons: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  onAnesSearch = value => {
+  onAnesSearch = (value) => {
     axios
       .get(`/api/anesthesiologists/?s=${value}`)
-      .then(response =>
+      .then((response) =>
         this.setState({
           options: {
             ...this.state.options,
-            anesthesiologists: response.data
-          }
+            anesthesiologists: response.data,
+          },
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   render() {
@@ -170,10 +163,10 @@ class AppendectomyOptechReport extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
     auth: state.auth,
-    map: state.map
+    map: state.map,
   };
 };
 

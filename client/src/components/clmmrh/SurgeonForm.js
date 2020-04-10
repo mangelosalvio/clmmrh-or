@@ -9,7 +9,6 @@ import { Layout, Breadcrumb, Form, Table, Icon, message } from "antd";
 import { formItemLayout, tailFormItemLayout } from "./../../utils/Layouts";
 import { gender_options, service_options } from "../../utils/Options";
 import RadioGroupFieldGroup from "../../commons/RadioGroupFieldGroup";
-import SimpleSelectFieldGroup from "../../commons/SimpleSelectFieldGroup";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
 
 const { Content } = Layout;
@@ -27,7 +26,7 @@ const form_data = {
   contact_number: "",
   department: "",
   license_number: "",
-  errors: {}
+  errors: {},
 };
 
 class SurgeonForm extends Component {
@@ -35,23 +34,23 @@ class SurgeonForm extends Component {
     title: "Surgeon Form",
     url: "/api/surgeons/",
     search_keyword: "",
-    ...form_data
+    ...form_data,
   };
 
   componentDidMount() {
     this.searchRecords();
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
 
     const form_data = {
       ...this.state,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
 
     if (isEmpty(this.state._id)) {
@@ -62,10 +61,10 @@ class SurgeonForm extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Saved"
+            message: "Transaction Saved",
           });
         })
-        .catch(err => {
+        .catch((err) => {
           message.error("You have an invalid input");
           this.setState({ errors: err.response.data });
         });
@@ -77,10 +76,10 @@ class SurgeonForm extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Updated"
+            message: "Transaction Updated",
           });
         })
-        .catch(err => this.setState({ errors: err.response.data }));
+        .catch((err) => this.setState({ errors: err.response.data }));
     }
   };
 
@@ -92,51 +91,51 @@ class SurgeonForm extends Component {
   searchRecords = () => {
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response =>
+      .then((response) =>
         this.setState({
           [collection_name]: response.data,
-          message: isEmpty(response.data) ? "No rows found" : ""
+          message: isEmpty(response.data) ? "No rows found" : "",
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   addNew = () => {
     this.setState({
       ...form_data,
       errors: {},
-      message: ""
+      message: "",
     });
   };
 
-  edit = record => {
+  edit = (record) => {
     axios
       .get(this.state.url + record._id)
-      .then(response => {
+      .then((response) => {
         const record = response.data;
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             ...form_data,
             [collection_name]: [],
             ...record,
-            errors: {}
+            errors: {},
           };
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onDelete = () => {
     axios
       .delete(this.state.url + this.state._id)
-      .then(response => {
+      .then((response) => {
         message.success("Transaction Deleted");
         this.setState({
           ...form_data,
-          message: "Transaction Deleted"
+          message: "Transaction Deleted",
         });
       })
-      .catch(err => {
+      .catch((err) => {
         message.error(err.response.data.message);
       });
   };
@@ -149,11 +148,11 @@ class SurgeonForm extends Component {
     const records_column = [
       {
         title: "Name",
-        dataIndex: "full_name"
+        dataIndex: "full_name",
       },
       {
         title: "Department",
-        dataIndex: "department"
+        dataIndex: "department",
       },
 
       {
@@ -169,8 +168,8 @@ class SurgeonForm extends Component {
               onClick={() => this.edit(record)}
             />
           </span>
-        )
-      }
+        ),
+      },
     ];
 
     const { errors } = this.state;
@@ -251,7 +250,7 @@ class SurgeonForm extends Component {
                 value={this.state.department}
                 dataSource={service_options}
                 onSelect={this.onSelectPatient}
-                onChange={value => this.setState({ department: value })}
+                onChange={(value) => this.setState({ department: value })}
                 formItemLayout={formItemLayout}
                 filterOption={(inputValue, option) =>
                   option.props.children
@@ -292,7 +291,7 @@ class SurgeonForm extends Component {
             <Table
               dataSource={this.state[collection_name]}
               columns={records_column}
-              rowKey={record => record._id}
+              rowKey={(record) => record._id}
             />
           )}
         </div>
@@ -301,9 +300,9 @@ class SurgeonForm extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 

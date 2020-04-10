@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const mongoose_paginate = require("mongoose-paginate");
 const Schema = mongoose.Schema;
 
 const AnesSchema = new Schema({
@@ -11,27 +12,28 @@ const AnesSchema = new Schema({
   year_level: String,
   on_duty: {
     type: Boolean,
-    default: false
+    default: false,
   },
   logs: [
     {
       user: Object,
       datetime: Date,
-      log: String
-    }
+      log: String,
+    },
   ],
-  license_number: String
+  license_number: String,
 });
 
 AnesSchema.set("toObject", {
-  virtuals: true
+  virtuals: true,
 });
 AnesSchema.set("toJSON", {
-  virtuals: true
+  virtuals: true,
 });
 
-AnesSchema.virtual("full_name").get(function() {
+AnesSchema.virtual("full_name").get(function () {
   return `${this.last_name}, ${this.first_name} ${this.middle_name}`;
 });
 
+AnesSchema.plugin(mongoose_paginate);
 module.exports = mongoose.model("anesthesiologists", AnesSchema);
