@@ -707,3 +707,8 @@ li.ant-select-dropdown-menu-item:hover {
     display: table-footer-group;
   }
 }
+
+.or-slip-form .ant-form-item-control:not(.has-error) div.ant-form-explain {
+  font-weight: bold;
+  color: #1890ff;
+}

@@ -16,7 +16,7 @@ const TextFieldGroup = ({
   readOnly,
   autoComplete,
   onPressEnter,
-  extra
+  extra,
 }) => (
   <Form.Item
     label={label}
@@ -49,15 +49,14 @@ TextFieldGroup.propTypes = {
   disabled: PropTypes.bool,
   readOnly: PropTypes.bool,
   onChange: PropTypes.func,
-  inputRef: PropTypes.func,
-  autoComplete: PropTypes.string
+  autoComplete: PropTypes.string,
 };
 
 TextFieldGroup.defaultProps = {
   text: "text",
   disabled: false,
   readOnly: false,
-  autoComplete: "on"
+  autoComplete: "on",
 };
 
 export default TextFieldGroup;
