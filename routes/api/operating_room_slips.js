@@ -193,7 +193,46 @@ router.put("/", (req, res) => {
 router.post("/paginate", (req, res) => {
   let page = req.body.page || 1;
 
+  const {
+    search_period_covered,
+    search_operating_room_number,
+    search_surgeon,
+    search_procedure,
+    search_classification,
+    search_main_anes,
+    search_service,
+  } = req.body;
+
   const form_data = {
+    ...(search_period_covered &&
+      search_period_covered[0] &&
+      search_period_covered[1] && {
+        date_time_of_surgery: {
+          $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+          $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+        },
+      }),
+    ...(search_procedure && {
+      procedure: {
+        $regex: new RegExp(search_procedure, "i"),
+      },
+    }),
+    ...(search_operating_room_number && {
+      operating_room_number: search_operating_room_number,
+    }),
+    ...(search_classification &&
+      !["All", ""].includes(search_classification) && {
+        classification: search_classification,
+      }),
+    ...(search_surgeon && {
+      "surgeon._id": search_surgeon._id,
+    }),
+    ...(search_main_anes && {
+      "main_anes._id": search_main_anes._id,
+    }),
+    ...(search_service && {
+      service: search_service,
+    }),
     ...(!isEmpty(req.body.s) && {
       $or: [
         {

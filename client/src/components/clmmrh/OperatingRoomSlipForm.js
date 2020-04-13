@@ -372,9 +372,26 @@ class OperatingRoomSlipForm extends Component {
   onSearch = ({ page = 1 } = { page: 1 }) => {
     const loading = message.loading("Loading...", 0);
 
+    const {
+      search_period_covered,
+      search_operating_room_number,
+      search_surgeon,
+      search_procedure,
+      search_classification,
+      search_main_anes,
+      search_service,
+    } = this.state;
+
     const form_data = {
       page,
       s: this.state.search_keyword,
+      search_period_covered,
+      search_operating_room_number,
+      search_surgeon,
+      search_procedure,
+      search_classification,
+      search_main_anes,
+      search_service,
     };
 
     axios
@@ -1853,7 +1870,7 @@ class OperatingRoomSlipForm extends Component {
                                 type="info"
                                 size="small"
                                 icon="search"
-                                onClick={() => this.onAdvancedSearch()}
+                                onClick={() => this.onSearch()}
                               >
                                 Search
                               </Button>
