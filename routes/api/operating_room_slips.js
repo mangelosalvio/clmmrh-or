@@ -201,6 +201,8 @@ router.post("/paginate", (req, res) => {
     search_classification,
     search_main_anes,
     search_service,
+    search_case,
+    search_operation_status,
   } = req.body;
 
   const form_data = {
@@ -232,6 +234,13 @@ router.post("/paginate", (req, res) => {
     }),
     ...(search_service && {
       service: search_service,
+    }),
+    ...(search_case &&
+      search_case !== "All" && {
+        case: search_case,
+      }),
+    ...(search_operation_status && {
+      operation_status: search_operation_status,
     }),
     ...(!isEmpty(req.body.s) && {
       $or: [

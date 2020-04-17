@@ -380,6 +380,8 @@ class OperatingRoomSlipForm extends Component {
       search_classification,
       search_main_anes,
       search_service,
+      search_case,
+      search_operation_status,
     } = this.state;
 
     const form_data = {
@@ -392,6 +394,8 @@ class OperatingRoomSlipForm extends Component {
       search_classification,
       search_main_anes,
       search_service,
+      search_case,
+      search_operation_status,
     };
 
     axios
@@ -402,6 +406,7 @@ class OperatingRoomSlipForm extends Component {
           [collection_name]: [...response.data.docs],
           total_records: response.data.total,
           current_page: page,
+          limit: response.data.limit,
         });
 
         if (response.data.total <= 0) {
@@ -1859,8 +1864,30 @@ class OperatingRoomSlipForm extends Component {
                             options={service_options}
                           />
                         </Col>
-                        <Col span={8} />
-                        <Col span={8} />
+                        <Col span={8}>
+                          <RadioGroupFieldGroup
+                            label="Case"
+                            name="search_case"
+                            value={this.state.search_case}
+                            onChange={this.onChangeCase}
+                            error={errors.search_case}
+                            formItemLayout={smallFormItemLayout}
+                            options={["All", ...case_options]}
+                          />
+                        </Col>
+                        <Col span={8}>
+                          <SimpleSelectFieldGroup
+                            label="Status"
+                            name="search_operation_status"
+                            value={this.state.search_operation_status}
+                            onChange={(value) =>
+                              this.setState({ search_operation_status: value })
+                            }
+                            formItemLayout={smallFormItemLayout}
+                            error={errors.search_operation_status}
+                            options={operation_status_options}
+                          />
+                        </Col>
                       </Row>
                       <Row>
                         <Col span={8}>
@@ -5064,6 +5091,7 @@ class OperatingRoomSlipForm extends Component {
                   </Button>
                 )}
               </div>
+
               <Table
                 className="or-slip-table"
                 dataSource={this.state[collection_name]}
@@ -5077,6 +5105,25 @@ class OperatingRoomSlipForm extends Component {
                   pageSize: 10,
                 }}
                 rowSelection={rowSelection}
+                footer={(data) => {
+                  const limit = data.length;
+                  const first_page =
+                    this.state.current_page * this.state.limit -
+                    this.state.limit +
+                    1;
+                  const next_page = first_page + limit - 1;
+                  return (
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        fontStyle: "italic",
+                      }}
+                    >
+                      Showing {first_page} to {next_page} of{" "}
+                      {this.state.total_records} entries
+                    </div>
+                  );
+                }}
               />
             </div>
           )}
