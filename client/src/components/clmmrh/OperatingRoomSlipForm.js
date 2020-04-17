@@ -1865,13 +1865,15 @@ class OperatingRoomSlipForm extends Component {
                           />
                         </Col>
                         <Col span={8}>
-                          <RadioGroupFieldGroup
+                          <SimpleSelectFieldGroup
                             label="Case"
                             name="search_case"
                             value={this.state.search_case}
-                            onChange={this.onChangeCase}
-                            error={errors.search_case}
+                            onChange={(value) =>
+                              this.setState({ search_case: value })
+                            }
                             formItemLayout={smallFormItemLayout}
+                            error={errors.search_case}
                             options={["All", ...case_options]}
                           />
                         </Col>
