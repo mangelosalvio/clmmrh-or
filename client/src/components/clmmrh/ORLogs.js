@@ -395,7 +395,7 @@ class ORLogs extends Component {
           </Row>
           <div style={{ overflow: "auto" }}>
             <Table
-              className="is-scrollable small-table or-slip-table"
+              className="is-scrollable  or-slip-table"
               dataSource={this.state.records}
               columns={records_column}
               rowKey={(record) => record._id}
