@@ -59,7 +59,7 @@ class ORLogs extends Component {
   };
 
   componentDidMount() {
-    this.getRecords();
+    //this.getRecords();
   }
 
   onChange = (e) => {
