@@ -282,7 +282,6 @@ router.post("/paginate", (req, res) => {
     },
     sort: {
       _id: -1,
-      name: 1,
     },
     page,
     limit: 10,
