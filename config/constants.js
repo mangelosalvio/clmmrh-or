@@ -54,4 +54,14 @@ module.exports = {
   PHILHEALTH: "PHILHEALTH", // housecase
   PHIC: "PHIC", // housecase
   PDAF: "PDAF",
+
+  SEX_MALE: "Male",
+  SEX_FEMALE: "Female",
+
+  AGE_CATEGORY_17_BELOW: "17 Years and Below",
+  AGE_CATEGORY_18_ABOVE: "18 Years and Above",
+
+  OPERATION_TYPE_MINOR: "Minor",
+  OPERATION_TYPE_MAJOR: "Major",
+  OPERATION_TYPE_CESAREAN: "Cesarean",
 };

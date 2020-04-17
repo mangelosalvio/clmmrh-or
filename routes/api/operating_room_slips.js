@@ -640,6 +640,221 @@ router.post("/logs", (req, res) => {
     .then((records) => res.json(records));
 });
 
+router.post("/or-monthly-report", (req, res) => {
+  const {
+    search_period_covered,
+    search_operating_room_number,
+    search_surgeon,
+    search_procedure,
+    search_classification,
+    search_main_anes,
+  } = req.body;
+
+  const form_data = {
+    ...(search_period_covered[0] &&
+      search_period_covered[1] && {
+        date_time_of_surgery: {
+          $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+          $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+        },
+      }),
+    ...(search_procedure && {
+      procedure: {
+        $regex: new RegExp(search_procedure, "i"),
+      },
+    }),
+    ...(search_operating_room_number && {
+      operating_room_number: search_operating_room_number,
+    }),
+    ...(!["All", ""].includes(search_classification) && {
+      classification: search_classification,
+    }),
+    ...(search_surgeon && {
+      "surgeon._id": search_surgeon._id,
+    }),
+    ...(search_main_anes && {
+      "main_anes._id": search_main_anes._id,
+    }),
+  };
+
+  OperatingRoomSlip.aggregate([
+    {
+      $match: {
+        ...(search_period_covered[0] &&
+          search_period_covered[1] && {
+            date_time_of_surgery: {
+              $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+              $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+            },
+          }),
+        ...(search_procedure && {
+          procedure: {
+            $regex: new RegExp(search_procedure, "i"),
+          },
+        }),
+        ...(search_operating_room_number && {
+          operating_room_number: search_operating_room_number,
+        }),
+        ...(!["All", ""].includes(search_classification) && {
+          classification: search_classification,
+        }),
+        ...(search_surgeon && {
+          "surgeon._id": search_surgeon._id,
+        }),
+        ...(search_main_anes && {
+          "main_anes._id": search_main_anes._id,
+        }),
+      },
+    },
+    {
+      $match: {
+        $and: [
+          {
+            operation_type: {
+              $ne: "",
+            },
+          },
+          {
+            operation_type: {
+              $ne: null,
+            },
+          },
+          {
+            age: {
+              $ne: "",
+            },
+          },
+          {
+            age: {
+              $ne: null,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        age: {
+          $toInt: {
+            $arrayElemAt: [
+              {
+                $split: [
+                  {
+                    $toUpper: "$age",
+                  },
+                  "Y",
+                ],
+              },
+              0,
+            ],
+          },
+        },
+        operation_type: 1,
+        sex: 1,
+      },
+    },
+    {
+      $addFields: {
+        age_category: {
+          $cond: [
+            {
+              $lte: ["$age", 17],
+            },
+            "17 Years and Below",
+            "18 Years and Above",
+          ],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          operation_type: "$operation_type",
+          age_category: "$age_category",
+          sex: "$sex",
+        },
+        count: {
+          $sum: 1,
+        },
+      },
+    },
+    {
+      $sort: {
+        age_category: 1,
+        sex: 1,
+      },
+    },
+  ]).then((records) => {
+    const major_columns = [constants.SEX_MALE, constants.SEX_FEMALE];
+    const major_rows = [
+      constants.AGE_CATEGORY_18_ABOVE,
+      constants.AGE_CATEGORY_17_BELOW,
+    ];
+
+    let major_records = [{}, {}];
+    let minor_records = [{}, {}];
+
+    major_rows.forEach((age_category, age_category_index) => {
+      major_columns.forEach((sex, sex_index) => {
+        const major_result = records.find((record) => {
+          return (
+            record._id.operation_type === constants.OPERATION_TYPE_MAJOR &&
+            record._id.sex === sex &&
+            record._id.age_category === age_category
+          );
+        });
+
+        major_records[age_category_index]["label"] = age_category;
+        if (major_result) {
+          major_records[age_category_index][sex.toLowerCase()] =
+            major_result.count;
+        } else {
+          major_records[age_category_index][sex.toLowerCase()] = 0;
+        }
+
+        /**
+         * MINOR RESULTS
+         */
+
+        const minor_result = records.find((record) => {
+          return (
+            record._id.operation_type === constants.OPERATION_TYPE_MINOR &&
+            record._id.sex === sex &&
+            record._id.age_category === age_category
+          );
+        });
+
+        minor_records[age_category_index]["label"] = age_category;
+        if (minor_result) {
+          minor_records[age_category_index][sex.toLowerCase()] =
+            minor_result.count;
+        } else {
+          minor_records[age_category_index][sex.toLowerCase()] = 0;
+        }
+      });
+    });
+
+    major_records = major_records.map((record) => {
+      const total = numeral(0);
+      total.add(record.male).add(record.female);
+      return {
+        ...record,
+        total: total.value(),
+      };
+    });
+    minor_records = minor_records.map((record) => {
+      const total = numeral(0);
+      total.add(record.male).add(record.female);
+      return {
+        ...record,
+        total: total.value(),
+      };
+    });
+
+    return res.json({ major_records, minor_records });
+  });
+});
+
 router.post("/room-statistics", (req, res) => {
   const {
     search_period_covered,

@@ -23,6 +23,7 @@ import OptechSelectionForm from "../components/clmmrh/OptechSelectionForm";
 import OptechReport from "../components/clmmrh/OptechReport";
 import RoomStatistics from "../components/clmmrh/RoomStatistics";
 import ORElectiveForm from "../components/pas/ORElectiveForm";
+import ORMonthlyReport from "../components/clmmrh/ORMonthlyReport";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -40,6 +41,11 @@ const AppRouter = () => (
         />
 
         <PrivateRoute path="/or-logs" component={ORLogs} exact={true} />
+        <PrivateRoute
+          path="/or-monthly-report"
+          component={ORMonthlyReport}
+          exact={true}
+        />
 
         <PrivateRoute
           path="/room-statistics"

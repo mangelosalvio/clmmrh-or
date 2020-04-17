@@ -712,3 +712,8 @@ li.ant-select-dropdown-menu-item:hover {
   font-weight: bold;
   color: #1890ff;
 }
+
+.or-report-heading {
+  font-size: 11px;
+  font-weight: bold;
+}
