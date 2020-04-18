@@ -530,7 +530,7 @@ class ORScheduleForm extends Component {
                     <button className="button is-small is-primary">Save</button>
                   </div>
                   {!isEmpty(this.state._id) ? (
-                    <a
+                    <span
                       className="button is-danger is-outlined is-small"
                       onClick={this.onDelete}
                     >
@@ -538,7 +538,7 @@ class ORScheduleForm extends Component {
                       <span className="icon is-small">
                         <i className="fas fa-times" />
                       </span>
-                    </a>
+                    </span>
                   ) : null}
                 </div>
               </Form.Item>

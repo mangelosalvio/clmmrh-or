@@ -4,7 +4,7 @@ export const civil_status_options = [
   "Single",
   "Married",
   "Divorced",
-  "Widowed"
+  "Widowed",
 ];
 
 export const transaction_options = ["Water Billing", "Association Dues"];
@@ -16,14 +16,14 @@ export const faculty_status = [
   "Faculty-Part-time",
   "Faculty-Probationary",
   "Faculty-Permanent",
-  "Staff"
+  "Staff",
 ];
 
 export const types_of_discipline = [
   "Multidisciplinary",
   "Interdisciplinary",
   "Transdisciplinary",
-  "Monodisciplinary"
+  "Monodisciplinary",
 ];
 
 export const teaching_assignments = ["Liceo", "Undergraduate", "IS"];
@@ -53,8 +53,22 @@ export const service_options = [
   "DENTAL",
   "OPD",
   "RADIOLOGY",
-  "URO"
+  "URO",
 ];
+
+export const services_label = {
+  OB: "Obsetrics and Gynecology",
+  GS: "General Surgery",
+  ENT: "Ears, Nose, and Throat - Head and Neck Surgery",
+  ORTHO: "Orthopedics and Traumatology",
+  OPHTHA: "Opthamology",
+  IM: "Internal Medicine",
+  PEDIATRICS: "Pediatrics",
+  DENTAL: "Dental",
+  OPD: "Out Patient Department",
+  RADIOLOGY: "Radiology",
+  URO: "Urology",
+};
 
 export const case_order_options = [
   "1st Case",
@@ -64,7 +78,7 @@ export const case_order_options = [
   "5th Case",
   "6th Case",
   "7th Case",
-  "8th Case"
+  "8th Case",
 ];
 
 export const operation_type_options = ["Major", "Minor", "Cesarean"];
@@ -76,7 +90,7 @@ export const operation_status_options = [
   "CANCEL",
   "POSTPONE",
   "IN HOLDING ROOM",
-  "ON RECOVERY"
+  "ON RECOVERY",
 ];
 
 export const bed_number_options = [
@@ -95,14 +109,14 @@ export const bed_number_options = [
   "WT 3",
   "OB 1",
   "OB 2",
-  "OB 3"
+  "OB 3",
 ];
 
 export const laterality_options = [
   "Left",
   "Right",
   "Bilateral",
-  "Not Applicable"
+  "Not Applicable",
 ];
 
 export const operating_room_number_options = [
@@ -116,7 +130,7 @@ export const operating_room_number_options = [
   "OB",
   "WT1",
   "WT2",
-  "EC"
+  "EC",
 ];
 
 export const assignment_options = ["NA", "TEAM CAPTAIN", "PACU", "24 HOURS"];
@@ -126,7 +140,7 @@ export const year_level_options = [
   "1ST YEAR",
   "2ND YEAR",
   "3RD YEAR",
-  "CONSULTANT"
+  "CONSULTANT",
 ];
 
 export const room_status_options = ["STATS", "OPEN", "CLOSED"];
@@ -136,14 +150,14 @@ export const year_level_order = {
   "1ST YEAR": 4,
   "2ND YEAR": 3,
   "3RD YEAR": 2,
-  CONSULTANT: 1
+  CONSULTANT: 1,
 };
 
 export const nurse_assignment_options = [
   "NA",
   "CHARGE NURSE",
   "RECEIVING NURSE",
-  "HOLDING ROOM"
+  "HOLDING ROOM",
 ];
 
 export const anes_route_options = [
@@ -152,7 +166,7 @@ export const anes_route_options = [
   "Epidural",
   "Rectal",
   "Perineural",
-  "Intrathecal"
+  "Intrathecal",
 ];
 
 export const anes_method_options = [
@@ -161,7 +175,7 @@ export const anes_method_options = [
   "Spinal anesthesia",
   "Peripheral nerve block",
   "Local anesthesia",
-  "Others"
+  "Others",
 ];
 
 export const anes_unit_options = ["ml", "mg", "mcg"];
@@ -175,12 +189,12 @@ export const special_equipment_needed_options = [
   "EGD/COLONSOCOPY",
   "MICROSCOPE",
   "IMAGE-INTENSIFIER/C-ARM",
-  "OTHERS"
+  "OTHERS",
 ];
 
 export const infectious_control_measures_options = [
   "ICC REFERRAL",
   "ISOLATION ROOM",
   "POST OPERATIVE MISTING",
-  "OTHERS"
+  "OTHERS",
 ];

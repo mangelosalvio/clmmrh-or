@@ -412,7 +412,6 @@ class RoomStatistics extends Component {
                 {round(horizontal_total.value())}
               </Col>
             </Row>
-            ,
           </div>
         </div>
       </Content>

@@ -4,6 +4,7 @@ const router = express.Router();
 const { Sequelize } = require("sequelize");
 const sortBy = require("lodash").sortBy;
 const sumBy = require("lodash").sumBy;
+const sortedUniq = require("lodash").sortedUniq;
 const sqldatabase = require("./../../config/sqldatabase");
 
 const OperatingRoomSlip = require("./../../models/OperatingRoomSlip");
@@ -648,63 +649,384 @@ router.post("/or-monthly-report", (req, res) => {
     search_procedure,
     search_classification,
     search_main_anes,
+    search_service,
+    search_case,
+    search_operation_status,
   } = req.body;
 
-  const form_data = {
-    ...(search_period_covered[0] &&
-      search_period_covered[1] && {
-        date_time_of_surgery: {
-          $gte: moment(search_period_covered[0]).startOf("day").toDate(),
-          $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+  const filter_query = {
+    $match: {
+      ...(search_period_covered[0] &&
+        search_period_covered[1] && {
+          operation_started: {
+            $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+            $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+          },
+        }),
+      ...(search_procedure && {
+        procedure: {
+          $regex: new RegExp(search_procedure, "i"),
         },
       }),
-    ...(search_procedure && {
-      procedure: {
-        $regex: new RegExp(search_procedure, "i"),
+      ...(search_operating_room_number && {
+        operating_room_number: search_operating_room_number,
+      }),
+      ...(!["All", "", null].includes(search_classification) && {
+        classification: search_classification,
+      }),
+      ...(search_surgeon && {
+        "surgeon._id": search_surgeon._id,
+      }),
+      ...(search_main_anes && {
+        "main_anes._id": search_main_anes._id,
+      }),
+      ...(search_service && {
+        service: search_service,
+      }),
+      ...(search_case &&
+        search_case !== "All" && {
+          case: search_case,
+        }),
+      ...(search_operation_status && {
+        operation_status: search_operation_status,
+      }),
+    },
+  };
+
+  async.parallel(
+    {
+      operations: (cb) => {
+        OperatingRoomSlip.aggregate([
+          {
+            ...filter_query,
+          },
+          {
+            $match: {
+              $and: [
+                {
+                  operation_type: {
+                    $ne: "",
+                  },
+                },
+                {
+                  operation_type: {
+                    $ne: null,
+                  },
+                },
+                {
+                  age: {
+                    $ne: "",
+                  },
+                },
+                {
+                  age: {
+                    $ne: null,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $project: {
+              age: {
+                $toInt: {
+                  $arrayElemAt: [
+                    {
+                      $split: [
+                        {
+                          $toUpper: "$age",
+                        },
+                        "Y",
+                      ],
+                    },
+                    0,
+                  ],
+                },
+              },
+              operation_type: 1,
+              sex: 1,
+            },
+          },
+          {
+            $addFields: {
+              age_category: {
+                $cond: [
+                  {
+                    $lte: ["$age", 17],
+                  },
+                  "17 Years and Below",
+                  "18 Years and Above",
+                ],
+              },
+            },
+          },
+          {
+            $group: {
+              _id: {
+                operation_type: "$operation_type",
+                age_category: "$age_category",
+                sex: "$sex",
+              },
+              count: {
+                $sum: 1,
+              },
+            },
+          },
+          {
+            $sort: {
+              age_category: 1,
+              sex: 1,
+            },
+          },
+        ]).exec(cb);
       },
-    }),
-    ...(search_operating_room_number && {
-      operating_room_number: search_operating_room_number,
-    }),
-    ...(!["All", ""].includes(search_classification) && {
-      classification: search_classification,
-    }),
-    ...(search_surgeon && {
-      "surgeon._id": search_surgeon._id,
-    }),
-    ...(search_main_anes && {
-      "main_anes._id": search_main_anes._id,
-    }),
+      summary: (cb) => {
+        OperatingRoomSlip.aggregate([
+          {
+            ...filter_query,
+          },
+          {
+            $match: {
+              $and: [
+                {
+                  operation_type: {
+                    $ne: "",
+                  },
+                },
+                {
+                  operation_type: {
+                    $ne: null,
+                  },
+                },
+                {
+                  classification: {
+                    $ne: null,
+                  },
+                },
+                {
+                  classification: {
+                    $ne: "",
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $project: {
+              operation_type: 1,
+              classification: 1,
+            },
+          },
+          {
+            $addFields: {
+              private: {
+                $cond: [
+                  {
+                    $eq: ["$classification", "Private"],
+                  },
+                  1,
+                  0,
+                ],
+              },
+              service: {
+                $cond: [
+                  {
+                    $eq: ["$classification", "Service"],
+                  },
+                  1,
+                  0,
+                ],
+              },
+              housecase: {
+                $cond: [
+                  {
+                    $eq: ["$classification", "Housecase"],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+          },
+          {
+            $group: {
+              _id: "$operation_type",
+              housecase: {
+                $sum: "$housecase",
+              },
+              private: {
+                $sum: "$private",
+              },
+              service: {
+                $sum: "$service",
+              },
+            },
+          },
+          {
+            $addFields: {
+              total: {
+                $add: ["$housecase", "$private", "$service"],
+              },
+            },
+          },
+        ]).exec(cb);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return res.status(401).json(err);
+      }
+
+      const records = [...results.operations];
+
+      const major_columns = [constants.SEX_MALE, constants.SEX_FEMALE];
+      const major_rows = [
+        constants.AGE_CATEGORY_18_ABOVE,
+        constants.AGE_CATEGORY_17_BELOW,
+      ];
+
+      let major_records = [{}, {}];
+      let minor_records = [{}, {}];
+
+      major_rows.forEach((age_category, age_category_index) => {
+        major_columns.forEach((sex, sex_index) => {
+          const major_result = records.find((record) => {
+            return (
+              record._id.operation_type === constants.OPERATION_TYPE_MAJOR &&
+              record._id.sex === sex &&
+              record._id.age_category === age_category
+            );
+          });
+
+          major_records[age_category_index]["label"] = age_category;
+          if (major_result) {
+            major_records[age_category_index][sex.toLowerCase()] =
+              major_result.count;
+          } else {
+            major_records[age_category_index][sex.toLowerCase()] = 0;
+          }
+
+          /**
+           * MINOR RESULTS
+           */
+
+          const minor_result = records.find((record) => {
+            return (
+              record._id.operation_type === constants.OPERATION_TYPE_MINOR &&
+              record._id.sex === sex &&
+              record._id.age_category === age_category
+            );
+          });
+
+          minor_records[age_category_index]["label"] = age_category;
+          if (minor_result) {
+            minor_records[age_category_index][sex.toLowerCase()] =
+              minor_result.count;
+          } else {
+            minor_records[age_category_index][sex.toLowerCase()] = 0;
+          }
+        });
+      });
+
+      major_records = major_records.map((record) => {
+        const total = numeral(0);
+        total.add(record.male).add(record.female);
+        return {
+          ...record,
+          total: total.value(),
+        };
+      });
+      minor_records = minor_records.map((record) => {
+        const total = numeral(0);
+        total.add(record.male).add(record.female);
+        return {
+          ...record,
+          total: total.value(),
+        };
+      });
+
+      /**
+       * SUMMARY
+       */
+
+      const summary_rows = [
+        constants.OPERATION_TYPE_MAJOR,
+        constants.OPERATION_TYPE_CESAREAN,
+        constants.OPERATION_TYPE_MINOR,
+      ];
+
+      let summary_records = [];
+
+      summary_rows.forEach((operation_type) => {
+        const operation_type_result = results.summary.find((o) => {
+          return o._id === operation_type;
+        });
+
+        if (operation_type_result) {
+          summary_records = [...summary_records, { ...operation_type_result }];
+        }
+      });
+
+      return res.json({ major_records, minor_records, summary_records });
+    }
+  );
+});
+
+router.post("/summary-of-operations-per-department", (req, res) => {
+  const {
+    search_period_covered,
+    search_operating_room_number,
+    search_surgeon,
+    search_procedure,
+    search_classification,
+    search_main_anes,
+    search_service,
+    search_case,
+    search_operation_status,
+  } = req.body;
+
+  const filter_query = {
+    $match: {
+      ...(search_period_covered[0] &&
+        search_period_covered[1] && {
+          operation_started: {
+            $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+            $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+          },
+        }),
+      ...(search_procedure && {
+        procedure: {
+          $regex: new RegExp(search_procedure, "i"),
+        },
+      }),
+      ...(search_operating_room_number && {
+        operating_room_number: search_operating_room_number,
+      }),
+      ...(!["All", "", null].includes(search_classification) && {
+        classification: search_classification,
+      }),
+      ...(search_surgeon && {
+        "surgeon._id": search_surgeon._id,
+      }),
+      ...(search_main_anes && {
+        "main_anes._id": search_main_anes._id,
+      }),
+      ...(search_service && {
+        service: search_service,
+      }),
+      ...(search_case &&
+        search_case !== "All" && {
+          case: search_case,
+        }),
+      ...(search_operation_status && {
+        operation_status: search_operation_status,
+      }),
+    },
   };
 
   OperatingRoomSlip.aggregate([
     {
-      $match: {
-        ...(search_period_covered[0] &&
-          search_period_covered[1] && {
-            date_time_of_surgery: {
-              $gte: moment(search_period_covered[0]).startOf("day").toDate(),
-              $lte: moment(search_period_covered[1]).endOf("day").toDate(),
-            },
-          }),
-        ...(search_procedure && {
-          procedure: {
-            $regex: new RegExp(search_procedure, "i"),
-          },
-        }),
-        ...(search_operating_room_number && {
-          operating_room_number: search_operating_room_number,
-        }),
-        ...(!["All", ""].includes(search_classification) && {
-          classification: search_classification,
-        }),
-        ...(search_surgeon && {
-          "surgeon._id": search_surgeon._id,
-        }),
-        ...(search_main_anes && {
-          "main_anes._id": search_main_anes._id,
-        }),
-      },
+      ...filter_query,
     },
     {
       $match: {
@@ -720,12 +1042,12 @@ router.post("/or-monthly-report", (req, res) => {
             },
           },
           {
-            age: {
+            service: {
               $ne: "",
             },
           },
           {
-            age: {
+            service: {
               $ne: null,
             },
           },
@@ -734,34 +1056,25 @@ router.post("/or-monthly-report", (req, res) => {
     },
     {
       $project: {
-        age: {
-          $toInt: {
-            $arrayElemAt: [
-              {
-                $split: [
-                  {
-                    $toUpper: "$age",
-                  },
-                  "Y",
-                ],
-              },
-              0,
-            ],
-          },
-        },
+        service: 1,
+        case: 1,
         operation_type: 1,
-        sex: 1,
-      },
-    },
-    {
-      $addFields: {
-        age_category: {
+        elective: {
           $cond: [
             {
-              $lte: ["$age", 17],
+              $eq: ["$case", "Elective Surgery"],
             },
-            "17 Years and Below",
-            "18 Years and Above",
+            1,
+            0,
+          ],
+        },
+        emergency: {
+          $cond: [
+            {
+              $eq: ["$case", "Emergency Procedure"],
+            },
+            1,
+            0,
           ],
         },
       },
@@ -769,89 +1082,66 @@ router.post("/or-monthly-report", (req, res) => {
     {
       $group: {
         _id: {
+          service: "$service",
           operation_type: "$operation_type",
-          age_category: "$age_category",
-          sex: "$sex",
         },
-        count: {
-          $sum: 1,
+        elective: {
+          $sum: "$elective",
         },
-      },
-    },
-    {
-      $sort: {
-        age_category: 1,
-        sex: 1,
+        emergency: {
+          $sum: "$emergency",
+        },
       },
     },
   ]).then((records) => {
-    const major_columns = [constants.SEX_MALE, constants.SEX_FEMALE];
-    const major_rows = [
-      constants.AGE_CATEGORY_18_ABOVE,
-      constants.AGE_CATEGORY_17_BELOW,
-    ];
+    let transaction_records = [];
 
-    let major_records = [{}, {}];
-    let minor_records = [{}, {}];
+    constants.SERVICES.forEach((service) => {
+      const operation_types = constants.OPERATION_TYPES.filter(
+        (operation_type) => {
+          /**
+           * Include only cesarean in GS
+           */
 
-    major_rows.forEach((age_category, age_category_index) => {
-      major_columns.forEach((sex, sex_index) => {
-        const major_result = records.find((record) => {
           return (
-            record._id.operation_type === constants.OPERATION_TYPE_MAJOR &&
-            record._id.sex === sex &&
-            record._id.age_category === age_category
+            (service !== constants.SERVICE_OB &&
+              [
+                constants.OPERATION_TYPE_MAJOR,
+                constants.OPERATION_TYPE_MINOR,
+              ].includes(operation_type)) ||
+            service === constants.SERVICE_OB
+          );
+        }
+      );
+
+      operation_types.forEach((operation_type) => {
+        const result = records.find((o) => {
+          return (
+            o._id.service === service && o._id.operation_type === operation_type
           );
         });
 
-        major_records[age_category_index]["label"] = age_category;
-        if (major_result) {
-          major_records[age_category_index][sex.toLowerCase()] =
-            major_result.count;
-        } else {
-          major_records[age_category_index][sex.toLowerCase()] = 0;
-        }
+        const { elective = 0, emergency = 0 } = result || {
+          emergency: 0,
+          elective: 0,
+        };
 
-        /**
-         * MINOR RESULTS
-         */
-
-        const minor_result = records.find((record) => {
-          return (
-            record._id.operation_type === constants.OPERATION_TYPE_MINOR &&
-            record._id.sex === sex &&
-            record._id.age_category === age_category
-          );
-        });
-
-        minor_records[age_category_index]["label"] = age_category;
-        if (minor_result) {
-          minor_records[age_category_index][sex.toLowerCase()] =
-            minor_result.count;
-        } else {
-          minor_records[age_category_index][sex.toLowerCase()] = 0;
-        }
+        transaction_records = [
+          ...transaction_records,
+          {
+            service,
+            operation_type,
+            elective,
+            emergency,
+            total: elective + emergency,
+          },
+        ];
       });
     });
 
-    major_records = major_records.map((record) => {
-      const total = numeral(0);
-      total.add(record.male).add(record.female);
-      return {
-        ...record,
-        total: total.value(),
-      };
-    });
-    minor_records = minor_records.map((record) => {
-      const total = numeral(0);
-      total.add(record.male).add(record.female);
-      return {
-        ...record,
-        total: total.value(),
-      };
-    });
+    console.log(transaction_records);
 
-    return res.json({ major_records, minor_records });
+    return res.json(transaction_records);
   });
 });
 

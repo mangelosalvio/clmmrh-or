@@ -3486,12 +3486,12 @@ class OperatingRoomSlipForm extends Component {
                                     this.setState({ optech_others });
                                   }}
                                 >
-                                  <a className="button is-danger is-outlined is-small control">
+                                  <span className="button is-danger is-outlined is-small control">
                                     <span>Delete Operative Technique</span>
                                     <span className="icon is-small">
                                       <i className="fas fa-times" />
                                     </span>
-                                  </a>
+                                  </span>
                                 </Popconfirm>
                               </div>,
                             ]}
@@ -3540,7 +3540,7 @@ class OperatingRoomSlipForm extends Component {
                             </div>
 
                             {!isEmpty(this.state._id) && [
-                              <div className="control">
+                              <div key="1" className="control">
                                 <Button
                                   className="button is-small is-outlined is-info"
                                   onClick={this.onAddOptech}
@@ -3551,7 +3551,7 @@ class OperatingRoomSlipForm extends Component {
                                   Add Operative Technique
                                 </Button>
                               </div>,
-                              <div className="control">
+                              <div key="2" className="control">
                                 <Link
                                   to={`/or-slip/${this.state._id}/surgical-memorandum`}
                                   target="_blank"
@@ -3564,7 +3564,7 @@ class OperatingRoomSlipForm extends Component {
                                   </Button>
                                 </Link>
                               </div>,
-                              <div className="control">
+                              <div key="3" className="control">
                                 <Button
                                   className="button is-small is-outlined is-info"
                                   onClick={this.onAddSurgicalMemo}
@@ -3576,7 +3576,7 @@ class OperatingRoomSlipForm extends Component {
                                 </Button>
                               </div>,
                               false && (
-                                <div className="control">
+                                <div className="control" key="4">
                                   <Link
                                     to={`/or-slip/${this.state._id}/operative-technique`}
                                     target="_blank"
@@ -3592,6 +3592,7 @@ class OperatingRoomSlipForm extends Component {
                               ),
                               is_admin && (
                                 <Popconfirm
+                                  key="5"
                                   title="Are you sure to delete this item?"
                                   className="button is-danger is-outlined is-small control"
                                   onConfirm={this.onDelete}
@@ -5062,12 +5063,12 @@ class OperatingRoomSlipForm extends Component {
                                 title="Are you sure to delete this item?"
                                 onConfirm={this.onDelete}
                               >
-                                <a className="button is-danger is-outlined is-small">
+                                <span className="button is-danger is-outlined is-small">
                                   <span>Delete</span>
                                   <span className="icon is-small">
                                     <i className="fas fa-times" />
                                   </span>
-                                </a>
+                                </span>
                               </Popconfirm>
                             )}
                           </div>

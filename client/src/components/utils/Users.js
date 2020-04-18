@@ -20,7 +20,7 @@ const form_data = {
   role: "",
   password: "",
   password_confirmation: "",
-  logs: []
+  logs: [],
 };
 
 const collection_field = "users";
@@ -34,7 +34,7 @@ class Users extends Component {
 
     [collection_field]: [],
 
-    ...form_data
+    ...form_data,
   };
 
   componentDidMount() {
@@ -47,30 +47,30 @@ class Users extends Component {
 
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response =>
+      .then((response) =>
         this.setState({
           users: response.data,
-          message: isEmpty(response.data) ? "No rows found" : ""
+          message: isEmpty(response.data) ? "No rows found" : "",
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onSelectChange = name => {
-    return value => {
+  onSelectChange = (name) => {
+    return (value) => {
       this.setState({ [name]: value });
     };
   };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
     const data = {
       ...this.state,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
 
     if (isEmpty(this.state._id)) {
@@ -80,10 +80,10 @@ class Users extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Saved"
+            message: "Transaction Saved",
           })
         )
-        .catch(err => this.setState({ errors: err.response.data }));
+        .catch((err) => this.setState({ errors: err.response.data }));
     } else {
       axios
         .post(this.state.url + this.state._id, data)
@@ -91,10 +91,10 @@ class Users extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Updated"
+            message: "Transaction Updated",
           })
         )
-        .catch(err => this.setState({ errors: err.response.data }));
+        .catch((err) => this.setState({ errors: err.response.data }));
     }
   };
 
@@ -103,13 +103,13 @@ class Users extends Component {
 
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response =>
+      .then((response) =>
         this.setState({
           users: response.data,
-          message: isEmpty(response.data) ? "No rows found" : ""
+          message: isEmpty(response.data) ? "No rows found" : "",
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   addNew = () => {
@@ -120,36 +120,36 @@ class Users extends Component {
       ...form_data,
 
       errors: {},
-      message: ""
+      message: "",
     });
   };
 
-  edit = record => {
+  edit = (record) => {
     axios
       .get(this.state.url + record._id)
-      .then(response => {
+      .then((response) => {
         const record = response.data;
         this.setState({
           [collection_field]: [],
           ...record,
           password: "",
           password_confirmation: "",
-          role: record.role ? record.role : null
+          role: record.role ? record.role : null,
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onDelete = () => {
     axios
       .delete(this.state.url + this.state._id)
-      .then(response => {
+      .then((response) => {
         this.setState({
           ...form_data,
-          message: "Transaction Deleted"
+          message: "Transaction Deleted",
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onHide = () => {
@@ -163,7 +163,7 @@ class Users extends Component {
       <Content
         style={{
           background: "#fff",
-          padding: 24
+          padding: 24,
         }}
         className="is-full-height-vh"
       >
@@ -209,7 +209,7 @@ class Users extends Component {
                 label="Role"
                 name="role"
                 value={this.state.role}
-                onChange={value => this.setState({ role: value })}
+                onChange={(value) => this.setState({ role: value })}
                 error={errors.role}
                 options={roles_options}
               />
@@ -238,7 +238,7 @@ class Users extends Component {
                 </div>
 
                 {!isEmpty(this.state._id) ? (
-                  <a
+                  <span
                     className="button is-danger is-outlined"
                     onClick={this.onDelete}
                   >
@@ -246,7 +246,7 @@ class Users extends Component {
                     <span className="icon is-small">
                       <i className="fas fa-times" />
                     </span>
-                  </a>
+                  </span>
                 ) : null}
               </div>
             </div>
@@ -284,9 +284,9 @@ class Users extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 

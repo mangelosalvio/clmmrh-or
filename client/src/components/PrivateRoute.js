@@ -128,7 +128,15 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
               <Link to="/or-monthly-report">
                 <span>
                   <Icon type="folder" />
-                  OR monthly Report
+                  OR Monthly Report
+                </span>
+              </Link>
+            </Menu.Item>
+            <Menu.Item key="/summary-of-operations-per-department">
+              <Link to="/summary-of-operations-per-department">
+                <span>
+                  <Icon type="folder" />
+                  Summary of Operations per Department
                 </span>
               </Link>
             </Menu.Item>

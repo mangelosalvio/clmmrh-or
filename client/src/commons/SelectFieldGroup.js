@@ -14,7 +14,7 @@ const SelectFieldGroup = ({
   data,
   autoFocus,
   inputRef,
-  column
+  column,
 }) => (
   <Form.Item
     label={label}
@@ -34,7 +34,7 @@ const SelectFieldGroup = ({
       autoFocus={autoFocus}
       ref={inputRef}
     >
-      {data.map((d, index) => (
+      {(data || []).map((d, index) => (
         <Option key={d._id} value={index}>
           {d[column]}
         </Option>
@@ -50,12 +50,12 @@ SelectFieldGroup.propTypes = {
   onChange: PropTypes.func,
   onSearch: PropTypes.func,
   autoFocus: PropTypes.bool,
-  column: PropTypes.string
+  column: PropTypes.string,
 };
 
 SelectFieldGroup.defaultProps = {
   autoFocus: false,
-  column: "name"
+  column: "name",
 };
 
 export default SelectFieldGroup;
