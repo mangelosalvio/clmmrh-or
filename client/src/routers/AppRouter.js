@@ -25,6 +25,7 @@ import RoomStatistics from "../components/clmmrh/RoomStatistics";
 import ORElectiveForm from "../components/pas/ORElectiveForm";
 import ORMonthlyReport from "../components/clmmrh/ORMonthlyReport";
 import SummaryOfOperationsPerDepartment from "../components/clmmrh/SummaryOfOperationsPerDepartment";
+import OperationsSummaryReport from "../components/clmmrh/OperationsSummaryReport";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -50,6 +51,11 @@ const AppRouter = () => (
         <PrivateRoute
           path="/summary-of-operations-per-department"
           component={SummaryOfOperationsPerDepartment}
+          exact={true}
+        />
+        <PrivateRoute
+          path="/operations-summary"
+          component={OperationsSummaryReport}
           exact={true}
         />
 

@@ -1139,10 +1139,185 @@ router.post("/summary-of-operations-per-department", (req, res) => {
       });
     });
 
-    console.log(transaction_records);
-
     return res.json(transaction_records);
   });
+});
+
+router.post("/operations-summary", (req, res) => {
+  const {
+    search_period_covered,
+    search_operating_room_number,
+    search_surgeon,
+    search_procedure,
+    search_classification,
+    search_main_anes,
+    search_service,
+    search_case,
+    search_operation_status,
+  } = req.body;
+
+  const filter_query = {
+    $match: {
+      ...(search_period_covered[0] &&
+        search_period_covered[1] && {
+          operation_started: {
+            $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+            $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+          },
+        }),
+      ...(search_procedure && {
+        procedure: {
+          $regex: new RegExp(search_procedure, "i"),
+        },
+      }),
+      ...(search_operating_room_number && {
+        operating_room_number: search_operating_room_number,
+      }),
+      ...(!["All", "", null].includes(search_classification) && {
+        classification: search_classification,
+      }),
+      ...(search_surgeon && {
+        "surgeon._id": search_surgeon._id,
+      }),
+      ...(search_main_anes && {
+        "main_anes._id": search_main_anes._id,
+      }),
+      ...(search_service && {
+        service: search_service,
+      }),
+      ...(search_case &&
+        search_case !== "All" && {
+          case: search_case,
+        }),
+      ...(search_operation_status && {
+        operation_status: search_operation_status,
+      }),
+    },
+  };
+
+  async.map(
+    constants.OPERATION_TYPES,
+    (operation_type, cb) => {
+      OperatingRoomSlip.aggregate([
+        {
+          ...filter_query,
+        },
+        {
+          $unwind: {
+            path: "$rvs",
+          },
+        },
+        {
+          $match: {
+            $and: [
+              {
+                "rvs.rvs_code": {
+                  $ne: "",
+                },
+              },
+              {
+                "rvs.rvs_description": {
+                  $ne: "",
+                },
+              },
+              {
+                classification: {
+                  $ne: null,
+                },
+              },
+              {
+                classification: {
+                  $ne: "",
+                },
+              },
+            ],
+            operation_type: operation_type,
+          },
+        },
+        {
+          $project: {
+            rvs: {
+              rvs_code: {
+                $trim: {
+                  input: "$rvs.rvs_code",
+                },
+              },
+              rvs_description: {
+                $trim: {
+                  input: "$rvs.rvs_description",
+                },
+              },
+            },
+            classification: 1,
+            operation_type: 1,
+          },
+        },
+        {
+          $addFields: {
+            private: {
+              $cond: [
+                {
+                  $eq: ["$classification", "Private"],
+                },
+                1,
+                0,
+              ],
+            },
+            service: {
+              $cond: [
+                {
+                  $eq: ["$classification", "Service"],
+                },
+                1,
+                0,
+              ],
+            },
+            housecase: {
+              $cond: [
+                {
+                  $eq: ["$classification", "Housecase"],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$rvs.rvs_code",
+            rvs: {
+              $first: "$rvs",
+            },
+            private: {
+              $sum: "$private",
+            },
+            service: {
+              $sum: "$service",
+            },
+            housecase: {
+              $sum: "$housecase",
+            },
+          },
+        },
+        {
+          $addFields: {
+            total: {
+              $add: ["$private", "$service", "$housecase"],
+            },
+          },
+        },
+        {
+          $sort: {
+            "rvs.rvs_description": 1,
+          },
+        },
+      ]).exec(cb);
+    },
+    (err, results) => {
+      return res.json(results);
+    }
+  );
 });
 
 router.post("/room-statistics", (req, res) => {

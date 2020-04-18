@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Redirect, Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { Layout, Menu, Icon } from "antd";
+import { Layout, Menu, Icon, Tooltip } from "antd";
 import Sider from "antd/lib/layout/Sider";
 import { USER_ADMIN, USER_WARD } from "./../utils/constants";
 import { logoutUser } from "../actions/authActions";
@@ -133,12 +133,27 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
               </Link>
             </Menu.Item>
             <Menu.Item key="/summary-of-operations-per-department">
-              <Link to="/summary-of-operations-per-department">
-                <span>
-                  <Icon type="folder" />
-                  Summary of Operations per Department
-                </span>
-              </Link>
+              <Tooltip
+                title="Summary of Operations per Department"
+                placement="right"
+              >
+                <Link to="/summary-of-operations-per-department">
+                  <span>
+                    <Icon type="folder" />
+                    Summary of Operations per Department
+                  </span>
+                </Link>
+              </Tooltip>
+            </Menu.Item>
+            <Menu.Item key="/operations-summary">
+              <Tooltip title="Summary of Operations" placement="right">
+                <Link to="/operations-summary">
+                  <span>
+                    <Icon type="folder" />
+                    Summary of Operations
+                  </span>
+                </Link>
+              </Tooltip>
             </Menu.Item>
           </SubMenu>,
           <Menu.Item key="/or-schedules">
