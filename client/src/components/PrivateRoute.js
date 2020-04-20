@@ -155,6 +155,19 @@ const PrivateRoute = ({ component: Component, logoutUser, auth, ...rest }) => (
                 </Link>
               </Tooltip>
             </Menu.Item>
+            <Menu.Item key="/summary-of-deferred-scheduled-procedures">
+              <Tooltip
+                title="Summary of Deferred Scheduled Procedures"
+                placement="right"
+              >
+                <Link to="/summary-of-deferred-scheduled-procedures">
+                  <span>
+                    <Icon type="folder" />
+                    Deferred Scheduled Procedures
+                  </span>
+                </Link>
+              </Tooltip>
+            </Menu.Item>
           </SubMenu>,
           <Menu.Item key="/or-schedules">
             <Link to="/or-schedules">

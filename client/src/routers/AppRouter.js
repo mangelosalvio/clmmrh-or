@@ -26,6 +26,7 @@ import ORElectiveForm from "../components/pas/ORElectiveForm";
 import ORMonthlyReport from "../components/clmmrh/ORMonthlyReport";
 import SummaryOfOperationsPerDepartment from "../components/clmmrh/SummaryOfOperationsPerDepartment";
 import OperationsSummaryReport from "../components/clmmrh/OperationsSummaryReport";
+import SummaryOfDeferredScheduledProcedures from "../components/clmmrh/SummaryOfDeferredScheduledProcedures";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -56,6 +57,11 @@ const AppRouter = () => (
         <PrivateRoute
           path="/operations-summary"
           component={OperationsSummaryReport}
+          exact={true}
+        />
+        <PrivateRoute
+          path="/summary-of-deferred-scheduled-procedures"
+          component={SummaryOfDeferredScheduledProcedures}
           exact={true}
         />
 

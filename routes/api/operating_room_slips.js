@@ -1143,6 +1143,233 @@ router.post("/summary-of-operations-per-department", (req, res) => {
   });
 });
 
+router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
+  const {
+    search_period_covered,
+    search_operating_room_number,
+    search_surgeon,
+    search_procedure,
+    search_classification,
+    search_main_anes,
+    search_service,
+    search_case,
+    search_operation_status,
+  } = req.body;
+
+  const filter_query = {
+    $match: {
+      ...(search_period_covered[0] &&
+        search_period_covered[1] && {
+          operation_started: {
+            $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+            $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+          },
+        }),
+      ...(search_procedure && {
+        procedure: {
+          $regex: new RegExp(search_procedure, "i"),
+        },
+      }),
+      ...(search_operating_room_number && {
+        operating_room_number: search_operating_room_number,
+      }),
+      ...(!["All", "", null].includes(search_classification) && {
+        classification: search_classification,
+      }),
+      ...(search_surgeon && {
+        "surgeon._id": search_surgeon._id,
+      }),
+      ...(search_main_anes && {
+        "main_anes._id": search_main_anes._id,
+      }),
+      ...(search_service && {
+        service: search_service,
+      }),
+      ...(search_case &&
+        search_case !== "All" && {
+          case: search_case,
+        }),
+      ...(search_operation_status && {
+        operation_status: search_operation_status,
+      }),
+    },
+  };
+
+  OperatingRoomSlip.aggregate([
+    {
+      ...filter_query,
+    },
+    {
+      $match: {
+        case: {
+          $in: ["Elective Surgery", "Emergency Procedure"],
+        },
+        operation_status: {
+          $in: ["POSTPONE", "CANCEL", "DONE"],
+        },
+        service: {
+          $nin: [null, ""],
+        },
+      },
+    },
+    {
+      $project: {
+        case: 1,
+        operation_status: 1,
+        service: 1,
+        elective_count: {
+          $cond: [
+            {
+              $eq: ["$case", "Elective Surgery"],
+            },
+            1,
+            0,
+          ],
+        },
+        emergency_count: {
+          $cond: [
+            {
+              $eq: ["$case", "Emergency Procedure"],
+            },
+            1,
+            0,
+          ],
+        },
+        postpone_count: {
+          $cond: [
+            {
+              $eq: ["$operation_status", "POSTPONE"],
+            },
+            1,
+            0,
+          ],
+        },
+        cancel_count: {
+          $cond: [
+            {
+              $eq: ["$operation_status", "CANCEL"],
+            },
+            1,
+            0,
+          ],
+        },
+      },
+    },
+    {
+      $addFields: {
+        done_count: {
+          $add: ["$elective_count", "$emergency_count"],
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          service: "$service",
+          case: "$case",
+        },
+        service: {
+          $first: "$service",
+        },
+        case: {
+          $first: "$case",
+        },
+        elective_count: {
+          $sum: "$elective_count",
+        },
+        emergency_count: {
+          $sum: "$emergency_count",
+        },
+        postpone_count: {
+          $sum: "$postpone_count",
+        },
+        cancel_count: {
+          $sum: "$cancel_count",
+        },
+        done_count: {
+          $sum: "$done_count",
+        },
+      },
+    },
+    {
+      $sort: {
+        service: 1,
+        case: 1,
+      },
+    },
+    {
+      $group: {
+        _id: "$service",
+        service: {
+          $first: "$service",
+        },
+        cancel_count: {
+          $sum: "$cancel_count",
+        },
+        postpone_count: {
+          $sum: "$postpone_count",
+        },
+        done_count: {
+          $sum: "$done_count",
+        },
+        procedures: {
+          $push: {
+            case: "$case",
+            count: {
+              $cond: [
+                {
+                  $eq: ["$case", "Elective Surgery"],
+                },
+                "$elective_count",
+                "$emergency_count",
+              ],
+            },
+            postpone_count: "$postpone_count",
+            cancel_count: "$cancel_count",
+            done_count: "$done_count",
+          },
+        },
+      },
+    },
+    {
+      $addFields: {
+        deferred_count: {
+          $add: ["$cancel_count", "$postpone_count"],
+        },
+      },
+    },
+    {
+      $sort: {
+        service: 1,
+      },
+    },
+  ]).then((records) => {
+    const cases = [constants.ELECTIVE_SURGERY, constants.EMERGENCY_PROCEDURE];
+    let transaction_records = [...records];
+
+    transaction_records = transaction_records.map((record) => {
+      let procedures = [...record.procedures];
+      for (let i = 0; i <= 1; i++) {
+        procedures[i] = procedures[i] || {
+          case:
+            i == 0 ? constants.ELECTIVE_SURGERY : constants.EMERGENCY_PROCEDURE,
+          count: 0,
+          postpone_count: 0,
+          cancel_count: 0,
+          done_count: 0,
+        };
+      }
+
+      return {
+        ...record,
+        procedures,
+      };
+    });
+
+    return res.json(transaction_records);
+  });
+});
+
 router.post("/operations-summary", (req, res) => {
   const {
     search_period_covered,
