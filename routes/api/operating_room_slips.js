@@ -21,6 +21,7 @@ const multer = require("multer");
 const fs = require("fs");
 const moment = require("moment-timezone");
 const round = require("./../../utils/round");
+const utilities = require("./../../utils/utilities");
 const numberFormat = require("./../../utils/numberFormat");
 const constants = require("./../../config/constants");
 const util = require("util");
@@ -28,6 +29,7 @@ const capitalize = require("lodash").capitalize;
 const startCase = require("lodash").startCase;
 const toLower = require("lodash").toLower;
 const toUpper = require("lodash").toUpper;
+const forOwn = require("lodash").forOwn;
 
 const numeral = require("numeral");
 const async = require("async");
@@ -1144,61 +1146,16 @@ router.post("/summary-of-operations-per-department", (req, res) => {
 });
 
 router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
-  const {
-    search_period_covered,
-    search_operating_room_number,
-    search_surgeon,
-    search_procedure,
-    search_classification,
-    search_main_anes,
-    search_service,
-    search_case,
-    search_operation_status,
-  } = req.body;
+  const all_filter_query = utilities.getFilterQueryForDateTimeOfSurgeryAndOperation(
+    { ...req.body }
+  );
 
-  const filter_query = {
-    $match: {
-      ...(search_period_covered[0] &&
-        search_period_covered[1] && {
-          operation_started: {
-            $gte: moment(search_period_covered[0]).startOf("day").toDate(),
-            $lte: moment(search_period_covered[1]).endOf("day").toDate(),
-          },
-        }),
-      ...(search_procedure && {
-        procedure: {
-          $regex: new RegExp(search_procedure, "i"),
-        },
-      }),
-      ...(search_operating_room_number && {
-        operating_room_number: search_operating_room_number,
-      }),
-      ...(!["All", "", null].includes(search_classification) && {
-        classification: search_classification,
-      }),
-      ...(search_surgeon && {
-        "surgeon._id": search_surgeon._id,
-      }),
-      ...(search_main_anes && {
-        "main_anes._id": search_main_anes._id,
-      }),
-      ...(search_service && {
-        service: search_service,
-      }),
-      ...(search_case &&
-        search_case !== "All" && {
-          case: search_case,
-        }),
-      ...(search_operation_status && {
-        operation_status: search_operation_status,
-      }),
-    },
-  };
+  const deferred_filter_query = utilities.getFilterQuery(
+    { ...req.body },
+    "date_time_of_surgery"
+  );
 
-  OperatingRoomSlip.aggregate([
-    {
-      ...filter_query,
-    },
+  const aggregate_query = [
     {
       $match: {
         case: {
@@ -1343,31 +1300,55 @@ router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
         service: 1,
       },
     },
-  ]).then((records) => {
-    const cases = [constants.ELECTIVE_SURGERY, constants.EMERGENCY_PROCEDURE];
-    let transaction_records = [...records];
+  ];
 
-    transaction_records = transaction_records.map((record) => {
-      let procedures = [...record.procedures];
-      for (let i = 0; i <= 1; i++) {
-        procedures[i] = procedures[i] || {
-          case:
-            i == 0 ? constants.ELECTIVE_SURGERY : constants.EMERGENCY_PROCEDURE,
-          count: 0,
-          postpone_count: 0,
-          cancel_count: 0,
-          done_count: 0,
-        };
+  const all_query = [all_filter_query, ...aggregate_query];
+  const deferred_query = [deferred_filter_query, ...aggregate_query];
+
+  async.parallel(
+    {
+      all_transactions: (cb) => {
+        OperatingRoomSlip.aggregate(all_query).exec(cb);
+      },
+      deferred_transactions: (cb) => {
+        OperatingRoomSlip.aggregate(deferred_query).exec(cb);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return res.status(401).json(err);
       }
 
-      return {
-        ...record,
-        procedures,
-      };
-    });
+      forOwn(results, (value, key, object) => {
+        let transactions = [...value];
 
-    return res.json(transaction_records);
-  });
+        transactions = transactions.map((record) => {
+          let procedures = [...record.procedures];
+          for (let i = 0; i <= 1; i++) {
+            procedures[i] = procedures[i] || {
+              case:
+                i == 0
+                  ? constants.ELECTIVE_SURGERY
+                  : constants.EMERGENCY_PROCEDURE,
+              count: 0,
+              postpone_count: 0,
+              cancel_count: 0,
+              done_count: 0,
+            };
+          }
+
+          return {
+            ...record,
+            procedures,
+          };
+        });
+
+        object[key] = transactions;
+      });
+
+      return res.json(results);
+    }
+  );
 });
 
 router.post("/operations-summary", (req, res) => {

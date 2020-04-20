@@ -15,7 +15,8 @@ const { Content } = Layout;
 const title = "Summary of Deferred Scheduled Procedures";
 
 function SummaryOfDeferredScheduledProcedures() {
-  const [records, setRecords] = useState([]);
+  const [all_records, setAllRecords] = useState([]);
+  const [deferred_records, setDeferredRecords] = useState([]);
 
   const getRecords = useCallback(
     ({
@@ -49,12 +50,16 @@ function SummaryOfDeferredScheduledProcedures() {
         )
         .then((response) => {
           loading();
+          console.log(response.data);
 
-          let records = [...response.data];
+          let all_records = [...response.data.all_transactions];
 
-          records = addKeysToArray(records);
+          let deferred_records = [...response.data.deferred_transactions];
+          all_records = addKeysToArray(all_records);
+          deferred_records = addKeysToArray(deferred_records);
 
-          setRecords(records);
+          setAllRecords(all_records);
+          setDeferredRecords(deferred_records);
         })
         .catch((err) => {
           loading();
@@ -110,94 +115,108 @@ function SummaryOfDeferredScheduledProcedures() {
               <th>
                 Subtotal Percentage B<sup>4</sup>
               </th>
-              <th>Total Percentage</th>
+              <th>
+                Total Percentage<sup>5</sup>
+              </th>
             </tr>
-            {records.map((record) => [
-              <tr>
-                <td rowSpan="4">{services_label[record.service]}</td>
-                <td rowSpan="2">Elective</td>
-                <td rowSpan="2">{record.procedures[0].count}</td>
-                <td rowSpan="4">{record.done_count}</td>
-                <td>Cancellation</td>
-                <td>{record.procedures[0].cancel_count}</td>
-                <td rowSpan="2">
-                  Cancellation <br />
-                  {record.cancel_count}
-                </td>
-                <td rowSpan="4">{record.deferred_count}</td>
-                <td>
-                  {record.procedures[0].count !== 0 &&
-                    `${round(
-                      (record.procedures[0].cancel_count /
-                        record.procedures[0].count) *
-                        100
-                    )}%`}
-                </td>
-                <td rowSpan="2">
-                  Cancellation <br />
-                  {record.done_count !== 0 &&
-                    `${round(
-                      (record.cancel_count / record.done_count) * 100
-                    )}%`}
-                </td>
-                <td rowSpan="4">
-                  {record.done_count !== 0 &&
-                    `${round(
-                      (record.deferred_count / record.done_count) * 100
-                    )}%`}
-                </td>
-              </tr>,
-              <tr>
-                <td>Postponement</td>
-                <td>{record.procedures[0].postpone_count}</td>
-                <td>
-                  {record.procedures[0].count !== 0 &&
-                    `${round(
-                      (record.procedures[0].postpone_count /
-                        record.procedures[0].count) *
-                        100
-                    )}%`}
-                </td>
-              </tr>,
-              <tr>
-                <td rowSpan="2">Emergency</td>
-                <td rowSpan="2">{record.procedures[1].count}</td>
-                <td>Cancellation</td>
-                <td>{record.procedures[1].cancel_count}</td>
-                <td rowSpan="2">
-                  Postponement <br />
-                  {record.postpone_count}
-                </td>
-                <td>
-                  {record.procedures[1].count !== 0 &&
-                    `${round(
-                      (record.procedures[1].cancel_count /
-                        record.procedures[1].count) *
-                        100
-                    )}%`}
-                </td>
-                <td rowSpan="2">
-                  Postponement <br />
-                  {record.done_count !== 0 &&
-                    `${round(
-                      (record.postpone_count / record.done_count) * 100
-                    )}%`}
-                </td>
-              </tr>,
+            {all_records.map((record) => {
+              const deferred_record = deferred_records.find(
+                (o) => o.service === record.service
+              );
 
-              <tr>
-                <td>Postponement</td>
-                <td>{record.procedures[1].postpone_count}</td>
-                <td>
-                  {record.procedures[1].count !== 0 &&
-                    `${round(
-                      (record.procedures[1].postpone_count /
-                        record.procedures[1].count) *
-                        100
-                    )}%`}
-                </td>
-              </tr>,
-            ])}
+              return [
+                <tr>
+                  <td rowSpan="4">{services_label[record.service]}</td>
+                  <td rowSpan="2">Elective</td>
+                  <td rowSpan="2">{record.procedures[0].count}</td>
+                  <td rowSpan="4">{record.done_count}</td>
+                  <td>Cancellation</td>
+                  <td>{deferred_record?.procedures[0].cancel_count || 0}</td>
+                  <td rowSpan="2">
+                    Cancellation <br />
+                    {deferred_record?.cancel_count || 0}
+                  </td>
+                  <td rowSpan="4">{deferred_record?.deferred_count || 0}</td>
+                  <td>
+                    {record.procedures[0].count !== 0 &&
+                      `${round(
+                        ((deferred_record?.procedures[0]?.cancel_count || 0) /
+                          record.procedures[0].count) *
+                          100
+                      )}%`}
+                  </td>
+                  <td rowSpan="2">
+                    Cancellation <br />
+                    {record.done_count !== 0 &&
+                      `${round(
+                        ((deferred_record?.cancel_count || 0) /
+                          record.done_count) *
+                          100
+                      )}%`}
+                  </td>
+                  <td rowSpan="4">
+                    {record.done_count !== 0 &&
+                      `${round(
+                        ((deferred_record?.deferred_count || 0) /
+                          record.done_count) *
+                          100
+                      )}%`}
+                  </td>
+                </tr>,
+                <tr>
+                  <td>Postponement</td>
+                  <td>{deferred_record?.procedures[0]?.postpone_count || 0}</td>
+                  <td>
+                    {record.procedures[0].count !== 0 &&
+                      `${round(
+                        ((deferred_record?.procedures[0]?.postpone_count || 0) /
+                          record.procedures[0].count) *
+                          100
+                      )}%`}
+                  </td>
+                </tr>,
+                <tr>
+                  <td rowSpan="2">Emergency</td>
+                  <td rowSpan="2">{record.procedures[1].count}</td>
+                  <td>Cancellation</td>
+                  <td>{deferred_record?.procedures[1]?.cancel_count || 0}</td>
+                  <td rowSpan="2">
+                    Postponement <br />
+                    {deferred_record?.postpone_count || 0}
+                  </td>
+                  <td>
+                    {record.procedures[1].count !== 0 &&
+                      `${round(
+                        ((deferred_record?.procedures[1]?.cancel_count || 0) /
+                          record.procedures[1].count) *
+                          100
+                      )}%`}
+                  </td>
+                  <td rowSpan="2">
+                    Postponement <br />
+                    {record.done_count !== 0 &&
+                      `${round(
+                        ((deferred_record?.postpone_count || 0) /
+                          record.done_count) *
+                          100
+                      )}%`}
+                  </td>
+                </tr>,
+
+                <tr>
+                  <td>Postponement</td>
+                  <td>{deferred_record?.procedures[1]?.postpone_count || 0}</td>
+                  <td>
+                    {record.procedures[1].count !== 0 &&
+                      `${round(
+                        ((deferred_record?.procedures[1]?.postpone_count || 0) /
+                          record.procedures[1].count) *
+                          100
+                      )}%`}
+                  </td>
+                </tr>,
+              ];
+            })}
           </table>
         </div>
       </div>
