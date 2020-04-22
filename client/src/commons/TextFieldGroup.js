@@ -17,11 +17,12 @@ const TextFieldGroup = ({
   autoComplete,
   onPressEnter,
   extra,
+  help,
 }) => (
   <Form.Item
     label={label}
     validateStatus={error ? "error" : ""}
-    help={error}
+    help={error ? error : help}
     extra={extra}
     {...formItemLayout}
   >

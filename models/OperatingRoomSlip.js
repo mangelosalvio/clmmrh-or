@@ -26,6 +26,7 @@ const OperatingRoomSlipSchema = new Schema({
   date_time_received: Date,
   surgery_is_date: Boolean,
   date_time_of_surgery: Date,
+  stat_time_limit: Number,
   case_order: String,
   received_by: Object,
 

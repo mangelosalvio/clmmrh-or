@@ -1775,21 +1775,12 @@ router.post("/display-monitor", (req, res) => {
             $match: {
               operation_status: constants.ON_SCHEDULE,
               case: constants.EMERGENCY_PROCEDURE,
-              /* date_time_of_surgery: {
-                $lte: now
-                  .clone()
-                  .endOf("day")
-                  .toDate(),
-                $gte: now
-                  .clone()
-                  .startOf("day")
-                  .toDate()
-              } */
             },
           },
           {
             $sort: {
               case_order: 1,
+              stat_time_limit: 1,
               date_time_of_surgery: -1,
             },
           },

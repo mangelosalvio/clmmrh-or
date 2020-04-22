@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Layout, Breadcrumb, Table, Row, Col, message } from "antd";
+import { Layout, Breadcrumb, Row, Col, message } from "antd";
 
-import { sumBy } from "lodash";
 import AdvancedSearchFilter from "./AdvancedSearchFilter";
 import { useState } from "react";
 import { addKeysToArray } from "../../utils/utilities";

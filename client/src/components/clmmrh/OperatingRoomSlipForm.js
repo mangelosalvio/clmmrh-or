@@ -121,6 +121,7 @@ const form_data = {
   surgery_is_date: true,
   date_time_of_surgery: null,
   case_order: "",
+  stat_time_limit: null,
   received_by: "",
 
   operation_type: "",
@@ -2194,6 +2195,16 @@ class OperatingRoomSlipForm extends Component {
                         formItemLayout={smallFormItemLayout}
                         error={errors.case_order}
                         options={case_order_options}
+                      />
+
+                      <TextFieldGroup
+                        label="Operation Must be Done Within"
+                        name="stat_time_limit"
+                        value={this.state.stat_time_limit}
+                        error={errors.stat_time_limit}
+                        formItemLayout={smallFormItemLayout}
+                        onChange={this.onChange}
+                        help="Unit in hours"
                       />
 
                       <SelectFieldGroup
