@@ -1750,12 +1750,19 @@ router.post("/display-monitor", (req, res) => {
         OperatingRoomSlip.aggregate([
           {
             $match: {
-              operation_status: constants.ON_SCHEDULE,
-              case: constants.ELECTIVE_SURGERY,
-              date_time_of_surgery: {
-                $lte: now.clone().endOf("day").toDate(),
-                $gte: now.clone().startOf("day").toDate(),
-              },
+              $or: [
+                {
+                  operation_status: constants.ON_SCHEDULE,
+                  case: constants.ELECTIVE_SURGERY,
+                  date_time_of_surgery: {
+                    $lte: now.clone().endOf("day").toDate(),
+                    $gte: now.clone().startOf("day").toDate(),
+                  },
+                },
+                {
+                  received_by: "",
+                },
+              ],
             },
           },
           {
@@ -1773,14 +1780,42 @@ router.post("/display-monitor", (req, res) => {
         OperatingRoomSlip.aggregate([
           {
             $match: {
-              operation_status: constants.ON_SCHEDULE,
-              case: constants.EMERGENCY_PROCEDURE,
+              $or: [
+                {
+                  operation_status: constants.ON_SCHEDULE,
+                  case: constants.EMERGENCY_PROCEDURE,
+                },
+                {
+                  received_by: "",
+                },
+              ],
+              date_time_ordered: {
+                $ne: null,
+              },
+            },
+          },
+          {
+            $addFields: {
+              est_date_time_finish: {
+                $add: [
+                  "$date_time_ordered",
+                  {
+                    $multiply: [
+                      {
+                        $ifNull: ["$stat_time_limit", 0],
+                      },
+                      60,
+                      60000,
+                    ],
+                  },
+                ],
+              },
             },
           },
           {
             $sort: {
               case_order: 1,
-              stat_time_limit: 1,
+              est_date_time_finish: 1,
               date_time_of_surgery: -1,
             },
           },

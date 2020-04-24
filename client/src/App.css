@@ -748,3 +748,7 @@ li.ant-select-dropdown-menu-item:hover {
   text-align: center !important;
   font-size: 11px;
 }
+
+.has-not-received {
+  color: #f600f6;
+}

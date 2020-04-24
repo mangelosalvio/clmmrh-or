@@ -43,6 +43,12 @@ const AppRouter = () => (
           exact={true}
         />
 
+        <PrivateRoute
+          path="/or-slip/:id"
+          component={OperatingRoomSlipForm}
+          exact={true}
+        />
+
         <PrivateRoute path="/or-logs" component={ORLogs} exact={true} />
         <PrivateRoute
           path="/or-monthly-report"

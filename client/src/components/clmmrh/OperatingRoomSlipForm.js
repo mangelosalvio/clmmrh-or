@@ -78,6 +78,7 @@ import {
   USER_WARD,
   OTHERS,
   SOCKET_ENDPOINT,
+  OPERATION_STATUS_ON_SCHEDULE,
 } from "./../../utils/constants";
 import socketIoClient from "socket.io-client";
 import TextFieldAutocompleteGroup from "../../commons/TextFieldAutocompleteGroup";
@@ -125,7 +126,7 @@ const form_data = {
   received_by: "",
 
   operation_type: "",
-  operation_status: null /* OPERATION_STATUS_ON_SCHEDULE */,
+  operation_status: OPERATION_STATUS_ON_SCHEDULE,
   main_anes: "",
   other_anes_input: "",
   other_anes: [],
@@ -260,14 +261,33 @@ class OperatingRoomSlipForm extends Component {
       }
     });
 
-    if (this.props.auth.user && this.props.auth.user.role !== USER_WARD) {
+    if (
+      this.props.auth.user &&
+      this.props.auth.user.role !== USER_WARD &&
+      isEmpty(this.props.match.params.id)
+    ) {
       this.onSearch();
-    } else {
-      /**
-       * set operation status to null if ward
-       */
+    } /*  else {
+      // set operation status to null if ward
       this.setState({
         operation_status: null,
+      });
+    } */
+
+    if (this.props.match?.params?.id) {
+      this.edit({ _id: this.props.match.params.id });
+    }
+
+    console.log(this.props.match);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.received_by !== this.state.received_by &&
+      this.state.date_time_received === null
+    ) {
+      this.setState({
+        date_time_received: moment(),
       });
     }
   }

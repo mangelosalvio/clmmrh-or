@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import axios from "axios";
 import isEmpty from "../../validation/is-empty";
 import moment from "moment";
@@ -438,9 +439,13 @@ class MainDisplay extends Component {
                   style={{ width: `${100 / 8}%`, height: "50%" }}
                 >
                   <div
+                    onDoubleClick={() =>
+                      this.props.history.push(`/or-slip/${record._id}`)
+                    }
                     className={classnames("display-wrapper", {
                       "is-emergency":
                         record && record.case === EMERGENCY_PROCEDURE,
+                      "has-not-received": record && record.received_by === "",
                     })}
                   >
                     {record && (
@@ -509,10 +514,14 @@ class MainDisplay extends Component {
                     style={{ width: `${100 / 8}%`, height: "50%" }}
                   >
                     <div
+                      onDoubleClick={() =>
+                        this.props.history.push(`/or-slip/${record._id}`)
+                      }
                       className={classnames("display-wrapper", {
                         "is-emergency":
                           record && record.case === EMERGENCY_PROCEDURE,
                         "is-backlog": is_backlog,
+                        "has-not-received": record && record.received_by === "",
                       })}
                     >
                       {record && (
@@ -604,4 +613,4 @@ const mapToState = (state) => {
   };
 };
 
-export default connect(mapToState)(MainDisplay);
+export default connect(mapToState)(withRouter(MainDisplay));
