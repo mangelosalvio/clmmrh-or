@@ -62,7 +62,6 @@ import CheckboxFieldGroup from "../../commons/CheckboxFieldGroup";
 import TextAreaAutocompleteGroup from "../../commons/TextAreaAutocompleteGroup";
 import { debounce } from "lodash";
 import {
-  OPERATION_STATUS_ON_GOING,
   ON_RECOVERY,
   EMERGENCY_PROCEDURE,
   ELECTIVE_SURGERY,
