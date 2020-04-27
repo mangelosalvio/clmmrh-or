@@ -1747,13 +1747,14 @@ router.post("/display-monitor", (req, res) => {
         ]).exec(cb);
       },
       elective_list: (cb) => {
+        /**
+         * should display all transactions not received so that they will see in the board, even though date/time of surgery is already supplied
+         */
         OperatingRoomSlip.aggregate([
           {
             $match: {
               $or: [
                 {
-                  operation_status: constants.ON_SCHEDULE,
-                  case: constants.ELECTIVE_SURGERY,
                   date_time_of_surgery: {
                     $lte: now.clone().endOf("day").toDate(),
                     $gte: now.clone().startOf("day").toDate(),
@@ -1763,6 +1764,8 @@ router.post("/display-monitor", (req, res) => {
                   received_by: "",
                 },
               ],
+              operation_status: constants.ON_SCHEDULE,
+              case: constants.ELECTIVE_SURGERY,
             },
           },
           {
@@ -1780,15 +1783,8 @@ router.post("/display-monitor", (req, res) => {
         OperatingRoomSlip.aggregate([
           {
             $match: {
-              $or: [
-                {
-                  operation_status: constants.ON_SCHEDULE,
-                  case: constants.EMERGENCY_PROCEDURE,
-                },
-                {
-                  received_by: "",
-                },
-              ],
+              operation_status: constants.ON_SCHEDULE,
+              case: constants.EMERGENCY_PROCEDURE,
               date_time_ordered: {
                 $ne: null,
               },
