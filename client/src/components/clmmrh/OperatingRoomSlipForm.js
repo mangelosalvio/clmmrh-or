@@ -441,11 +441,8 @@ class OperatingRoomSlipForm extends Component {
   };
 
   addNew = () => {
-    const is_ward =
-      this.props.auth.user && this.props.auth.user.role === USER_WARD;
     this.setState({
       ...form_data,
-      operation_status: is_ward ? OPERATION_STATUS_ON_GOING : null,
       errors: {},
       message: "",
     });
