@@ -2223,22 +2223,24 @@ class OperatingRoomSlipForm extends Component {
                         help="Unit in hours"
                       />
 
-                      <SelectFieldGroup
-                        label="Received By"
-                        name="received_by"
-                        value={
-                          this.state.received_by &&
-                          this.state.received_by.full_name
-                        }
-                        onChange={(index) =>
-                          this.onNurseChange(index, "received_by")
-                        }
-                        onSearch={this.onNurseSearch}
-                        error={errors.received_by}
-                        formItemLayout={smallFormItemLayout}
-                        data={this.state.options.nurses}
-                        column="full_name"
-                      />
+                      {!is_ward && (
+                        <SelectFieldGroup
+                          label="Received By"
+                          name="received_by"
+                          value={
+                            this.state.received_by &&
+                            this.state.received_by.full_name
+                          }
+                          onChange={(index) =>
+                            this.onNurseChange(index, "received_by")
+                          }
+                          onSearch={this.onNurseSearch}
+                          error={errors.received_by}
+                          formItemLayout={smallFormItemLayout}
+                          data={this.state.options.nurses}
+                          column="full_name"
+                        />
+                      )}
 
                       <CheckboxGroupFieldGroup
                         label="Special Equipment Needed"
