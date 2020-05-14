@@ -27,6 +27,7 @@ import ORMonthlyReport from "../components/clmmrh/ORMonthlyReport";
 import SummaryOfOperationsPerDepartment from "../components/clmmrh/SummaryOfOperationsPerDepartment";
 import OperationsSummaryReport from "../components/clmmrh/OperationsSummaryReport";
 import SummaryOfDeferredScheduledProcedures from "../components/clmmrh/SummaryOfDeferredScheduledProcedures";
+import OrComplexDailyUtilization from "../components/clmmrh/OrComplexDailyUtilization";
 
 const AppRouter = () => (
   <BrowserRouter>
@@ -142,6 +143,12 @@ const AppRouter = () => (
         <PrivateRoute
           path="/or-elective-form"
           component={ORElectiveForm}
+          exact={true}
+        />
+
+        <PrivateRoute
+          path="/or-complex-utilization"
+          component={OrComplexDailyUtilization}
           exact={true}
         />
 

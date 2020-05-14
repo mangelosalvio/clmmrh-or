@@ -439,6 +439,140 @@ router.post("/patients", (req, res) => {
     .catch((err) => res.status(500).json(err));
 });
 
+router.post("/operations", (req, res) => {
+  const date = moment(req.body.search_date);
+  console.log(date.clone().startOf("day").format("LLL"));
+  OperatingRoomSlip.aggregate([
+    {
+      $match: {
+        operating_room_number: {
+          $ne: null,
+        },
+        $or: [
+          {
+            operation_started: {
+              $gte: date.clone().startOf("day").toDate(),
+              $lte: date.clone().endOf("day").toDate(),
+            },
+          },
+          {
+            operation_finished: {
+              $gte: date.clone().startOf("day").toDate(),
+              $lte: date.clone().endOf("day").toDate(),
+            },
+          },
+        ],
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        operation_started: 1,
+        operation_finished: 1,
+        operating_room_number: 1,
+        date_time_ordered: 1,
+        case: 1,
+      },
+    },
+    {
+      $sort: {
+        operation_started: 1,
+      },
+    },
+    {
+      $group: {
+        _id: "$operating_room_number",
+        operations: {
+          $push: "$$ROOT",
+        },
+      },
+    },
+    {
+      $sort: {
+        _id: 1,
+      },
+    },
+  ]).then((records) => {
+    console.log(records);
+    let updated_records = records.map((o) => {
+      const operations = o.operations.map((operation) => {
+        let operation_started = moment(operation.operation_started);
+        let operation_finished = moment(operation.operation_finished);
+
+        const isCarriedOver =
+          operation_started
+            .clone()
+            .endOf("day")
+            .isBefore(operation_finished.clone().startOf("day")) &&
+          operation_finished
+            .clone()
+            .startOf("day")
+            .isSame(date.clone().startOf("day"));
+
+        const isFinishedOnTheNextDay =
+          operation_started
+            .clone()
+            .endOf("day")
+            .isBefore(operation_finished.clone().startOf("day")) &&
+          operation_started
+            .clone()
+            .startOf("day")
+            .isSame(date.clone().startOf("day"));
+
+        if (isCarriedOver) {
+          operation_started = operation_finished.clone().startOf("day");
+        } else if (isFinishedOnTheNextDay) {
+          operation_finished = operation_finished.clone().endOf("day");
+        }
+
+        const start_time = moment
+          .duration(
+            operation_started.diff(operation_started.clone().startOf("day"))
+          )
+          .asMinutes();
+
+        const end_time = moment
+          .duration(
+            operation_finished.diff(operation_finished.clone().startOf("day"))
+          )
+          .asMinutes();
+
+        const minutes = round(end_time - start_time);
+
+        const backlog_hours = moment
+          .duration(
+            operation_finished.diff(moment(operation.date_time_ordered))
+          )
+          .asHours();
+
+        const is_backlog =
+          !isEmpty(operation.date_time_ordered) &&
+          backlog_hours > 24 &&
+          operation.case === constants.EMERGENCY_PROCEDURE &&
+          operation.operation_status !== constants.CANCEL;
+
+        return {
+          ...operation,
+          operation_started,
+          operation_finished,
+          start_time,
+          end_time,
+          minutes,
+          case: operation.case,
+          is_backlog,
+        };
+      });
+
+      return {
+        ...o,
+        operations,
+      };
+    });
+
+    return res.json({ records: updated_records, date });
+  });
+});
+
 router.post("/or-elective-operations", (req, res) => {
   const now = moment.tz(moment(), process.env.TIMEZONE);
   const or_date = moment(req.body.or_date);
