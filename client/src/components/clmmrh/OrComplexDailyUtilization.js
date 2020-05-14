@@ -17,6 +17,7 @@ import { sumBy } from "lodash";
 import { addKeysToArray } from "./../../utils/utilities";
 import ResizeObserver from "resize-observer-polyfill";
 import round from "../../utils/round";
+import { operating_room_number_labels } from "../../utils/Options";
 
 const initialState = {
   search_date: moment(),
@@ -46,6 +47,7 @@ const records_column = [
     title: "OR Number",
     dataIndex: "_id",
     align: "center",
+    render: (value) => <span>{operating_room_number_labels[value]}</span>,
   },
   {
     title: "Total Minutes in Use",
@@ -113,7 +115,9 @@ export default function OrComplexDailyUtilization() {
         ])
         .range([0, dimensions.width]);
 
-      const yAxis = axisLeft(yScale);
+      const yAxis = axisLeft(yScale).tickFormat(
+        (value, index) => operating_room_number_labels[value]
+      );
       const xAxis = axisBottom(xScale).ticks(timeHour.every(1));
 
       svg.select(".y-axis").call(yAxis);

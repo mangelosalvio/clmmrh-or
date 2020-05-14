@@ -441,7 +441,6 @@ router.post("/patients", (req, res) => {
 
 router.post("/operations", (req, res) => {
   const date = moment(req.body.search_date);
-  console.log(date.clone().startOf("day").format("LLL"));
   OperatingRoomSlip.aggregate([
     {
       $match: {
@@ -493,7 +492,6 @@ router.post("/operations", (req, res) => {
       },
     },
   ]).then((records) => {
-    console.log(records);
     let updated_records = records.map((o) => {
       const operations = o.operations.map((operation) => {
         let operation_started = moment(operation.operation_started);
