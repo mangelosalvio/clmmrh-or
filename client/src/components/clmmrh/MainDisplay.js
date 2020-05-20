@@ -10,7 +10,7 @@ import { sortBy } from "lodash";
 import {
   EMERGENCY_PROCEDURE,
   SOCKET_ENDPOINT,
-  CANCEL
+  CANCEL,
 } from "./../../utils/constants";
 import socketIoClient from "socket.io-client";
 import { year_level_order } from "../../utils/Options";
@@ -33,7 +33,7 @@ const form_data = {
   on_duty_anes: [],
   pacu_anes: [],
   team_captain_anes: [],
-  errors: {}
+  errors: {},
 };
 
 class MainDisplay extends Component {
@@ -41,28 +41,28 @@ class MainDisplay extends Component {
     title: "Anesthesiologist Form",
     url: "/api/anesthesiologists/",
     search_keyword: "",
-    ...form_data
+    ...form_data,
   };
 
   componentDidMount() {
     const socket = socketIoClient(SOCKET_ENDPOINT);
-    socket.on("refresh-display", data => {
+    socket.on("refresh-display", (data) => {
       //this.props.getTables();
       this.getOrData();
     });
 
-    socket.on("new-or", data => {
+    socket.on("new-or", (data) => {
       notification.open({
         message: `Patient Added`,
         description: `${data.name} was added.`,
-        duration: 5
+        duration: 5,
       });
     });
 
     setInterval(() => {
       const current_time = moment().format("dddd, MMMM D, YYYY h:mm:ss A");
       this.setState({
-        current_time
+        current_time,
       });
     }, 1000);
 
@@ -70,23 +70,23 @@ class MainDisplay extends Component {
   }
 
   getOrData = () => {
-    axios.post("/api/operating-room-slips/display-monitor").then(response => {
+    axios.post("/api/operating-room-slips/display-monitor").then((response) => {
       this.setState({
-        ...response.data
+        ...response.data,
       });
     });
   };
 
-  onChange = e => {
+  onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
 
     const form_data = {
       ...this.state,
-      user: this.props.auth.user
+      user: this.props.auth.user,
     };
 
     if (isEmpty(this.state._id)) {
@@ -97,10 +97,10 @@ class MainDisplay extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Saved"
+            message: "Transaction Saved",
           });
         })
-        .catch(err => {
+        .catch((err) => {
           message.error("You have an invalid input");
           this.setState({ errors: err.response.data });
         });
@@ -112,10 +112,10 @@ class MainDisplay extends Component {
           this.setState({
             ...data,
             errors: {},
-            message: "Transaction Updated"
+            message: "Transaction Updated",
           });
         })
-        .catch(err => this.setState({ errors: err.response.data }));
+        .catch((err) => this.setState({ errors: err.response.data }));
     }
   };
 
@@ -124,51 +124,51 @@ class MainDisplay extends Component {
 
     axios
       .get(this.state.url + "?s=" + this.state.search_keyword)
-      .then(response =>
+      .then((response) =>
         this.setState({
           [collection_name]: response.data,
-          message: isEmpty(response.data) ? "No rows found" : ""
+          message: isEmpty(response.data) ? "No rows found" : "",
         })
       )
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   addNew = () => {
     this.setState({
       ...form_data,
       errors: {},
-      message: ""
+      message: "",
     });
   };
 
-  edit = record => {
+  edit = (record) => {
     axios
       .get(this.state.url + record._id)
-      .then(response => {
+      .then((response) => {
         const record = response.data;
-        this.setState(prevState => {
+        this.setState((prevState) => {
           return {
             ...form_data,
             [collection_name]: [],
             ...record,
-            errors: {}
+            errors: {},
           };
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   onDelete = () => {
     axios
       .delete(this.state.url + this.state._id)
-      .then(response => {
+      .then((response) => {
         message.success("Transaction Deleted");
         this.setState({
           ...form_data,
-          message: "Transaction Deleted"
+          message: "Transaction Deleted",
         });
       })
-      .catch(err => {
+      .catch((err) => {
         message.error(err.response.data.message);
       });
   };
@@ -179,22 +179,22 @@ class MainDisplay extends Component {
 
   onChangeAssignment = (value, record, index) => {
     const form_data = {
-      assignment: value
+      assignment: value,
     };
     const loading = message.loading("Processing...");
     axios
       .post(`/api/anesthesiologists/${record._id}/assignment`, form_data)
-      .then(response => {
+      .then((response) => {
         loading();
         const records = [...this.state[collection_name]];
         records[index] = { ...response.data };
         this.setState({
-          [collection_name]: records
+          [collection_name]: records,
         });
       });
   };
 
-  filterProcedure = procedure => {
+  filterProcedure = (procedure) => {
     let max_characters = 60;
     if (procedure.length > max_characters) {
       return `${procedure.substring(0, max_characters - 1)}...`;
@@ -203,26 +203,26 @@ class MainDisplay extends Component {
     return procedure;
   };
 
-  getScreenName = record => {
+  getScreenName = (record) => {
     const { first_name, last_name } = record;
     const fname = first_name
       .split(" ")
-      .map(o => o[0])
+      .map((o) => o[0])
       .join("");
     return `${fname} ${last_name}`;
   };
 
   render() {
     const charge_nurse = this.state.charge_nurse
-      .map(o => this.getScreenName(o))
+      .map((o) => this.getScreenName(o))
       .join("/");
 
     const holding_room_nurse = this.state.holding_room_nurse
-      .map(o => this.getScreenName(o))
+      .map((o) => this.getScreenName(o))
       .join("/");
 
     const receiving_nurse = this.state.receiving_nurse
-      .map(o => this.getScreenName(o))
+      .map((o) => this.getScreenName(o))
       .join("/");
 
     /**
@@ -230,40 +230,40 @@ class MainDisplay extends Component {
      */
 
     let on_duty_anes = sortBy(this.state.on_duty_anes, [
-      o => {
+      (o) => {
         let order = year_level_order[o.year_level];
         return isEmpty(order) ? 10 : order;
-      }
+      },
     ]);
 
-    on_duty_anes = on_duty_anes.map(o => this.getScreenName(o)).join("/");
+    on_duty_anes = on_duty_anes.map((o) => this.getScreenName(o)).join("/");
 
     /**
      * PACU ANES
      */
 
     let pacu_anes = sortBy(this.state.pacu_anes, [
-      o => {
+      (o) => {
         let order = year_level_order[o.year_level];
         return isEmpty(order) ? 10 : order;
-      }
+      },
     ]);
 
-    pacu_anes = pacu_anes.map(o => this.getScreenName(o)).join("/");
+    pacu_anes = pacu_anes.map((o) => this.getScreenName(o)).join("/");
 
     /**
      * TEAM CAPTAIN ANES
      */
 
     let team_captain_anes = sortBy(this.state.team_captain_anes, [
-      o => {
+      (o) => {
         let order = year_level_order[o.year_level];
         return isEmpty(order) ? 10 : order;
-      }
+      },
     ]);
 
     team_captain_anes = team_captain_anes
-      .map(o => this.getScreenName(o))
+      .map((o) => this.getScreenName(o))
       .join("/");
 
     return (
@@ -283,14 +283,14 @@ class MainDisplay extends Component {
               <div className="display-wrapper-accent">ONGOING</div>
             </div>
             <div className="is-flex" style={{ flex: "8" }}>
-              {this.state.on_going.map(record => {
-                const operation_started = record.operation_started
-                  ? moment(record.operation_started)
+              {this.state.on_going.map((record) => {
+                const operation_finished = record.operation_finished
+                  ? moment(record.operation_finished)
                   : moment();
 
                 const backlog_hours = moment
                   .duration(
-                    operation_started.diff(moment(record.date_time_ordered))
+                    operation_finished.diff(moment(record.date_time_ordered))
                   )
                   .asHours();
                 const is_backlog =
@@ -305,7 +305,7 @@ class MainDisplay extends Component {
                       className={classnames("display-wrapper", {
                         "is-emergency":
                           record && record.case === EMERGENCY_PROCEDURE,
-                        "is-backlog": is_backlog
+                        "is-backlog": is_backlog,
                       })}
                     >
                       <div className="is-flex">
@@ -343,12 +343,12 @@ class MainDisplay extends Component {
             <div className="outline-full-bordered accent is-flex">
               <div className="display-wrapper-accent">PACU</div>
             </div>
-            {this.state.pacu.map(record => (
+            {this.state.pacu.map((record) => (
               <div className="outline-full-bordered is-flex-1 is-flex">
                 <div
                   className={classnames("display-wrapper", {
                     "is-emergency":
-                      record && record.case === EMERGENCY_PROCEDURE
+                      record && record.case === EMERGENCY_PROCEDURE,
                   })}
                 >
                   {record && (
@@ -388,12 +388,12 @@ class MainDisplay extends Component {
             <div className="outline-full-bordered accent is-flex">
               <div className="display-wrapper-accent">HOLDING</div>
             </div>
-            {this.state.in_holding_room.map(record => (
+            {this.state.in_holding_room.map((record) => (
               <div className="outline-full-bordered is-flex-1 is-flex">
                 <div
                   className={classnames("display-wrapper", {
                     "is-emergency":
-                      record && record.case === EMERGENCY_PROCEDURE
+                      record && record.case === EMERGENCY_PROCEDURE,
                   })}
                 >
                   {record && (
@@ -431,10 +431,10 @@ class MainDisplay extends Component {
               style={{
                 flex: 8,
                 flexFlow: "column  !important",
-                flexWrap: "wrap"
+                flexWrap: "wrap",
               }}
             >
-              {this.state.elective_list.map(record => (
+              {this.state.elective_list.map((record) => (
                 <div
                   className="outline-full-bordered is-flex"
                   style={{ width: `${100 / 8}%`, height: "50%" }}
@@ -446,7 +446,7 @@ class MainDisplay extends Component {
                     className={classnames("display-wrapper", {
                       "is-emergency":
                         record && record.case === EMERGENCY_PROCEDURE,
-                      "has-not-received": record && record.received_by === ""
+                      "has-not-received": record && record.received_by === "",
                     })}
                   >
                     {record && (
@@ -465,7 +465,7 @@ class MainDisplay extends Component {
                         <div
                           className="is-flex-1"
                           style={{
-                            overflow: "hidden"
+                            overflow: "hidden",
                           }}
                         >
                           {this.filterProcedure(record.procedure)}
@@ -497,10 +497,10 @@ class MainDisplay extends Component {
               style={{
                 flex: 8,
                 flexFlow: "column  !important",
-                flexWrap: "wrap"
+                flexWrap: "wrap",
               }}
             >
-              {this.state.emergency_list.map(record => {
+              {this.state.emergency_list.map((record) => {
                 const backlog_hours =
                   record &&
                   record.date_time_ordered &&
@@ -522,7 +522,7 @@ class MainDisplay extends Component {
                         "is-emergency":
                           record && record.case === EMERGENCY_PROCEDURE,
                         "is-backlog": is_backlog,
-                        "has-not-received": record && record.received_by === ""
+                        "has-not-received": record && record.received_by === "",
                       })}
                     >
                       {record && (
@@ -608,9 +608,9 @@ class MainDisplay extends Component {
   }
 }
 
-const mapToState = state => {
+const mapToState = (state) => {
   return {
-    auth: state.auth
+    auth: state.auth,
   };
 };
 

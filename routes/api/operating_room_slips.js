@@ -41,31 +41,31 @@ const Model = OperatingRoomSlip;
 router.get("/:id/operative-technique/:index", (req, res) => {
   Optech.findOne({
     or_slip_id: mongoose.Types.ObjectId(req.params.id),
-    index: req.params.index
-  }).then(record => res.json(record));
+    index: req.params.index,
+  }).then((record) => res.json(record));
 });
 
 router.get("/:id/surgical-memorandum/:surg_memo_id", (req, res) => {
   Model.aggregate([
     {
       $match: {
-        _id: mongoose.Types.ObjectId(req.params.id)
-      }
+        _id: mongoose.Types.ObjectId(req.params.id),
+      },
     },
     {
       $unwind: {
-        path: "$surgical_memos"
-      }
+        path: "$surgical_memos",
+      },
     },
     {
       $match: {
-        "surgical_memos._id": mongoose.Types.ObjectId(req.params.surg_memo_id)
-      }
-    }
+        "surgical_memos._id": mongoose.Types.ObjectId(req.params.surg_memo_id),
+      },
+    },
   ])
-    .then(records => {
+    .then((records) => {
       const record = {
-        ...records[0]
+        ...records[0],
       };
 
       const {
@@ -79,7 +79,7 @@ router.get("/:id/surgical-memorandum/:surg_memo_id", (req, res) => {
         registration_date,
         date_time_of_surgery,
         weight,
-        weight_unit
+        weight_unit,
       } = record;
 
       return res.json({
@@ -94,16 +94,16 @@ router.get("/:id/surgical-memorandum/:surg_memo_id", (req, res) => {
         date_time_of_surgery,
         weight,
         weight_unit,
-        ...records[0].surgical_memos
+        ...records[0].surgical_memos,
       });
     })
-    .catch(err => res.status(401).json(err));
+    .catch((err) => res.status(401).json(err));
 });
 
 router.get("/:id", (req, res) => {
   Model.findById(req.params.id)
-    .then(record => res.json(record))
-    .catch(err => console.log(err));
+    .then((record) => res.json(record))
+    .catch((err) => console.log(err));
 });
 
 router.get("/", (req, res) => {
@@ -113,15 +113,15 @@ router.get("/", (req, res) => {
         $or: [
           {
             name: {
-              $regex: new RegExp(req.query.s, "i")
-            }
+              $regex: new RegExp(req.query.s, "i"),
+            },
           },
           {
             procedure: {
-              $regex: new RegExp(req.query.s, "i")
-            }
-          }
-        ]
+              $regex: new RegExp(req.query.s, "i"),
+            },
+          },
+        ],
       };
 
   Model.find(form_data)
@@ -144,16 +144,16 @@ router.get("/", (req, res) => {
       or_ended: 1,
       date_time_ordered: 1,
       operation_status: 1,
-      operation_finished: 1
+      operation_finished: 1,
     })
     .sort({
       _id: -1,
-      name: 1
+      name: 1,
     })
-    .then(records => {
+    .then((records) => {
       return res.json(records);
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 });
 
 router.put("/", (req, res) => {
@@ -172,25 +172,25 @@ router.put("/", (req, res) => {
     {
       user,
       datetime,
-      log
-    }
+      log,
+    },
   ];
 
   const newRecord = new Model({
     ...body,
-    logs
+    logs,
   });
   newRecord
     .save()
-    .then(record => {
+    .then((record) => {
       const io = req.app.get("socketio");
       io.emit("refresh-display", true);
       io.emit("new-or", {
-        name: record.name
+        name: record.name,
       });
       return res.json(record);
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 });
 
 router.post("/paginate", (req, res) => {
@@ -205,7 +205,7 @@ router.post("/paginate", (req, res) => {
     search_main_anes,
     search_service,
     search_case,
-    search_operation_status
+    search_operation_status,
   } = req.body;
 
   const form_data = {
@@ -213,56 +213,52 @@ router.post("/paginate", (req, res) => {
       search_period_covered[0] &&
       search_period_covered[1] && {
         date_time_of_surgery: {
-          $gte: moment(search_period_covered[0])
-            .startOf("day")
-            .toDate(),
-          $lte: moment(search_period_covered[1])
-            .endOf("day")
-            .toDate()
-        }
+          $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+          $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+        },
       }),
     ...(search_procedure && {
       procedure: {
-        $regex: new RegExp(search_procedure, "i")
-      }
+        $regex: new RegExp(search_procedure, "i"),
+      },
     }),
     ...(search_operating_room_number && {
-      operating_room_number: search_operating_room_number
+      operating_room_number: search_operating_room_number,
     }),
     ...(search_classification &&
       !["All", ""].includes(search_classification) && {
-        classification: search_classification
+        classification: search_classification,
       }),
     ...(search_surgeon && {
-      "surgeon._id": search_surgeon._id
+      "surgeon._id": search_surgeon._id,
     }),
     ...(search_main_anes && {
-      "main_anes._id": search_main_anes._id
+      "main_anes._id": search_main_anes._id,
     }),
     ...(search_service && {
-      service: search_service
+      service: search_service,
     }),
     ...(search_case &&
       search_case !== "All" && {
-        case: search_case
+        case: search_case,
       }),
     ...(search_operation_status && {
-      operation_status: search_operation_status
+      operation_status: search_operation_status,
     }),
     ...(!isEmpty(req.body.s) && {
       $or: [
         {
           name: {
-            $regex: new RegExp(req.body.s, "i")
-          }
+            $regex: new RegExp(req.body.s, "i"),
+          },
         },
         {
           procedure: {
-            $regex: new RegExp(req.body.s, "i")
-          }
-        }
-      ]
-    })
+            $regex: new RegExp(req.body.s, "i"),
+          },
+        },
+      ],
+    }),
   };
 
   Model.paginate(form_data, {
@@ -285,18 +281,18 @@ router.post("/paginate", (req, res) => {
       or_ended: 1,
       date_time_ordered: 1,
       operation_status: 1,
-      operation_finished: 1
+      operation_finished: 1,
     },
     sort: {
-      _id: -1
+      _id: -1,
     },
     page,
-    limit: 10
+    limit: 10,
   })
-    .then(records => {
+    .then((records) => {
       return res.json(records);
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 });
 
 router.post("/advanced-search", (req, res) => {
@@ -307,49 +303,45 @@ router.post("/advanced-search", (req, res) => {
     search_procedure,
     search_classification,
     search_main_anes,
-    search_service
+    search_service,
   } = req.body;
 
   const form_data = {
     ...(search_period_covered[0] &&
       search_period_covered[1] && {
         date_time_of_surgery: {
-          $gte: moment(search_period_covered[0])
-            .startOf("day")
-            .toDate(),
-          $lte: moment(search_period_covered[1])
-            .endOf("day")
-            .toDate()
-        }
+          $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+          $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+        },
       }),
     ...(search_procedure && {
       procedure: {
-        $regex: new RegExp(search_procedure, "i")
-      }
+        $regex: new RegExp(search_procedure, "i"),
+      },
     }),
     ...(search_operating_room_number && {
-      operating_room_number: search_operating_room_number
+      operating_room_number: search_operating_room_number,
     }),
     ...(!["All", ""].includes(search_classification) && {
-      classification: search_classification
+      classification: search_classification,
     }),
     ...(search_surgeon && {
-      "surgeon._id": search_surgeon._id
+      "surgeon._id": search_surgeon._id,
     }),
     ...(search_main_anes && {
-      "main_anes._id": search_main_anes._id
+      "main_anes._id": search_main_anes._id,
     }),
     ...(search_service && {
-      service: search_service
-    })
+      service: search_service,
+    }),
   };
 
   OperatingRoomSlip.find(form_data)
     .sort({
       _id: -1,
-      name: 1
+      name: 1,
     })
-    .then(records => res.json(records));
+    .then((records) => res.json(records));
 });
 
 /**
@@ -427,10 +419,10 @@ router.post("/patients", (req, res) => {
 
   sqldatabase
     .query(query, { type: sqldatabase.QueryTypes.SELECT })
-    .then(records => {
+    .then((records) => {
       let updated_records = [...records];
 
-      updated_records = updated_records.map(record => {
+      updated_records = updated_records.map((record) => {
         const { fname, mname, lname } = record;
         const fullname = `${toUpper(lname.trim())}, ${startCase(
           toLower(fname.trim())
@@ -438,13 +430,13 @@ router.post("/patients", (req, res) => {
 
         return {
           ...record,
-          fullname
+          fullname,
         };
       });
 
       return res.json(updated_records);
     })
-    .catch(err => res.status(500).json(err));
+    .catch((err) => res.status(500).json(err));
 });
 
 router.post("/operations", (req, res) => {
@@ -453,35 +445,23 @@ router.post("/operations", (req, res) => {
     {
       $match: {
         operating_room_number: {
-          $ne: null
+          $ne: null,
         },
         $or: [
           {
             operation_started: {
-              $gte: date
-                .clone()
-                .startOf("day")
-                .toDate(),
-              $lte: date
-                .clone()
-                .endOf("day")
-                .toDate()
-            }
+              $gte: date.clone().startOf("day").toDate(),
+              $lte: date.clone().endOf("day").toDate(),
+            },
           },
           {
             operation_finished: {
-              $gte: date
-                .clone()
-                .startOf("day")
-                .toDate(),
-              $lte: date
-                .clone()
-                .endOf("day")
-                .toDate()
-            }
-          }
-        ]
-      }
+              $gte: date.clone().startOf("day").toDate(),
+              $lte: date.clone().endOf("day").toDate(),
+            },
+          },
+        ],
+      },
     },
     {
       $project: {
@@ -490,30 +470,30 @@ router.post("/operations", (req, res) => {
         operation_finished: 1,
         operating_room_number: 1,
         date_time_ordered: 1,
-        case: 1
-      }
+        case: 1,
+      },
     },
     {
       $sort: {
-        operation_started: 1
-      }
+        operation_started: 1,
+      },
     },
     {
       $group: {
         _id: "$operating_room_number",
         operations: {
-          $push: "$$ROOT"
-        }
-      }
+          $push: "$$ROOT",
+        },
+      },
     },
     {
       $sort: {
-        _id: 1
-      }
-    }
-  ]).then(records => {
-    let updated_records = records.map(o => {
-      const operations = o.operations.map(operation => {
+        _id: 1,
+      },
+    },
+  ]).then((records) => {
+    let updated_records = records.map((o) => {
+      const operations = o.operations.map((operation) => {
         let operation_started = moment(operation.operation_started);
         let operation_finished = moment(operation.operation_finished);
 
@@ -558,7 +538,9 @@ router.post("/operations", (req, res) => {
         const minutes = round(end_time - start_time);
 
         const backlog_hours = moment
-          .duration(operation_started.diff(moment(operation.date_time_ordered)))
+          .duration(
+            operation_finished.clone().diff(moment(operation.date_time_ordered))
+          )
           .asHours();
 
         const is_backlog =
@@ -575,13 +557,13 @@ router.post("/operations", (req, res) => {
           end_time,
           minutes,
           case: operation.case,
-          is_backlog
+          is_backlog,
         };
       });
 
       return {
         ...o,
-        operations
+        operations,
       };
     });
 
@@ -595,31 +577,25 @@ router.post("/or-elective-operations", (req, res) => {
 
   async.parallel(
     {
-      electives: cb => {
+      electives: (cb) => {
         OperatingRoomSlip.aggregate([
           {
             $match: {
               date_time_of_surgery: {
-                $gte: or_date
-                  .clone()
-                  .startOf("day")
-                  .toDate(),
-                $lte: or_date
-                  .clone()
-                  .endOf("day")
-                  .toDate()
+                $gte: or_date.clone().startOf("day").toDate(),
+                $lte: or_date.clone().endOf("day").toDate(),
               },
               operating_room_number: {
                 $exists: true,
-                $nin: ["", null]
+                $nin: ["", null],
               },
-              case: constants.ELECTIVE_SURGERY
-            }
+              case: constants.ELECTIVE_SURGERY,
+            },
           },
           {
             $sort: {
-              case_order: 1
-            }
+              case_order: 1,
+            },
           },
           {
             $group: {
@@ -637,74 +613,62 @@ router.post("/or-elective-operations", (req, res) => {
                   surgeon: "$surgeon",
                   main_anes: "$main_anes",
                   classification: "$classification",
-                  case_order: "$case_order"
-                }
-              }
-            }
+                  case_order: "$case_order",
+                },
+              },
+            },
           },
           {
             $sort: {
-              _id: 1
-            }
-          }
+              _id: 1,
+            },
+          },
         ]).exec(cb);
       },
-      waiting_electives: cb => {
+      waiting_electives: (cb) => {
         OperatingRoomSlip.aggregate([
           {
             $match: {
               date_time_of_surgery: {
-                $gte: or_date
-                  .clone()
-                  .startOf("day")
-                  .toDate(),
-                $lte: or_date
-                  .clone()
-                  .endOf("day")
-                  .toDate()
+                $gte: or_date.clone().startOf("day").toDate(),
+                $lte: or_date.clone().endOf("day").toDate(),
               },
               case: constants.ELECTIVE_SURGERY,
               $or: [
                 {
                   operating_room_number: {
-                    $exists: false
-                  }
+                    $exists: false,
+                  },
                 },
                 {
                   operating_room_number: {
-                    $in: ["", null]
-                  }
-                }
-              ]
-            }
+                    $in: ["", null],
+                  },
+                },
+              ],
+            },
           },
           {
             $sort: {
-              case_order: 1
-            }
-          }
+              case_order: 1,
+            },
+          },
         ]).exec(cb);
       },
-      schedule: cb => {
+      schedule: (cb) => {
         ORSchedule.findOne({
           "period.0": {
-            $lte: or_date
-              .clone()
-              .endOf("day")
-              .toDate()
+            $lte: or_date.clone().endOf("day").toDate(),
           },
           "period.1": {
-            $gte: or_date
-              .clone()
-              .startOf("day")
-              .toDate()
-          }
+            $gte: or_date.clone().startOf("day").toDate(),
+          },
         }).exec(cb);
-      }
+      },
     },
     (err, result) => {
       let arr_return = {
-        ...result
+        ...result,
       };
 
       let electives = [...result.electives];
@@ -732,18 +696,18 @@ router.post("/or-elective-operations", (req, res) => {
 
       Object.entries(operating_rooms).forEach(([key, value]) => {
         let _id = value;
-        let elective_room = electives.find(o => o._id === key);
+        let elective_room = electives.find((o) => o._id === key);
         let items = elective_room ? [...elective_room.items] : [];
 
         const room_obj_schedule = (schedule.room_schedule || []).find(
-          o => o.room === key
+          (o) => o.room === key
         );
 
         if (items.length <= 0) {
           items = [
             {
-              procedure: room_obj_schedule ? room_obj_schedule.status : "STATS"
-            }
+              procedure: room_obj_schedule ? room_obj_schedule.status : "STATS",
+            },
           ];
         }
 
@@ -751,8 +715,8 @@ router.post("/or-elective-operations", (req, res) => {
           ...room_electives,
           {
             _id,
-            items
-          }
+            items,
+          },
         ];
       });
 
@@ -774,45 +738,41 @@ router.post("/logs", (req, res) => {
     search_surgeon,
     search_procedure,
     search_classification,
-    search_main_anes
+    search_main_anes,
   } = req.body;
 
   const form_data = {
     ...(search_period_covered[0] &&
       search_period_covered[1] && {
         date_time_of_surgery: {
-          $gte: moment(search_period_covered[0])
-            .startOf("day")
-            .toDate(),
-          $lte: moment(search_period_covered[1])
-            .endOf("day")
-            .toDate()
-        }
+          $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+          $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+        },
       }),
     ...(search_procedure && {
       procedure: {
-        $regex: new RegExp(search_procedure, "i")
-      }
+        $regex: new RegExp(search_procedure, "i"),
+      },
     }),
     ...(search_operating_room_number && {
-      operating_room_number: search_operating_room_number
+      operating_room_number: search_operating_room_number,
     }),
     ...(!["All", ""].includes(search_classification) && {
-      classification: search_classification
+      classification: search_classification,
     }),
     ...(search_surgeon && {
-      "surgeon._id": search_surgeon._id
+      "surgeon._id": search_surgeon._id,
     }),
     ...(search_main_anes && {
-      "main_anes._id": search_main_anes._id
-    })
+      "main_anes._id": search_main_anes._id,
+    }),
   };
 
   OperatingRoomSlip.find(form_data)
     .sort({
-      date_time_of_surgery: 1
+      date_time_of_surgery: 1,
     })
-    .then(records => res.json(records));
+    .then((records) => res.json(records));
 });
 
 router.post("/or-monthly-report", (req, res) => {
@@ -825,7 +785,7 @@ router.post("/or-monthly-report", (req, res) => {
     search_main_anes,
     search_service,
     search_case,
-    search_operation_status
+    search_operation_status,
   } = req.body;
 
   const filter_query = {
@@ -833,76 +793,72 @@ router.post("/or-monthly-report", (req, res) => {
       ...(search_period_covered[0] &&
         search_period_covered[1] && {
           operation_started: {
-            $gte: moment(search_period_covered[0])
-              .startOf("day")
-              .toDate(),
-            $lte: moment(search_period_covered[1])
-              .endOf("day")
-              .toDate()
-          }
+            $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+            $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+          },
         }),
       ...(search_procedure && {
         procedure: {
-          $regex: new RegExp(search_procedure, "i")
-        }
+          $regex: new RegExp(search_procedure, "i"),
+        },
       }),
       ...(search_operating_room_number && {
-        operating_room_number: search_operating_room_number
+        operating_room_number: search_operating_room_number,
       }),
       ...(!["All", "", null].includes(search_classification) && {
-        classification: search_classification
+        classification: search_classification,
       }),
       ...(search_surgeon && {
-        "surgeon._id": search_surgeon._id
+        "surgeon._id": search_surgeon._id,
       }),
       ...(search_main_anes && {
-        "main_anes._id": search_main_anes._id
+        "main_anes._id": search_main_anes._id,
       }),
       ...(search_service && {
-        service: search_service
+        service: search_service,
       }),
       ...(search_case &&
         search_case !== "All" && {
-          case: search_case
+          case: search_case,
         }),
       ...(search_operation_status && {
-        operation_status: search_operation_status
-      })
-    }
+        operation_status: search_operation_status,
+      }),
+    },
   };
 
   async.parallel(
     {
-      operations: cb => {
+      operations: (cb) => {
         OperatingRoomSlip.aggregate([
           {
-            ...filter_query
+            ...filter_query,
           },
           {
             $match: {
               $and: [
                 {
                   operation_type: {
-                    $ne: ""
-                  }
+                    $ne: "",
+                  },
                 },
                 {
                   operation_type: {
-                    $ne: null
-                  }
+                    $ne: null,
+                  },
                 },
                 {
                   age: {
-                    $ne: ""
-                  }
+                    $ne: "",
+                  },
                 },
                 {
                   age: {
-                    $ne: null
-                  }
-                }
-              ]
-            }
+                    $ne: null,
+                  },
+                },
+              ],
+            },
           },
           {
             $project: {
@@ -912,143 +868,143 @@ router.post("/or-monthly-report", (req, res) => {
                     {
                       $split: [
                         {
-                          $toUpper: "$age"
+                          $toUpper: "$age",
                         },
-                        "Y"
-                      ]
+                        "Y",
+                      ],
                     },
-                    0
-                  ]
-                }
+                    0,
+                  ],
+                },
               },
               operation_type: 1,
-              sex: 1
-            }
+              sex: 1,
+            },
           },
           {
             $addFields: {
               age_category: {
                 $cond: [
                   {
-                    $lte: ["$age", 17]
+                    $lte: ["$age", 17],
                   },
                   "17 Years and Below",
-                  "18 Years and Above"
-                ]
-              }
-            }
+                  "18 Years and Above",
+                ],
+              },
+            },
           },
           {
             $group: {
               _id: {
                 operation_type: "$operation_type",
                 age_category: "$age_category",
-                sex: "$sex"
+                sex: "$sex",
               },
               count: {
-                $sum: 1
-              }
-            }
+                $sum: 1,
+              },
+            },
           },
           {
             $sort: {
               age_category: 1,
-              sex: 1
-            }
-          }
+              sex: 1,
+            },
+          },
         ]).exec(cb);
       },
-      summary: cb => {
+      summary: (cb) => {
         OperatingRoomSlip.aggregate([
           {
-            ...filter_query
+            ...filter_query,
           },
           {
             $match: {
               $and: [
                 {
                   operation_type: {
-                    $ne: ""
-                  }
+                    $ne: "",
+                  },
                 },
                 {
                   operation_type: {
-                    $ne: null
-                  }
+                    $ne: null,
+                  },
                 },
                 {
                   classification: {
-                    $ne: null
-                  }
+                    $ne: null,
+                  },
                 },
                 {
                   classification: {
-                    $ne: ""
-                  }
-                }
-              ]
-            }
+                    $ne: "",
+                  },
+                },
+              ],
+            },
           },
           {
             $project: {
               operation_type: 1,
-              classification: 1
-            }
+              classification: 1,
+            },
           },
           {
             $addFields: {
               private: {
                 $cond: [
                   {
-                    $eq: ["$classification", "Private"]
+                    $eq: ["$classification", "Private"],
                   },
                   1,
-                  0
-                ]
+                  0,
+                ],
               },
               service: {
                 $cond: [
                   {
-                    $eq: ["$classification", "Service"]
+                    $eq: ["$classification", "Service"],
                   },
                   1,
-                  0
-                ]
+                  0,
+                ],
               },
               housecase: {
                 $cond: [
                   {
-                    $eq: ["$classification", "Housecase"]
+                    $eq: ["$classification", "Housecase"],
                   },
                   1,
-                  0
-                ]
-              }
-            }
+                  0,
+                ],
+              },
+            },
           },
           {
             $group: {
               _id: "$operation_type",
               housecase: {
-                $sum: "$housecase"
+                $sum: "$housecase",
               },
               private: {
-                $sum: "$private"
+                $sum: "$private",
               },
               service: {
-                $sum: "$service"
-              }
-            }
+                $sum: "$service",
+              },
+            },
           },
           {
             $addFields: {
               total: {
-                $add: ["$housecase", "$private", "$service"]
-              }
-            }
-          }
+                $add: ["$housecase", "$private", "$service"],
+              },
+            },
+          },
         ]).exec(cb);
-      }
+      },
     },
     (err, results) => {
       if (err) {
@@ -1060,7 +1016,7 @@ router.post("/or-monthly-report", (req, res) => {
       const major_columns = [constants.SEX_MALE, constants.SEX_FEMALE];
       const major_rows = [
         constants.AGE_CATEGORY_18_ABOVE,
-        constants.AGE_CATEGORY_17_BELOW
+        constants.AGE_CATEGORY_17_BELOW,
       ];
 
       let major_records = [{}, {}];
@@ -1068,7 +1024,7 @@ router.post("/or-monthly-report", (req, res) => {
 
       major_rows.forEach((age_category, age_category_index) => {
         major_columns.forEach((sex, sex_index) => {
-          const major_result = records.find(record => {
+          const major_result = records.find((record) => {
             return (
               record._id.operation_type === constants.OPERATION_TYPE_MAJOR &&
               record._id.sex === sex &&
@@ -1088,7 +1044,7 @@ router.post("/or-monthly-report", (req, res) => {
            * MINOR RESULTS
            */
 
-          const minor_result = records.find(record => {
+          const minor_result = records.find((record) => {
             return (
               record._id.operation_type === constants.OPERATION_TYPE_MINOR &&
               record._id.sex === sex &&
@@ -1106,20 +1062,20 @@ router.post("/or-monthly-report", (req, res) => {
         });
       });
 
-      major_records = major_records.map(record => {
+      major_records = major_records.map((record) => {
         const total = numeral(0);
         total.add(record.male).add(record.female);
         return {
           ...record,
-          total: total.value()
+          total: total.value(),
         };
       });
-      minor_records = minor_records.map(record => {
+      minor_records = minor_records.map((record) => {
         const total = numeral(0);
         total.add(record.male).add(record.female);
         return {
           ...record,
-          total: total.value()
+          total: total.value(),
         };
       });
 
@@ -1130,13 +1086,13 @@ router.post("/or-monthly-report", (req, res) => {
       const summary_rows = [
         constants.OPERATION_TYPE_MAJOR,
         constants.OPERATION_TYPE_CESAREAN,
-        constants.OPERATION_TYPE_MINOR
+        constants.OPERATION_TYPE_MINOR,
       ];
 
       let summary_records = [];
 
-      summary_rows.forEach(operation_type => {
-        const operation_type_result = results.summary.find(o => {
+      summary_rows.forEach((operation_type) => {
+        const operation_type_result = results.summary.find((o) => {
           return o._id === operation_type;
         });
 
@@ -1160,7 +1116,7 @@ router.post("/summary-of-operations-per-department", (req, res) => {
     search_main_anes,
     search_service,
     search_case,
-    search_operation_status
+    search_operation_status,
   } = req.body;
 
   const filter_query = {
@@ -1168,73 +1124,69 @@ router.post("/summary-of-operations-per-department", (req, res) => {
       ...(search_period_covered[0] &&
         search_period_covered[1] && {
           operation_started: {
-            $gte: moment(search_period_covered[0])
-              .startOf("day")
-              .toDate(),
-            $lte: moment(search_period_covered[1])
-              .endOf("day")
-              .toDate()
-          }
+            $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+            $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+          },
         }),
       ...(search_procedure && {
         procedure: {
-          $regex: new RegExp(search_procedure, "i")
-        }
+          $regex: new RegExp(search_procedure, "i"),
+        },
       }),
       ...(search_operating_room_number && {
-        operating_room_number: search_operating_room_number
+        operating_room_number: search_operating_room_number,
       }),
       ...(!["All", "", null].includes(search_classification) && {
-        classification: search_classification
+        classification: search_classification,
       }),
       ...(search_surgeon && {
-        "surgeon._id": search_surgeon._id
+        "surgeon._id": search_surgeon._id,
       }),
       ...(search_main_anes && {
-        "main_anes._id": search_main_anes._id
+        "main_anes._id": search_main_anes._id,
       }),
       ...(search_service && {
-        service: search_service
+        service: search_service,
       }),
       ...(search_case &&
         search_case !== "All" && {
-          case: search_case
+          case: search_case,
         }),
       ...(search_operation_status && {
-        operation_status: search_operation_status
-      })
-    }
+        operation_status: search_operation_status,
+      }),
+    },
   };
 
   OperatingRoomSlip.aggregate([
     {
-      ...filter_query
+      ...filter_query,
     },
     {
       $match: {
         $and: [
           {
             operation_type: {
-              $ne: ""
-            }
+              $ne: "",
+            },
           },
           {
             operation_type: {
-              $ne: null
-            }
+              $ne: null,
+            },
           },
           {
             service: {
-              $ne: ""
-            }
+              $ne: "",
+            },
           },
           {
             service: {
-              $ne: null
-            }
-          }
-        ]
-      }
+              $ne: null,
+            },
+          },
+        ],
+      },
     },
     {
       $project: {
@@ -1244,43 +1196,43 @@ router.post("/summary-of-operations-per-department", (req, res) => {
         elective: {
           $cond: [
             {
-              $eq: ["$case", "Elective Surgery"]
+              $eq: ["$case", "Elective Surgery"],
             },
             1,
-            0
-          ]
+            0,
+          ],
         },
         emergency: {
           $cond: [
             {
-              $eq: ["$case", "Emergency Procedure"]
+              $eq: ["$case", "Emergency Procedure"],
             },
             1,
-            0
-          ]
-        }
-      }
+            0,
+          ],
+        },
+      },
     },
     {
       $group: {
         _id: {
           service: "$service",
-          operation_type: "$operation_type"
+          operation_type: "$operation_type",
         },
         elective: {
-          $sum: "$elective"
+          $sum: "$elective",
         },
         emergency: {
-          $sum: "$emergency"
-        }
-      }
-    }
-  ]).then(records => {
+          $sum: "$emergency",
+        },
+      },
+    },
+  ]).then((records) => {
     let transaction_records = [];
 
-    constants.SERVICES.forEach(service => {
+    constants.SERVICES.forEach((service) => {
       const operation_types = constants.OPERATION_TYPES.filter(
-        operation_type => {
+        (operation_type) => {
           /**
            * Include only cesarean in GS
            */
@@ -1289,15 +1241,15 @@ router.post("/summary-of-operations-per-department", (req, res) => {
             (service !== constants.SERVICE_OB &&
               [
                 constants.OPERATION_TYPE_MAJOR,
-                constants.OPERATION_TYPE_MINOR
+                constants.OPERATION_TYPE_MINOR,
               ].includes(operation_type)) ||
             service === constants.SERVICE_OB
           );
         }
       );
 
-      operation_types.forEach(operation_type => {
-        const result = records.find(o => {
+      operation_types.forEach((operation_type) => {
+        const result = records.find((o) => {
           return (
             o._id.service === service && o._id.operation_type === operation_type
           );
@@ -1305,7 +1257,7 @@ router.post("/summary-of-operations-per-department", (req, res) => {
 
         const { elective = 0, emergency = 0 } = result || {
           emergency: 0,
-          elective: 0
+          elective: 0,
         };
 
         transaction_records = [
@@ -1315,8 +1267,8 @@ router.post("/summary-of-operations-per-department", (req, res) => {
             operation_type,
             elective,
             emergency,
-            total: elective + emergency
-          }
+            total: elective + emergency,
+          },
         ];
       });
     });
@@ -1339,15 +1291,15 @@ router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
     {
       $match: {
         case: {
-          $in: ["Elective Surgery", "Emergency Procedure"]
+          $in: ["Elective Surgery", "Emergency Procedure"],
         },
         operation_status: {
-          $in: ["POSTPONE", "CANCEL", "DONE"]
+          $in: ["POSTPONE", "CANCEL", "DONE"],
         },
         service: {
-          $nin: [null, ""]
-        }
-      }
+          $nin: [null, ""],
+        },
+      },
     },
     {
       $project: {
@@ -1357,97 +1309,97 @@ router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
         elective_count: {
           $cond: [
             {
-              $eq: ["$case", "Elective Surgery"]
+              $eq: ["$case", "Elective Surgery"],
             },
             1,
-            0
-          ]
+            0,
+          ],
         },
         emergency_count: {
           $cond: [
             {
-              $eq: ["$case", "Emergency Procedure"]
+              $eq: ["$case", "Emergency Procedure"],
             },
             1,
-            0
-          ]
+            0,
+          ],
         },
         postpone_count: {
           $cond: [
             {
-              $eq: ["$operation_status", "POSTPONE"]
+              $eq: ["$operation_status", "POSTPONE"],
             },
             1,
-            0
-          ]
+            0,
+          ],
         },
         cancel_count: {
           $cond: [
             {
-              $eq: ["$operation_status", "CANCEL"]
+              $eq: ["$operation_status", "CANCEL"],
             },
             1,
-            0
-          ]
-        }
-      }
+            0,
+          ],
+        },
+      },
     },
     {
       $addFields: {
         done_count: {
-          $add: ["$elective_count", "$emergency_count"]
-        }
-      }
+          $add: ["$elective_count", "$emergency_count"],
+        },
+      },
     },
     {
       $group: {
         _id: {
           service: "$service",
-          case: "$case"
+          case: "$case",
         },
         service: {
-          $first: "$service"
+          $first: "$service",
         },
         case: {
-          $first: "$case"
+          $first: "$case",
         },
         elective_count: {
-          $sum: "$elective_count"
+          $sum: "$elective_count",
         },
         emergency_count: {
-          $sum: "$emergency_count"
+          $sum: "$emergency_count",
         },
         postpone_count: {
-          $sum: "$postpone_count"
+          $sum: "$postpone_count",
         },
         cancel_count: {
-          $sum: "$cancel_count"
+          $sum: "$cancel_count",
         },
         done_count: {
-          $sum: "$done_count"
-        }
-      }
+          $sum: "$done_count",
+        },
+      },
     },
     {
       $sort: {
         service: 1,
-        case: 1
-      }
+        case: 1,
+      },
     },
     {
       $group: {
         _id: "$service",
         service: {
-          $first: "$service"
+          $first: "$service",
         },
         cancel_count: {
-          $sum: "$cancel_count"
+          $sum: "$cancel_count",
         },
         postpone_count: {
-          $sum: "$postpone_count"
+          $sum: "$postpone_count",
         },
         done_count: {
-          $sum: "$done_count"
+          $sum: "$done_count",
         },
         procedures: {
           $push: {
@@ -1455,31 +1407,31 @@ router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
             count: {
               $cond: [
                 {
-                  $eq: ["$case", "Elective Surgery"]
+                  $eq: ["$case", "Elective Surgery"],
                 },
                 "$elective_count",
-                "$emergency_count"
-              ]
+                "$emergency_count",
+              ],
             },
             postpone_count: "$postpone_count",
             cancel_count: "$cancel_count",
-            done_count: "$done_count"
-          }
-        }
-      }
+            done_count: "$done_count",
+          },
+        },
+      },
     },
     {
       $addFields: {
         deferred_count: {
-          $add: ["$cancel_count", "$postpone_count"]
-        }
-      }
+          $add: ["$cancel_count", "$postpone_count"],
+        },
+      },
     },
     {
       $sort: {
-        service: 1
-      }
-    }
+        service: 1,
+      },
+    },
   ];
 
   const all_query = [all_filter_query, ...aggregate_query];
@@ -1487,12 +1439,12 @@ router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
 
   async.parallel(
     {
-      all_transactions: cb => {
+      all_transactions: (cb) => {
         OperatingRoomSlip.aggregate(all_query).exec(cb);
       },
-      deferred_transactions: cb => {
+      deferred_transactions: (cb) => {
         OperatingRoomSlip.aggregate(deferred_query).exec(cb);
-      }
+      },
     },
     (err, results) => {
       if (err) {
@@ -1502,7 +1454,7 @@ router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
       forOwn(results, (value, key, object) => {
         let transactions = [...value];
 
-        transactions = transactions.map(record => {
+        transactions = transactions.map((record) => {
           let procedures = [...record.procedures];
           for (let i = 0; i <= 1; i++) {
             procedures[i] = procedures[i] || {
@@ -1513,13 +1465,13 @@ router.post("/summary-of-deferred-scheduled-procedures", (req, res) => {
               count: 0,
               postpone_count: 0,
               cancel_count: 0,
-              done_count: 0
+              done_count: 0,
             };
           }
 
           return {
             ...record,
-            procedures
+            procedures,
           };
         });
 
@@ -1541,7 +1493,7 @@ router.post("/operations-summary", (req, res) => {
     search_main_anes,
     search_service,
     search_case,
-    search_operation_status
+    search_operation_status,
   } = req.body;
 
   const filter_query = {
@@ -1549,42 +1501,38 @@ router.post("/operations-summary", (req, res) => {
       ...(search_period_covered[0] &&
         search_period_covered[1] && {
           operation_started: {
-            $gte: moment(search_period_covered[0])
-              .startOf("day")
-              .toDate(),
-            $lte: moment(search_period_covered[1])
-              .endOf("day")
-              .toDate()
-          }
+            $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+            $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+          },
         }),
       ...(search_procedure && {
         procedure: {
-          $regex: new RegExp(search_procedure, "i")
-        }
+          $regex: new RegExp(search_procedure, "i"),
+        },
       }),
       ...(search_operating_room_number && {
-        operating_room_number: search_operating_room_number
+        operating_room_number: search_operating_room_number,
       }),
       ...(!["All", "", null].includes(search_classification) && {
-        classification: search_classification
+        classification: search_classification,
       }),
       ...(search_surgeon && {
-        "surgeon._id": search_surgeon._id
+        "surgeon._id": search_surgeon._id,
       }),
       ...(search_main_anes && {
-        "main_anes._id": search_main_anes._id
+        "main_anes._id": search_main_anes._id,
       }),
       ...(search_service && {
-        service: search_service
+        service: search_service,
       }),
       ...(search_case &&
         search_case !== "All" && {
-          case: search_case
+          case: search_case,
         }),
       ...(search_operation_status && {
-        operation_status: search_operation_status
-      })
-    }
+        operation_status: search_operation_status,
+      }),
+    },
   };
 
   async.map(
@@ -1592,118 +1540,118 @@ router.post("/operations-summary", (req, res) => {
     (operation_type, cb) => {
       OperatingRoomSlip.aggregate([
         {
-          ...filter_query
+          ...filter_query,
         },
         {
           $unwind: {
-            path: "$rvs"
-          }
+            path: "$rvs",
+          },
         },
         {
           $match: {
             $and: [
               {
                 "rvs.rvs_code": {
-                  $ne: ""
-                }
+                  $ne: "",
+                },
               },
               {
                 "rvs.rvs_description": {
-                  $ne: ""
-                }
+                  $ne: "",
+                },
               },
               {
                 classification: {
-                  $ne: null
-                }
+                  $ne: null,
+                },
               },
               {
                 classification: {
-                  $ne: ""
-                }
-              }
+                  $ne: "",
+                },
+              },
             ],
-            operation_type: operation_type
-          }
+            operation_type: operation_type,
+          },
         },
         {
           $project: {
             rvs: {
               rvs_code: {
                 $trim: {
-                  input: "$rvs.rvs_code"
-                }
+                  input: "$rvs.rvs_code",
+                },
               },
               rvs_description: {
                 $trim: {
-                  input: "$rvs.rvs_description"
-                }
-              }
+                  input: "$rvs.rvs_description",
+                },
+              },
             },
             classification: 1,
-            operation_type: 1
-          }
+            operation_type: 1,
+          },
         },
         {
           $addFields: {
             private: {
               $cond: [
                 {
-                  $eq: ["$classification", "Private"]
+                  $eq: ["$classification", "Private"],
                 },
                 1,
-                0
-              ]
+                0,
+              ],
             },
             service: {
               $cond: [
                 {
-                  $eq: ["$classification", "Service"]
+                  $eq: ["$classification", "Service"],
                 },
                 1,
-                0
-              ]
+                0,
+              ],
             },
             housecase: {
               $cond: [
                 {
-                  $eq: ["$classification", "Housecase"]
+                  $eq: ["$classification", "Housecase"],
                 },
                 1,
-                0
-              ]
-            }
-          }
+                0,
+              ],
+            },
+          },
         },
         {
           $group: {
             _id: "$rvs.rvs_code",
             rvs: {
-              $first: "$rvs"
+              $first: "$rvs",
             },
             private: {
-              $sum: "$private"
+              $sum: "$private",
             },
             service: {
-              $sum: "$service"
+              $sum: "$service",
             },
             housecase: {
-              $sum: "$housecase"
-            }
-          }
+              $sum: "$housecase",
+            },
+          },
         },
         {
           $addFields: {
             total: {
-              $add: ["$private", "$service", "$housecase"]
-            }
-          }
+              $add: ["$private", "$service", "$housecase"],
+            },
+          },
         },
         {
           $sort: {
-            "rvs.rvs_description": 1
-          }
-        }
+            "rvs.rvs_description": 1,
+          },
+        },
       ]).exec(cb);
     },
     (err, results) => {
@@ -1719,47 +1667,43 @@ router.post("/room-statistics", (req, res) => {
     search_surgeon,
     search_procedure,
     search_classification,
-    search_main_anes
+    search_main_anes,
   } = req.body;
 
   OperatingRoomSlip.aggregate([
     {
       $match: {
         time_or_started: {
-          $ne: null
+          $ne: null,
         },
         trans_out_from_or: {
-          $ne: null
+          $ne: null,
         },
         ...(search_period_covered[0] &&
           search_period_covered[1] && {
             date_time_of_surgery: {
-              $gte: moment(search_period_covered[0])
-                .startOf("day")
-                .toDate(),
-              $lte: moment(search_period_covered[1])
-                .endOf("day")
-                .toDate()
-            }
+              $gte: moment(search_period_covered[0]).startOf("day").toDate(),
+              $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+            },
           }),
         ...(search_procedure && {
           procedure: {
-            $regex: new RegExp(search_procedure, "i")
-          }
+            $regex: new RegExp(search_procedure, "i"),
+          },
         }),
         ...(search_operating_room_number && {
-          operating_room_number: search_operating_room_number
+          operating_room_number: search_operating_room_number,
         }),
         ...(!["All", ""].includes(search_classification) && {
-          classification: search_classification
+          classification: search_classification,
         }),
         ...(search_surgeon && {
-          "surgeon._id": search_surgeon._id
+          "surgeon._id": search_surgeon._id,
         }),
         ...(search_main_anes && {
-          "main_anes._id": search_main_anes._id
-        })
-      }
+          "main_anes._id": search_main_anes._id,
+        }),
+      },
     },
     {
       $project: {
@@ -1769,61 +1713,61 @@ router.post("/room-statistics", (req, res) => {
         mins: {
           $divide: [
             {
-              $subtract: ["$trans_out_from_or", "$time_or_started"]
+              $subtract: ["$trans_out_from_or", "$time_or_started"],
             },
-            60000
-          ]
-        }
-      }
+            60000,
+          ],
+        },
+      },
     },
     {
       $sort: {
         time_or_started: 1,
-        operating_room_number: 1
-      }
+        operating_room_number: 1,
+      },
     },
     {
       $group: {
         _id: {
           day: {
             $dayOfYear: {
-              date: "$time_or_started"
-            }
+              date: "$time_or_started",
+            },
           },
-          operating_room_number: "$operating_room_number"
+          operating_room_number: "$operating_room_number",
         },
         date: {
-          $first: "$time_or_started"
+          $first: "$time_or_started",
         },
         times: {
           $push: {
             patient_in: "$time_or_started",
             patient_out: "$trans_out_from_or",
-            mins: "$mins"
-          }
-        }
-      }
+            mins: "$mins",
+          },
+        },
+      },
     },
     {
       $group: {
         _id: "$_id.day",
         date: {
-          $first: "$date"
+          $first: "$date",
         },
         items: {
           $push: {
             operating_room_number: "$_id.operating_room_number",
-            times: "$times"
-          }
-        }
-      }
+            times: "$times",
+          },
+        },
+      },
     },
     {
       $sort: {
-        date: 1
-      }
-    }
-  ]).then(records => {
+        date: 1,
+      },
+    },
+  ]).then((records) => {
     return res.json(records);
   });
 });
@@ -1832,109 +1776,109 @@ router.post("/display-monitor", (req, res) => {
   const now = moment.tz(moment(), process.env.TIMEZONE);
   async.parallel(
     {
-      on_going: cb => {
+      on_going: (cb) => {
         OperatingRoomSlip.aggregate([
           {
             $sort: {
               case_order: 1,
-              date_time_of_surgery: -1
-            }
+              date_time_of_surgery: -1,
+            },
           },
           {
             $match: {
-              operation_status: constants.ON_GOING
-            }
+              operation_status: constants.ON_GOING,
+            },
           },
           {
             $group: {
               _id: "$operating_room_number",
               operating_room_number: {
-                $first: "$operating_room_number"
+                $first: "$operating_room_number",
               },
               service: {
-                $first: "$service"
+                $first: "$service",
               },
               name: {
-                $first: "$name"
+                $first: "$name",
               },
               sex: {
-                $first: "$sex"
+                $first: "$sex",
               },
               case: {
-                $first: "$case"
+                $first: "$case",
               },
               classification: {
-                $first: "$classification"
+                $first: "$classification",
               },
               age: {
-                $first: "$age"
+                $first: "$age",
               },
               ward: {
-                $first: "$ward"
+                $first: "$ward",
               },
               procedure: {
-                $first: "$procedure"
+                $first: "$procedure",
               },
               surgeon: {
-                $first: "$surgeon"
+                $first: "$surgeon",
               },
               main_anes: {
-                $first: "$main_anes"
+                $first: "$main_anes",
               },
               case_order: {
-                $first: "$case_order"
+                $first: "$case_order",
               },
               date_time_ordered: {
-                $first: "$date_time_ordered"
-              }
-            }
+                $first: "$date_time_ordered",
+              },
+            },
           },
           {
-            $limit: 8
-          },
-          {
-            $sort: {
-              operating_room_number: 1
-            }
-          }
-        ]).exec(cb);
-      },
-      pacu: cb => {
-        OperatingRoomSlip.aggregate([
-          {
-            $match: {
-              operation_status: constants.ON_RECOVERY
-            }
+            $limit: 8,
           },
           {
             $sort: {
-              bed_number: 1
-            }
+              operating_room_number: 1,
+            },
           },
-          {
-            $limit: 8
-          }
         ]).exec(cb);
       },
-      in_holding_room: cb => {
+      pacu: (cb) => {
         OperatingRoomSlip.aggregate([
           {
             $match: {
-              operation_status: constants.IN_HOLDING_ROOM
-            }
+              operation_status: constants.ON_RECOVERY,
+            },
+          },
+          {
+            $sort: {
+              bed_number: 1,
+            },
+          },
+          {
+            $limit: 8,
+          },
+        ]).exec(cb);
+      },
+      in_holding_room: (cb) => {
+        OperatingRoomSlip.aggregate([
+          {
+            $match: {
+              operation_status: constants.IN_HOLDING_ROOM,
+            },
           },
           {
             $sort: {
               date_time_of_surgery: -1,
-              case_order: 1
-            }
+              case_order: 1,
+            },
           },
           {
-            $limit: 8
-          }
+            $limit: 8,
+          },
         ]).exec(cb);
       },
-      elective_list: cb => {
+      elective_list: (cb) => {
         /**
          * should display all transactions not received so that they will see in the board, even though date/time of surgery is already supplied
          */
@@ -1944,45 +1888,39 @@ router.post("/display-monitor", (req, res) => {
               $or: [
                 {
                   date_time_of_surgery: {
-                    $lte: now
-                      .clone()
-                      .endOf("day")
-                      .toDate(),
-                    $gte: now
-                      .clone()
-                      .startOf("day")
-                      .toDate()
-                  }
+                    $lte: now.clone().endOf("day").toDate(),
+                    $gte: now.clone().startOf("day").toDate(),
+                  },
                 },
                 {
-                  received_by: ""
-                }
+                  received_by: "",
+                },
               ],
               operation_status: constants.ON_SCHEDULE,
-              case: constants.ELECTIVE_SURGERY
-            }
+              case: constants.ELECTIVE_SURGERY,
+            },
           },
           {
             $sort: {
               case_order: 1,
-              date_time_of_surgery: -1
-            }
+              date_time_of_surgery: -1,
+            },
           },
           {
-            $limit: 16
-          }
+            $limit: 16,
+          },
         ]).exec(cb);
       },
-      emergency_list: cb => {
+      emergency_list: (cb) => {
         OperatingRoomSlip.aggregate([
           {
             $match: {
               operation_status: constants.ON_SCHEDULE,
               case: constants.EMERGENCY_PROCEDURE,
               date_time_ordered: {
-                $ne: null
-              }
-            }
+                $ne: null,
+              },
+            },
           },
           {
             $addFields: {
@@ -1992,96 +1930,96 @@ router.post("/display-monitor", (req, res) => {
                   {
                     $multiply: [
                       {
-                        $ifNull: ["$stat_time_limit", 0]
+                        $ifNull: ["$stat_time_limit", 0],
                       },
                       60,
-                      60000
-                    ]
-                  }
-                ]
-              }
-            }
+                      60000,
+                    ],
+                  },
+                ],
+              },
+            },
           },
           {
             $sort: {
               case_order: 1,
               est_date_time_finish: 1,
-              date_time_of_surgery: -1
-            }
+              date_time_of_surgery: -1,
+            },
           },
           {
-            $limit: 16
-          }
+            $limit: 16,
+          },
         ]).exec(cb);
       },
-      charge_nurse: cb => {
+      charge_nurse: (cb) => {
         Nurse.find({
-          assignment: constants.CHARGE_NURSE
+          assignment: constants.CHARGE_NURSE,
         })
           .sort({
             last_name: 1,
-            first_name: 1
+            first_name: 1,
           })
           .exec(cb);
       },
-      receiving_nurse: cb => {
+      receiving_nurse: (cb) => {
         Nurse.find({
-          assignment: constants.RECEIVING_NURSE
+          assignment: constants.RECEIVING_NURSE,
         })
           .sort({
             last_name: 1,
-            first_name: 1
+            first_name: 1,
           })
           .exec(cb);
       },
-      holding_room_nurse: cb => {
+      holding_room_nurse: (cb) => {
         Nurse.find({
-          assignment: constants.HOLDING_ROOM_NURSE
+          assignment: constants.HOLDING_ROOM_NURSE,
         })
           .sort({
             last_name: 1,
-            first_name: 1
+            first_name: 1,
           })
           .exec(cb);
       },
-      on_duty_nurse: cb => {
+      on_duty_nurse: (cb) => {
         Nurse.find({
-          on_duty: true
+          on_duty: true,
         })
           .sort({
             last_name: 1,
-            first_name: 1
+            first_name: 1,
           })
           .exec(cb);
       },
 
-      on_duty_anes: cb => {
+      on_duty_anes: (cb) => {
         Anesthesiologist.find({
-          assignments: constants.ON_DUTY_ANES
+          assignments: constants.ON_DUTY_ANES,
         })
           .sort({
-            year_level: 1
+            year_level: 1,
           })
           .exec(cb);
       },
-      pacu_anes: cb => {
+      pacu_anes: (cb) => {
         Anesthesiologist.find({
-          assignments: constants.PACU_ANES
+          assignments: constants.PACU_ANES,
         })
           .sort({
-            year_level: 1
+            year_level: 1,
           })
           .exec(cb);
       },
-      team_captain_anes: cb => {
+      team_captain_anes: (cb) => {
         Anesthesiologist.find({
-          assignments: constants.TEAM_CAPTAIN_ANES
+          assignments: constants.TEAM_CAPTAIN_ANES,
         })
           .sort({
-            year_level: 1
+            year_level: 1,
           })
           .exec(cb);
-      }
+      },
 
       /* schedule: cb => {
         ORSchedule.findOne({
@@ -2104,7 +2042,7 @@ router.post("/display-monitor", (req, res) => {
       let arr_return = {};
       if (result) {
         arr_return = {
-          ...result
+          ...result,
         };
 
         let on_going = [...result.on_going];
@@ -2156,7 +2094,7 @@ router.post("/:id", (req, res) => {
   const filtered_body = filterId(req);
   const user = req.body.user;
 
-  Model.findById(req.params.id).then(record => {
+  Model.findById(req.params.id).then((record) => {
     if (record) {
       const datetime = moment.tz(moment(), process.env.TIMEZONE);
       const log = `Modified by ${user.name} on ${datetime.format("LLL")}`;
@@ -2166,8 +2104,8 @@ router.post("/:id", (req, res) => {
         {
           user,
           datetime,
-          log
-        }
+          log,
+        },
       ];
 
       const body = {
@@ -2175,21 +2113,21 @@ router.post("/:id", (req, res) => {
         operating_room_number: filtered_body.operating_room_number
           ? filtered_body.operating_room_number
           : null,
-        logs
+        logs,
       };
 
       record.set({
-        ...body
+        ...body,
       });
 
       record
         .save()
-        .then(record => {
+        .then((record) => {
           const io = req.app.get("socketio");
           io.emit("refresh-display", true);
           return res.json(record);
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     } else {
       console.log("ID not found");
     }
@@ -2200,15 +2138,15 @@ router.post("/:id/operative-technique", (req, res) => {
   Optech.updateOne(
     {
       or_slip_id: mongoose.Types.ObjectId(req.body.id),
-      index: req.body.index
+      index: req.body.index,
     },
     {
       $set: {
-        values: req.body.values
-      }
+        values: req.body.values,
+      },
     },
     {
-      upsert: true
+      upsert: true,
     }
   ).exec();
 
@@ -2217,9 +2155,9 @@ router.post("/:id/operative-technique", (req, res) => {
 
 router.delete("/selection", async (req, res) => {
   const items = req.body.items;
-  await asyncForeach(items, async item => {
+  await asyncForeach(items, async (item) => {
     await OperatingRoomSlip.deleteOne({
-      _id: mongoose.Types.ObjectId(item)
+      _id: mongoose.Types.ObjectId(item),
     }).exec();
   });
 
@@ -2228,12 +2166,12 @@ router.delete("/selection", async (req, res) => {
 
 router.delete("/:id", (req, res) => {
   Model.findByIdAndRemove(req.params.id)
-    .then(response => {
+    .then((response) => {
       const io = req.app.get("socketio");
       io.emit("refresh-display", true);
       return res.json({ success: 1 });
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
 });
 
 module.exports = router;
