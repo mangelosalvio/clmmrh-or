@@ -282,6 +282,7 @@ router.post("/paginate", (req, res) => {
       date_time_ordered: 1,
       operation_status: 1,
       operation_finished: 1,
+      operation_started: 1,
     },
     sort: {
       _id: -1,
@@ -539,7 +540,7 @@ router.post("/operations", (req, res) => {
 
         const backlog_hours = moment
           .duration(
-            operation_finished.clone().diff(moment(operation.date_time_ordered))
+            operation_started.clone().diff(moment(operation.date_time_ordered))
           )
           .asHours();
 
@@ -1830,6 +1831,9 @@ router.post("/display-monitor", (req, res) => {
               },
               date_time_ordered: {
                 $first: "$date_time_ordered",
+              },
+              operation_started: {
+                $first: "$operation_started",
               },
             },
           },

@@ -284,13 +284,13 @@ class MainDisplay extends Component {
             </div>
             <div className="is-flex" style={{ flex: "8" }}>
               {this.state.on_going.map((record) => {
-                const operation_finished = record.operation_finished
-                  ? moment(record.operation_finished)
+                const operation_started = record.operation_started
+                  ? moment(record.operation_started)
                   : moment();
 
                 const backlog_hours = moment
                   .duration(
-                    operation_finished.diff(moment(record.date_time_ordered))
+                    operation_started.diff(moment(record.date_time_ordered))
                   )
                   .asHours();
                 const is_backlog =
@@ -505,7 +505,11 @@ class MainDisplay extends Component {
                   record &&
                   record.date_time_ordered &&
                   moment
-                    .duration(moment().diff(moment(record.date_time_ordered)))
+                    .duration(
+                      moment(record.operation_started).diff(
+                        moment(record.date_time_ordered)
+                      )
+                    )
                     .asHours();
                 const is_backlog =
                   backlog_hours > 24 && record.case === EMERGENCY_PROCEDURE;

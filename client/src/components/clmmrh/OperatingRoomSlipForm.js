@@ -1675,11 +1675,14 @@ class OperatingRoomSlipForm extends Component {
         title: "Case",
         dataIndex: "case",
         render: (value, record) => {
-          const operation_finished = record.operation_finished
-            ? moment(record.operation_finished)
+          const operation_started = record.operation_started
+            ? moment(record.operation_started)
+            : moment();
+          const date_time_ordered = record.date_time_ordered
+            ? moment(record.date_time_ordered)
             : moment();
           const backlog_hours = moment
-            .duration(operation_finished.diff(moment(record.date_time_ordered)))
+            .duration(operation_started.diff(date_time_ordered))
             .asHours();
           const is_backlog =
             !isEmpty(record.date_time_ordered) &&
