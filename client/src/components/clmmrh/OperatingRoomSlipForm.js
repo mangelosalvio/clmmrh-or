@@ -2158,17 +2158,19 @@ class OperatingRoomSlipForm extends Component {
                     </Col>
 
                     <Col span={12}>
-                      <DateTimePickerFieldGroup
-                        label="Date/Time Received"
-                        name="date_time_received"
-                        value={this.state.date_time_received}
-                        onChange={(value) =>
-                          this.setState({ date_time_received: value })
-                        }
-                        error={errors.date_time_received}
-                        formItemLayout={smallFormItemLayout}
-                        showTime={true}
-                      />
+                      {!is_ward && (
+                        <DateTimePickerFieldGroup
+                          label="Date/Time Received"
+                          name="date_time_received"
+                          value={this.state.date_time_received}
+                          onChange={(value) =>
+                            this.setState({ date_time_received: value })
+                          }
+                          error={errors.date_time_received}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+                      )}
 
                       {/* <CheckboxFieldGroup
                         label="Surgery is Date only"

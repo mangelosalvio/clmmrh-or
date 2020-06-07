@@ -65,7 +65,10 @@ module.exports = function validateInput(data) {
       errors.date_time_ordered = "Date/Time Ordered is required";
     }
 
-    if (isEmpty(data.date_time_received)) {
+    if (
+      isEmpty(data.date_time_received) &&
+      data.user.role !== constants.USER_WARD
+    ) {
       errors.date_time_received = "Date/Time Received is required";
     }
 
