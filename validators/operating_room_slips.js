@@ -41,6 +41,10 @@ module.exports = function validateInput(data) {
 
     */
 
+    if (isEmpty(data.stat_time_limit)) {
+      errors.stat_time_limit = "Stat Time Limit is required";
+    }
+
     if (isEmpty(data.weight)) {
       errors.weight = "Weight is required";
     }
