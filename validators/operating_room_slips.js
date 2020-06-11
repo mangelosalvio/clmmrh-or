@@ -41,7 +41,10 @@ module.exports = function validateInput(data) {
 
     */
 
-    if (isEmpty(data.stat_time_limit)) {
+    if (
+      isEmpty(data.stat_time_limit) &&
+      data.case === constants.EMERGENCY_PROCEDURE
+    ) {
       errors.stat_time_limit = "Stat Time Limit is required";
     }
 
