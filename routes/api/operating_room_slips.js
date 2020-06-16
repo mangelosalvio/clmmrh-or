@@ -1793,6 +1793,9 @@ router.post("/display-monitor", (req, res) => {
           {
             $group: {
               _id: "$operating_room_number",
+              or_id: {
+                $first: "$_id",
+              },
               operating_room_number: {
                 $first: "$operating_room_number",
               },
