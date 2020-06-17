@@ -3144,16 +3144,19 @@ class OperatingRoomSlipForm extends Component {
                           inputRef={this.anes_quantity_unit_input}
                         />
 
-                        <SimpleSelectFieldGroup
+                        <TextFieldAutocompleteGroup
                           label="Route"
-                          name="anes_route"
                           value={this.state.anes_route}
+                          dataSource={anes_route_options}
                           onChange={(value) =>
                             this.setState({ anes_route: value })
                           }
                           formItemLayout={smallFormItemLayout}
-                          error={errors.anes_route}
-                          options={anes_route_options}
+                          filterOption={(inputValue, option) =>
+                            option.props.children
+                              .toUpperCase()
+                              .indexOf(inputValue.toUpperCase()) !== -1
+                          }
                         />
 
                         <Form.Item
@@ -4479,10 +4482,10 @@ class OperatingRoomSlipForm extends Component {
                               options={anes_unit_options}
                             />
 
-                            <SimpleSelectFieldGroup
+                            <TextFieldAutocompleteGroup
                               label="Route"
-                              name="anes_route"
                               value={o.anes_route}
+                              dataSource={anes_route_options}
                               onChange={(value) => {
                                 const surgical_memos = [
                                   ...this.state.surgical_memos,
@@ -4495,8 +4498,11 @@ class OperatingRoomSlipForm extends Component {
                                 this.setState({ surgical_memos });
                               }}
                               formItemLayout={smallFormItemLayout}
-                              error={errors.anes_route}
-                              options={anes_route_options}
+                              filterOption={(inputValue, option) =>
+                                option.props.children
+                                  .toUpperCase()
+                                  .indexOf(inputValue.toUpperCase()) !== -1
+                              }
                             />
 
                             <Form.Item
