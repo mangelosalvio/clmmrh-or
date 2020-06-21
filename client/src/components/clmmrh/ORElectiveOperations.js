@@ -192,7 +192,7 @@ class ORElectiveOperations extends Component {
                         <div contentEditable="true">
                           Krejmer R. Magalona, RN{" "}
                         </div>
-                        <div>OR/PACU Supervisor</div>
+                        <div contentEditable="true">OR/PACU Supervisor</div>
                       </div>
                     </Col>
                     <Col offset={14} span={4}>
@@ -200,7 +200,7 @@ class ORElectiveOperations extends Component {
                         <div contentEditable="true">
                           Jose Dominador J. Nalumen, MD
                         </div>
-                        <div>Manager, OR Complex</div>
+                        <div contentEditable="true">Manager, OR Complex</div>
                       </div>
                     </Col>
                   </Row>
@@ -345,7 +345,7 @@ class ORElectiveOperations extends Component {
                             <div contentEditable="true">
                               Krejmer R. Magalona, RN{" "}
                             </div>
-                            <div>OR/PACU Supervisor</div>
+                            <div contentEditable="true">OR/PACU Supervisor</div>
                           </div>
                         </Col>
                         <Col offset={14} span={4}>
@@ -353,7 +353,9 @@ class ORElectiveOperations extends Component {
                             <div contentEditable="true">
                               Jose Dominador J. Nalumen, MD
                             </div>
-                            <div>Manager, OR Complex</div>
+                            <div contentEditable="true">
+                              Manager, OR Complex
+                            </div>
                           </div>
                         </Col>
                       </Row>
