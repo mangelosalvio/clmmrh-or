@@ -302,9 +302,9 @@ class MainDisplay extends Component {
                 return (
                   <div className="outline-full-bordered is-flex-1 is-flex">
                     <div
-                      onDoubleClick={() =>
-                        this.props.history.push(`/or-slip/${record.or_id}`)
-                      }
+                      onDoubleClick={() => {
+                        //this.props.history.push(`/or-slip/${record.or_id}`);
+                      }}
                       className={classnames("display-wrapper", {
                         "is-emergency":
                           record && record.case === EMERGENCY_PROCEDURE,
@@ -443,9 +443,9 @@ class MainDisplay extends Component {
                   style={{ width: `${100 / 8}%`, height: "50%" }}
                 >
                   <div
-                    onDoubleClick={() =>
-                      this.props.history.push(`/or-slip/${record._id}`)
-                    }
+                    onDoubleClick={() => {
+                      //this.props.history.push(`/or-slip/${record._id}`);
+                    }}
                     className={classnames("display-wrapper", {
                       "is-emergency":
                         record && record.case === EMERGENCY_PROCEDURE,
@@ -522,9 +522,9 @@ class MainDisplay extends Component {
                     style={{ width: `${100 / 8}%`, height: "50%" }}
                   >
                     <div
-                      onDoubleClick={() =>
-                        this.props.history.push(`/or-slip/${record._id}`)
-                      }
+                      onDoubleClick={() => {
+                        //this.props.history.push(`/or-slip/${record._id}`);
+                      }}
                       className={classnames("display-wrapper", {
                         "is-emergency":
                           record && record.case === EMERGENCY_PROCEDURE,
