@@ -11,6 +11,7 @@ import {
   EMERGENCY_PROCEDURE,
   SOCKET_ENDPOINT,
   CANCEL,
+  ELECTIVE_SURGERY,
 } from "./../../utils/constants";
 import socketIoClient from "socket.io-client";
 import { year_level_order } from "../../utils/Options";
@@ -288,10 +289,11 @@ class MainDisplay extends Component {
                   ? moment(record.operation_started)
                   : moment();
 
+                const date_time_ordered = record.date_time_ordered
+                  ? moment(record.date_time_ordered)
+                  : moment();
                 const backlog_hours = moment
-                  .duration(
-                    operation_started.diff(moment(record.date_time_ordered))
-                  )
+                  .duration(operation_started.diff(date_time_ordered))
                   .asHours();
                 const is_backlog =
                   !isEmpty(record.date_time_ordered) &&
@@ -306,9 +308,10 @@ class MainDisplay extends Component {
                         //this.props.history.push(`/or-slip/${record.or_id}`);
                       }}
                       className={classnames("display-wrapper", {
-                        "is-emergency":
-                          record && record.case === EMERGENCY_PROCEDURE,
-                        "is-backlog": is_backlog,
+                        "is-emergency": record.case === EMERGENCY_PROCEDURE,
+                        elective: record.case === ELECTIVE_SURGERY,
+                        "is-backlog":
+                          is_backlog && record.operation_status !== CANCEL,
                       })}
                     >
                       <div className="is-flex">
@@ -504,18 +507,17 @@ class MainDisplay extends Component {
               }}
             >
               {this.state.emergency_list.map((record) => {
-                const backlog_hours =
-                  record &&
-                  record.date_time_ordered &&
-                  moment
-                    .duration(
-                      moment(record.operation_started).diff(
-                        moment(record.date_time_ordered)
-                      )
-                    )
-                    .asHours();
+                const operation_started = record?.operation_started || moment();
+
+                const date_time_ordered = record?.date_time_ordered || moment();
+                const backlog_hours = moment
+                  .duration(operation_started.diff(date_time_ordered))
+                  .asHours();
                 const is_backlog =
-                  backlog_hours > 24 && record.case === EMERGENCY_PROCEDURE;
+                  !isEmpty(date_time_ordered) &&
+                  backlog_hours > 24 &&
+                  record.case === EMERGENCY_PROCEDURE &&
+                  record.operation_status !== CANCEL;
                 return (
                   <div
                     className="outline-full-bordered is-flex"
