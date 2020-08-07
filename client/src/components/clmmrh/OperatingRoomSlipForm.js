@@ -178,6 +178,11 @@ const form_data = {
   induction_time: null,
   induction_completed: null,
   time_or_started: null,
+
+  induction_time_2: null,
+  induction_completed_2: null,
+  time_or_started_2: null,
+
   or_ended: null,
   trans_out_from_or: null,
   surgical_safety_checklist: null,
@@ -5042,6 +5047,46 @@ class OperatingRoomSlipForm extends Component {
                           formItemLayout={smallFormItemLayout}
                           showTime={true}
                         />
+
+                        <Divider />
+
+                        <DateTimePickerFieldGroup
+                          label="Induction Time"
+                          name="induction_time_2"
+                          value={this.state.induction_time_2}
+                          onChange={(value) =>
+                            this.setState({ induction_time_2: value })
+                          }
+                          error={errors.induction_time_2}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Induction Completed"
+                          name="induction_completed_2"
+                          value={this.state.induction_completed_2}
+                          onChange={(value) =>
+                            this.setState({ induction_completed_2: value })
+                          }
+                          error={errors.induction_completed_2}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <DateTimePickerFieldGroup
+                          label="Time OR Started"
+                          name="time_or_started_2"
+                          value={this.state.time_or_started_2}
+                          onChange={(value) =>
+                            this.setState({ time_or_started_2: value })
+                          }
+                          error={errors.time_or_started_2}
+                          formItemLayout={smallFormItemLayout}
+                          showTime={true}
+                        />
+
+                        <Divider />
 
                         <DateTimePickerFieldGroup
                           label="OR Ended"
