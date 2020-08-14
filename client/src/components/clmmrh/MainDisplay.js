@@ -507,9 +507,14 @@ class MainDisplay extends Component {
               }}
             >
               {this.state.emergency_list.map((record) => {
-                const operation_started = record?.operation_started || moment();
+                const operation_started = record?.operation_started
+                  ? moment(record.operation_status)
+                  : moment();
 
-                const date_time_ordered = record?.date_time_ordered || moment();
+                const date_time_ordered = record?.date_time_ordered
+                  ? moment(record.date_time_ordered)
+                  : moment();
+
                 const backlog_hours = moment
                   .duration(operation_started.diff(date_time_ordered))
                   .asHours();
