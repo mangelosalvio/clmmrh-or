@@ -171,9 +171,9 @@ module.exports = function validateInput(data) {
     if (isEmpty(data.patient_placed_in_or_table)) {
       errors.patient_placed_in_or_table = "Patient placed in OR Table required";
     }
-    if (isEmpty(data.time_anes_arrived)) {
+    /* if (isEmpty(data.time_anes_arrived)) {
       errors.time_anes_arrived = "Time Anes arrived required";
-    }
+    } */
     if (isEmpty(data.time_surgeon_arrived)) {
       errors.time_surgeon_arrived = "Time Surgeon required";
     }

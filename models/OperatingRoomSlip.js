@@ -106,6 +106,10 @@ const OperatingRoomSlipSchema = new Schema({
   surgical_safety_checklist: Boolean,
   remarks: String,
 
+  induction_time_2: Date,
+  induction_completed_2: Date,
+  time_or_started_2: Date,
+
   rvs: [
     {
       rvs_code: String,
