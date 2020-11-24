@@ -399,6 +399,7 @@ class OperatingRoomSlipForm extends Component {
 
     const {
       search_period_covered,
+      search_operation_started,
       search_operating_room_number,
       search_surgeon,
       search_procedure,
@@ -413,6 +414,7 @@ class OperatingRoomSlipForm extends Component {
       page,
       s: this.state.search_keyword,
       search_period_covered,
+      search_operation_started,
       search_operating_room_number,
       search_surgeon,
       search_procedure,
@@ -1913,6 +1915,20 @@ class OperatingRoomSlipForm extends Component {
                             formItemLayout={smallFormItemLayout}
                             error={errors.search_operation_status}
                             options={operation_status_options}
+                          />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={8}>
+                          <RangeDatePickerFieldGroup
+                            label="Operation Started"
+                            name="search_operation_started"
+                            value={this.state.search_operation_started}
+                            onChange={(dates) =>
+                              this.setState({ search_operation_started: dates })
+                            }
+                            error={errors.search_operation_started}
+                            formItemLayout={smallFormItemLayout}
                           />
                         </Col>
                       </Row>

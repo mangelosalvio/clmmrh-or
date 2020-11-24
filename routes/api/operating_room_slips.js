@@ -206,6 +206,7 @@ router.post("/paginate", (req, res) => {
     search_service,
     search_case,
     search_operation_status,
+    search_operation_started,
   } = req.body;
 
   const form_data = {
@@ -215,6 +216,14 @@ router.post("/paginate", (req, res) => {
         date_time_of_surgery: {
           $gte: moment(search_period_covered[0]).startOf("day").toDate(),
           $lte: moment(search_period_covered[1]).endOf("day").toDate(),
+        },
+      }),
+    ...(search_operation_started &&
+      search_operation_started[0] &&
+      search_operation_started[1] && {
+        operation_started: {
+          $gte: moment(search_operation_started[0]).startOf("day").toDate(),
+          $lte: moment(search_operation_started[1]).endOf("day").toDate(),
         },
       }),
     ...(search_procedure && {
