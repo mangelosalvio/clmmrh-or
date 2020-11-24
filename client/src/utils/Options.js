@@ -134,13 +134,13 @@ export const operating_room_number_options = [
 ];
 
 export const operating_room_number_labels = {
-  "1": "H-OR1",
-  "2": "H-OR2",
-  "3": "H-OR3",
-  "4": "H-OR4",
-  "5": "H-OR5",
-  "6": "H-OR6",
-  "7": "H-OR7",
+  1: "H-OR1",
+  2: "H-OR2",
+  3: "H-OR3",
+  4: "H-OR4",
+  5: "H-OR5",
+  6: "H-OR6",
+  7: "H-OR7",
   OB: "OB OR",
   WT1: "WT-OR1",
   WT2: "WT-OR2",
@@ -154,6 +154,7 @@ export const year_level_options = [
   "1ST YEAR",
   "2ND YEAR",
   "3RD YEAR",
+  "4TH YEAR",
   "CONSULTANT",
 ];
 
