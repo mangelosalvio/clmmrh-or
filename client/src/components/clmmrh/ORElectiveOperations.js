@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
 import { Layout, message, Col, Row } from "antd";
-import clmmrh_logo from "./../../images/clmmrh-report-logo.png";
+import clmmrh_logo from "./../../images/clmmrh-header.png";
 import clmmrh_footer_logo from "./../../images/clmmrh-report-footer-logo.png";
 import isEmpty from "./../../validation/is-empty";
 
@@ -85,7 +85,7 @@ class ORElectiveOperations extends Component {
                     <img
                       src={clmmrh_logo}
                       alt="logo"
-                      style={{ width: "8.61in" }}
+                      style={{ width: "5in" }}
                     />
                   </div>
                   <div
@@ -200,7 +200,7 @@ class ORElectiveOperations extends Component {
                         <div contentEditable="true">
                           Jose Dominador J. Nalumen, MD
                         </div>
-                        <div contentEditable="true">Manager, OR Complex</div>
+                        <div contentEditable="true">OR/PACU Manager</div>
                       </div>
                     </Col>
                   </Row>
