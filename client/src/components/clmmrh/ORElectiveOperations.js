@@ -5,6 +5,7 @@ import axios from "axios";
 import { Layout, message, Col, Row } from "antd";
 import clmmrh_logo from "./../../images/clmmrh-header.png";
 import clmmrh_footer_logo from "./../../images/clmmrh-report-footer-logo.png";
+//import clmmrh_footer_logo from "./../../images/socotec.png";
 import isEmpty from "./../../validation/is-empty";
 
 import moment from "moment";
@@ -353,9 +354,7 @@ class ORElectiveOperations extends Component {
                             <div contentEditable="true">
                               Jose Dominador J. Nalumen, MD
                             </div>
-                            <div contentEditable="true">
-                              Manager, OR Complex
-                            </div>
+                            <div contentEditable="true">OR/PACU Manager</div>
                           </div>
                         </Col>
                       </Row>
