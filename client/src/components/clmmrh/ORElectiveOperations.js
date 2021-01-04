@@ -4,8 +4,8 @@ import { withRouter } from "react-router-dom";
 import axios from "axios";
 import { Layout, message, Col, Row } from "antd";
 import clmmrh_logo from "./../../images/clmmrh-header.png";
-import clmmrh_footer_logo from "./../../images/clmmrh-report-footer-logo.png";
-//import clmmrh_footer_logo from "./../../images/socotec.png";
+//import clmmrh_footer_logo from "./../../images/clmmrh-report-footer-logo.png";
+import clmmrh_footer_logo from "./../../images/socotec.png";
 import isEmpty from "./../../validation/is-empty";
 
 import moment from "moment";
@@ -213,15 +213,9 @@ class ORElectiveOperations extends Component {
                     Issue Date: 09/15/2016 <br />
                     Issue No. 004
                   </Col>
-                  <Col offset={7} span={4}>
+                  <Col span={10} offset={2}>
                     <div className="has-text-centered">
-                      <img
-                        src={clmmrh_footer_logo}
-                        style={{
-                          width: "1.41in",
-                        }}
-                        alt="footer"
-                      />
+                      <img src={clmmrh_footer_logo} alt="footer" />
                     </div>
                   </Col>
                 </Row>
@@ -366,15 +360,9 @@ class ORElectiveOperations extends Component {
                         Issue Date: 09/15/2016 <br />
                         Issue No. 004
                       </Col>
-                      <Col offset={7} span={4}>
+                      <Col span={10} offset={2}>
                         <div className="has-text-centered">
-                          <img
-                            src={clmmrh_footer_logo}
-                            style={{
-                              width: "1.41in",
-                            }}
-                            alt="footer"
-                          />
+                          <img src={clmmrh_footer_logo} alt="footer" />
                         </div>
                       </Col>
                     </Row>
