@@ -362,7 +362,7 @@ class ORElectiveOperations extends Component {
                       </Col>
                       <Col span={10} offset={2}>
                         <div className="has-text-centered">
-                          <img src={clmmrh_footer_logo} alt="footer" />
+                          {/* <img src={clmmrh_footer_logo} alt="footer" /> */}
                         </div>
                       </Col>
                     </Row>
